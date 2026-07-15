@@ -1,0 +1,175 @@
+<div class="catalogo-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1>
+        <span class="page-icon"><mat-icon>design_services</mat-icon></span>
+        Administración de Servicios
+      </h1>
+      <p>Gestión de servicios registrados en el sistema.</p>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="btn-nuevo"
+      [routerLink]="['/servicios/create']">
+      <mat-icon>add</mat-icon>
+      Nuevo Servicio
+    </button>
+  </div>
+
+  <!-- FILTROS -->
+  <mat-card class="filter-card mb-4">
+    <mat-card-content>
+      <div class="filters-bar">
+
+        <!-- BUSCAR -->
+        <mat-form-field appearance="outline" class="filter-search">
+          <mat-label>Buscar servicio</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Nombre del servicio">
+        </mat-form-field>
+
+        <!-- CATEGORIA -->
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-label>Categoría</mat-label>
+          <mat-select [ngModel]="categoria()" (ngModelChange)="categoria.set($event)">
+            <mat-option value="">Todas</mat-option>
+            @for (cat of categorias(); track cat) {
+            <mat-option [value]="cat">{{cat}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- MODALIDAD -->
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-label>Modalidad</mat-label>
+          <mat-select [ngModel]="modalidad()" (ngModelChange)="modalidad.set($event)">
+            <mat-option value="">Todas</mat-option>
+            <mat-option value="PRESENCIAL">Presencial</mat-option>
+            <mat-option value="VIRTUAL">Virtual</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- PRECIO -->
+        <div class="filter-price-range">
+          <mat-form-field appearance="outline" class="filter-price">
+            <mat-label>Desde</mat-label>
+            <span matPrefix>₡&nbsp;</span>
+            <input matInput type="number" [ngModel]="precioDesde()" (ngModelChange)="precioDesde.set($event)">
+          </mat-form-field>
+
+          <span class="price-separator">—</span>
+
+          <mat-form-field appearance="outline" class="filter-price">
+            <mat-label>Hasta</mat-label>
+            <span matPrefix>₡&nbsp;</span>
+            <input matInput type="number" [ngModel]="precioHasta()" (ngModelChange)="precioHasta.set($event)">
+          </mat-form-field>
+        </div>
+
+        <!-- LIMPIAR -->
+        <button mat-stroked-button class="clear-btn" (click)="clearFilters()">
+          <mat-icon>filter_alt_off</mat-icon>
+          Limpiar
+        </button>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- CONTADOR -->
+  <div class="results-counter">
+    <h5>
+      Servicios encontrados
+      <span class="badge-count">{{totalServicios()}}</span>
+    </h5>
+  </div>
+
+  <!-- TABLA -->
+  <mat-card class="table-card">
+    <div class="table-responsive">
+      <table class="services-table mb-0">
+        <thead>
+          <tr>
+            <th>Servicio</th>
+            <th>Profesional</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Modalidad</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (servicio of serviciosFiltrados(); track servicio.id) {
+          <tr>
+            <td>
+              <strong class="servicio-nombre">{{servicio.nombre}}</strong>
+              <br>
+              <small class="text-muted">{{servicio.descripcion}}</small>
+            </td>
+
+            <td>{{servicio.profesional}}</td>
+
+            <td>
+              <span class="chip chip-categoria">{{servicio.categoria}}</span>
+            </td>
+
+            <td>
+              <strong class="precio">₡{{servicio.precio}}</strong>
+            </td>
+
+            <td>
+              <span class="chip" [class.chip-presencial]="servicio.modalidad==='PRESENCIAL'"
+                [class.chip-virtual]="servicio.modalidad==='VIRTUAL'">
+                {{servicio.modalidad}}
+              </span>
+            </td>
+
+            <td>
+              <span class="chip chip-dot" [class.chip-activo]="servicio.estado==='ACTIVO'"
+                [class.chip-inactivo]="servicio.estado!=='ACTIVO'">
+                {{servicio.estado}}
+              </span>
+            </td>
+
+            <td class="text-center">
+              <button mat-icon-button
+                      class="btn-toggle-estado"
+                      [class.btn-desactivar]="servicio.estado === 'ACTIVO'"
+                      [class.btn-activar]="servicio.estado !== 'ACTIVO'"
+                      (click)="toggleEstado(servicio)"
+                      [title]="servicio.estado === 'ACTIVO' ? 'Desactivar servicio' : 'Activar servicio'">
+                <mat-icon>{{ servicio.estado === 'ACTIVO' ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+              </button>
+
+              <a mat-icon-button class="btn-ver" matTooltip="Ver detalle" [routerLink]="['/servicios', servicio.id]">
+                <mat-icon>visibility</mat-icon>
+              </a>
+
+              <a mat-icon-button class="btn-editar" matTooltip="Editar" [routerLink]="['/servicios/edit', servicio.id]">
+                <mat-icon>edit</mat-icon>
+              </a>
+            </td>
+          </tr>
+          }
+
+          @empty {
+          <tr>
+            <td colspan="7" class="empty-row">
+              <mat-icon>search_off</mat-icon>
+              <h5>No hay servicios disponibles</h5>
+              <p class="text-muted mb-0">Intenta ajustar los filtros de búsqueda.</p>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </mat-card>
+
+</div>

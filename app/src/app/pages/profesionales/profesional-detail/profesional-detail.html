@@ -1,0 +1,177 @@
+<div class="page-container">
+
+    <div class="page-header">
+
+        <div>
+            <h1 class="page-title">
+                Detalle del Profesional
+            </h1>
+
+            <p class="page-subtitle">
+                Información completa del profesional.
+            </p>
+        </div>
+
+        <a mat-stroked-button routerLink="/profesionales">
+            <mat-icon>arrow_back</mat-icon>
+            Volver
+        </a>
+
+    </div>
+
+
+    @if (loading()) {
+
+        <div class="state-box">
+            <mat-spinner diameter="42"></mat-spinner>
+            <p>Cargando información...</p>
+        </div>
+
+    }
+
+
+    @if (error()) {
+
+        <div class="alert-error">
+            {{error()}}
+        </div>
+
+    }
+
+
+    @if (profesional(); as profesional) {
+
+    <mat-card class="detail-card hero-card">
+
+        <mat-card-content>
+
+            <div class="hero-top">
+
+                @if (imagenUrl(); as imagenUrl) {
+                    <div class="profile-image-wrap">
+                                <img mat-card-image [src]="getImageUrl(profesional.imagenPerfil)" [alt]="profesional.nombre" />
+                    </div>
+                } @else {
+                    <div class="avatar">
+                        {{ iniciales() }}
+                    </div>
+                }
+
+                <div class="hero-info">
+
+                    <h2 class="profesional-name">{{profesional.nombre}}</h2>
+                    <p class="profesional-title">{{profesional.tituloProfesional}}</p>
+
+                    <div class="hero-tags">
+                        <span class="chip chip-modalidad">{{profesional.modalidad}}</span>
+
+                        @if (profesional.disponible) {
+                            <span class="chip chip-activo">Disponible</span>
+                        } @else {
+                            <span class="chip chip-inactivo">No disponible</span>
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <div class="info-icon icon-experience">
+                        <mat-icon>workspace_premium</mat-icon>
+                    </div>
+                    <div class="info-text">
+                        <strong>Experiencia</strong>
+                        <p>{{profesional.aniosExperiencia}} años</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon icon-price">
+                        <mat-icon>payments</mat-icon>
+                    </div>
+                    <div class="info-text">
+                        <strong>Tarifa base</strong>
+                        <p>₡{{profesional.tarifaBase}}</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon icon-email">
+                        <mat-icon>email</mat-icon>
+                    </div>
+                    <div class="info-text">
+                        <strong>Correo</strong>
+                        <p>{{profesional.correo}}</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon icon-phone">
+                        <mat-icon>phone</mat-icon>
+                    </div>
+                    <div class="info-text">
+                        <strong>Teléfono</strong>
+                        <p>{{profesional.telefono}}</p>
+                    </div>
+                </div>
+
+                <div class="info-item info-item-wide">
+                    <div class="info-icon icon-location">
+                        <mat-icon>location_on</mat-icon>
+                    </div>
+                    <div class="info-text">
+                        <strong>Ubicación</strong>
+                        <p>{{profesional.distrito}}, {{profesional.canton}}, {{profesional.provincia}}</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </mat-card-content>
+
+    </mat-card>
+
+
+    <mat-card class="detail-card mt-4">
+
+        <mat-card-content>
+
+            <h3 class="section-title">Especialidades</h3>
+
+            @if (profesional.especialidades.length) {
+
+                <div class="chips-row">
+                    @for (especialidad of profesional.especialidades; track especialidad.id) {
+                        <span class="chip chip-especialidad">{{especialidad.nombre}}</span>
+                    }
+                </div>
+
+            } @else {
+
+                <p class="muted">No hay especialidades registradas.</p>
+
+            }
+
+        </mat-card-content>
+
+    </mat-card>
+
+
+    <mat-card class="detail-card mt-4">
+
+        <mat-card-content>
+
+            <h3 class="section-title">Descripción</h3>
+
+            <p class="descripcion-text">{{profesional.descripcion}}</p>
+
+        </mat-card-content>
+
+    </mat-card>
+
+    }
+
+</div>

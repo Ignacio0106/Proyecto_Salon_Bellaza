@@ -1,0 +1,106 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Detalle de la Cita</h1>
+      <p class="page-subtitle">Información completa del registro.</p>
+    </div>
+
+    <a mat-stroked-button routerLink="/citas">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="state-box">
+      <mat-spinner diameter="42"></mat-spinner>
+      <p>Cargando información...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert-error">
+      {{ error() }}
+    </div>
+  }
+
+  @if (cita(); as cita) {
+    <mat-card class="detail-card">
+      <mat-card-content>
+        <div class="header-grid">
+          <div>
+            <span class="detail-label">Estado</span>
+            <h2 class="detail-title">{{ cita.estado }}</h2>
+          </div>
+          <span class="chip chip-estado">#{{ cita.id }}</span>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <mat-icon>person</mat-icon>
+            <div>
+              <strong>Cliente</strong>
+              <p>{{ cita.cliente.nombreCompleto }}</p>
+              <small>{{ cita.cliente.correo }} · {{ cita.cliente.telefono }}</small>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>badge</mat-icon>
+            <div>
+              <strong>Profesional</strong>
+              <p>{{ cita.profesional.nombreCompleto }}</p>
+              <small>{{ cita.profesional.tituloProfesional }}</small>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>spa</mat-icon>
+            <div>
+              <strong>Servicio</strong>
+              <p>{{ cita.servicio.nombre }}</p>
+              <small>₡{{ cita.servicio.precio }}</small>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>event</mat-icon>
+            <div>
+              <strong>Fecha y hora</strong>
+              <p>{{ cita.fecha | date:'dd/MM/yyyy' }}</p>
+              <small>{{ cita.horaInicio }} - {{ cita.horaFinalizacion }}</small>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>place</mat-icon>
+            <div>
+              <strong>Modalidad</strong>
+              <p>{{ cita.modalidad }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>payments</mat-icon>
+            <div>
+              <strong>Monto calculado</strong>
+              <p>₡{{ cita.montoCalculado }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-section">
+          <h3>Descripción</h3>
+          <p>{{ cita.descripcion }}</p>
+        </div>
+
+        @if (cita.comentarioProfesional) {
+          <div class="text-section">
+            <h3>Comentario profesional</h3>
+            <p>{{ cita.comentarioProfesional }}</p>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

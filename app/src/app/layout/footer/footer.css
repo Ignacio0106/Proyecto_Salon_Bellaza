@@ -1,0 +1,76 @@
+.salon-footer {
+  /* Usamos los tonos oscuros de la paleta neutral para fondos */
+  background-color: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface-variant);
+  padding: 32px 24px;
+  font-size: 0.9rem;
+  /* Línea superior usando tu color primario para amarrar la paleta */
+  border-top: 4px solid var(--mat-sys-primary);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.footer-brand {
+  flex: 1 1 400px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  color: var(--mat-sys-on-surface);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.logo-area mat-icon {
+  margin-right: 8px;
+  color: var(--mat-sys-tertiary);
+}
+
+.footer-brand p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.footer-academic {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+}
+
+.course {
+  color: var(--mat-sys-on-surface);
+  font-weight: 500;
+  text-align: right;
+}
+
+.institution {
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+.copyright {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .footer-academic {
+    align-items: flex-start;
+  }
+  .course {
+    text-align: left;
+  }
+}

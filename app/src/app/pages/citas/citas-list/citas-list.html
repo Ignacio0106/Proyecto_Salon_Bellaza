@@ -1,0 +1,123 @@
+<div class="container">
+  <mat-card>
+    <mat-card-content>
+      <h2>Listado de Citas Medicas</h2>
+
+      <!-- Contenedor Combinable de Filtros -->
+      <div class="filtros-container">
+        
+        <!-- Filtro por Estado -->
+        <mat-form-field appearance="outline" class="filtro-select">
+          <mat-label>Estado</mat-label>
+          <mat-select [ngModel]="estadoFiltro()" (ngModelChange)="estadoFiltro.set($event)">
+            <mat-option value="">Todos los estados</mat-option>
+            @for (est of estadosDisponibles(); track est) {
+              <mat-option [value]="est">{{ est }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Filtro por Profesional -->
+        <mat-form-field appearance="outline" class="filtro-select">
+          <mat-label>Profesional</mat-label>
+          <mat-select [ngModel]="profesionalFiltro()" (ngModelChange)="profesionalFiltro.set($event)">
+            <mat-option value="">Todos los profesionales</mat-option>
+            @for (prof of profesionalesDisponibles(); track prof) {
+              <mat-option [value]="prof">{{ prof }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Filtro por Rango de Fechas -->
+        <mat-form-field appearance="outline" class="filtro-fecha">
+          <mat-label>Rango de fechas</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate [ngModel]="fechaInicio()" (ngModelChange)="fechaInicio.set($event)" placeholder="Inicio">
+            <input matEndDate [ngModel]="fechaFin()" (ngModelChange)="fechaFin.set($event)" placeholder="Fin">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+
+        <!-- Botón Limpiar -->
+        <button mat-stroked-button class="secondary-button" (click)="clearFilters()">
+          Limpiar
+        </button>
+      </div>
+
+      <!-- Loading Shade -->
+      @if (loading()) {
+        <div class="loading-shade">
+          <mat-spinner></mat-spinner>
+        </div>
+      }
+
+      <!-- Tabla Funcional -->
+      <div class="table-responsive">
+        <table mat-table [dataSource]="citasFiltradas()" class="mat-elevation-z0">
+
+          <!-- Columna Cliente -->
+          <ng-container matColumnDef="cliente">
+            <th mat-header-cell *matHeaderCellDef> Cliente </th>
+            <td mat-cell *matCellDef="let cita"> {{ cita.cliente }} </td>
+          </ng-container>
+
+          <!-- Columna Profesional -->
+          <ng-container matColumnDef="profesional">
+            <th mat-header-cell *matHeaderCellDef> Profesional </th>
+            <td mat-cell *matCellDef="let cita"> {{ cita.profesional }} </td>
+          </ng-container>
+
+          <!-- Columna Servicio -->
+          <ng-container matColumnDef="servicio">
+            <th mat-header-cell *matHeaderCellDef> Servicio </th>
+            <td mat-cell *matCellDef="let cita"> {{ cita.servicio }} </td>
+          </ng-container>
+
+          <!-- Columna Fecha y Hora -->
+          <ng-container matColumnDef="fechaHora">
+            <th mat-header-cell *matHeaderCellDef> Fecha / Hora </th>
+            <td mat-cell *matCellDef="let cita"> 
+              <div class="fecha-celda">
+                <span class="fecha-texto"><mat-icon>calendar_today</mat-icon> {{ cita.fecha }}</span>
+                <span class="hora-texto"><mat-icon>access_time</mat-icon> {{ cita.hora }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Estado -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef> Estado </th>
+            <td mat-cell *matCellDef="let cita">
+              <span class="badge-estado" [attr.data-estado]="cita.estado">
+                {{ cita.estado }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Columna Acciones -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+            <td mat-cell *matCellDef="let cita">
+              <a mat-stroked-button color="primary" [routerLink]="['/citas', cita.id]">
+                <mat-icon>visibility</mat-icon>
+                Ver detalle
+              </a>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- No Data Row -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell no-data" colspan="6">
+              No se encontraron registros de citas coincidentes.
+            </td>
+          </tr>
+        </table>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+</div>

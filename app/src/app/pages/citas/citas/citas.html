@@ -1,0 +1,92 @@
+<div class="page-container citas-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Mis Citas</h1>
+      <p class="page-subtitle">Solo se muestran las citas del usuario activo.</p>
+    </div>
+
+    <a mat-stroked-button routerLink="/citas/cita-reserva">
+      <mat-icon>add</mat-icon>
+      Nueva cita
+    </a>
+  </div>
+
+  @if (currentUser(); as user) {
+    <mat-card class="session-card">
+      <mat-card-content>
+        <span class="session-label">Sesión activa</span>
+        <h2>{{ user.nombre }}</h2>
+        <p>{{ user.role }}</p>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <mat-card class="session-card empty-session">
+      <mat-card-content>
+        <mat-icon>person_off</mat-icon>
+        <h2>No hay usuario activo</h2>
+        <p>Usa los botones del encabezado para seleccionar un cliente o profesional de prueba.</p>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (loading()) {
+    <div class="state-box">
+      <mat-spinner diameter="42"></mat-spinner>
+      <p>Cargando citas...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert-error">
+      {{ error() }}
+    </div>
+  }
+
+  @if (currentUser(); as user) {
+    @if (citasVisibles().length) {
+      <div class="citas-grid">
+        @for (cita of citasVisibles(); track cita.id) {
+          <mat-card class="cita-card">
+            <mat-card-content>
+              <div class="cita-top">
+                <div>
+                  <span class="cita-label">{{ user.role === 'CLIENTE' ? 'Profesional' : 'Cliente' }}</span>
+                  <h3>{{ user.role === 'CLIENTE' ? cita.profesional : cita.cliente }}</h3>
+                </div>
+
+                <span class="badge-estado" [attr.data-estado]="cita.estado">{{ cita.estado }}</span>
+              </div>
+
+              <div class="cita-meta">
+                <div>
+                  <mat-icon>spa</mat-icon>
+                  <span>{{ cita.servicio }}</span>
+                </div>
+                <div>
+                  <mat-icon>event</mat-icon>
+                  <span>{{ cita.fecha | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div>
+                  <mat-icon>schedule</mat-icon>
+                  <span>{{ cita.hora }}</span>
+                </div>
+              </div>
+
+              <a mat-stroked-button color="primary" [routerLink]="['/citas', cita.id]">
+                Ver detalle
+              </a>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    } @else {
+      <mat-card class="empty-results">
+        <mat-card-content>
+          <mat-icon>event_busy</mat-icon>
+          <h2>No hay citas para este usuario</h2>
+          <p>Si cambias de usuario desde el encabezado, aquí aparecerán solo sus citas.</p>
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+</div><p>citas works!</p>

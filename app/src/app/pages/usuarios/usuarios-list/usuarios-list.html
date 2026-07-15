@@ -1,0 +1,97 @@
+<div class="container">
+    <mat-card class="custom-card">
+        <mat-card-content>
+            <div class="card-header">
+                <h2>
+                    <mat-icon>group</mat-icon>
+                    Gestión de Usuarios
+                </h2>
+            </div>
+
+            <div class="filtros-container">
+                <mat-form-field appearance="outline" class="filtro-busqueda">
+                    <mat-label>Buscar por nombre o correo</mat-label>
+                    <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)"
+                        placeholder="Ej. Juan Pérez">
+                    <mat-icon matSuffix>search</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="filtro-rol">
+                    <mat-label>Filtrar por Rol</mat-label>
+                    <mat-select [ngModel]="rolFiltro()" (ngModelChange)="rolFiltro.set($event)">
+                        <mat-option value="">Todos los roles</mat-option>
+                        @for (rol of roles(); track rol) {
+                        <mat-option [value]="rol">
+                            {{ rol }}
+                        </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <button mat-stroked-button class="btn-limpiar" (click)="clearFilters()">
+                    <mat-icon>filter_alt_off</mat-icon>
+                    Limpiar
+                </button>
+            </div>
+
+            @if (loading()) {
+            <div class="loading-shade">
+                <mat-spinner diameter="40"></mat-spinner>
+            </div>
+            }
+
+            <div class="table-responsive">
+                <table mat-table [dataSource]="usuariosFiltrados()" class="mat-elevation-z0 custom-table">
+
+                    <ng-container matColumnDef="nombre">
+                        <th mat-header-cell *matHeaderCellDef> Nombre Completo </th>
+                        <td mat-cell *matCellDef="let usuario">
+                            {{ usuario.nombreCompleto }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="correo">
+                        <th mat-header-cell *matHeaderCellDef> Correo </th>
+                        <td mat-cell *matCellDef="let usuario"> {{ usuario.correo }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="rol">
+                        <th mat-header-cell *matHeaderCellDef> Rol </th>
+                        <td mat-cell *matCellDef="let usuario">
+                            <span class="badge-rol">{{ usuario.rol }}</span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="estado">
+                        <th mat-header-cell *matHeaderCellDef> Estado </th>
+                        <td mat-cell *matCellDef="let usuario">
+                            <span class="badge-estado" [class.activo]="usuario.estado === 'ACTIVO'"
+                                [class.inactivo]="usuario.estado === 'INACTIVO'">
+                                {{ usuario.estado === 'ACTIVO' ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="acciones">
+                        <th mat-header-cell *matHeaderCellDef> Acciones </th>
+                        <td mat-cell *matCellDef="let usuario">
+                            <button mat-icon-button class="btn-toggle-estado"
+                                [class.btn-desactivar]="usuario.estado === 'ACTIVO'"
+                                [class.btn-activar]="usuario.estado === 'INACTIVO'" (click)="toggleEstado(usuario)">
+                                <mat-icon>{{ usuario.estado === 'ACTIVO' ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="['nombre', 'correo', 'rol', 'estado', 'acciones']"></tr>
+                    <tr mat-row *matRowDef="let row; columns: ['nombre', 'correo', 'rol', 'estado', 'acciones'];"></tr>
+
+                    <tr class="mat-row" *matNoDataRow>
+                        <td class="mat-cell no-data" colspan="5">No se encontraron usuarios con los criterios de
+                            búsqueda.</td>
+                    </tr>
+                </table>
+            </div>
+
+        </mat-card-content>
+    </mat-card>
+</div>

@@ -1,0 +1,77 @@
+ .cita-form-page {
+	display: grid;
+	gap: 1.25rem;
+ }
+
+ .state-card,
+ .form-card {
+	border-radius: 18px;
+	box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+ }
+
+ .state-card mat-card-content {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+ }
+
+ .error-box {
+	padding: 0.9rem 1rem;
+	border-radius: 12px;
+	background: #fef2f2;
+	color: #b91c1c;
+	border: 1px solid #fecaca;
+ }
+
+ .cita-form {
+	display: grid;
+	gap: 1.25rem;
+ }
+
+ .form-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+ }
+
+ .full-width {
+	width: 100%;
+ }
+
+ .summary-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+ }
+
+ .summary-item {
+	padding: 1rem;
+	border-radius: 14px;
+	background: #f8fafc;
+	border: 1px solid #e5e7eb;
+ }
+
+ .summary-item span {
+	display: block;
+	font-size: 0.8rem;
+	color: #6b7280;
+	margin-bottom: 0.35rem;
+ }
+
+ .summary-item strong {
+	color: #111827;
+ }
+
+ .actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+ }
+
+ @media (max-width: 820px) {
+	.form-grid,
+	.summary-grid {
+		grid-template-columns: 1fr;
+	}
+ }

@@ -1,0 +1,260 @@
+/* Header contenedor: fondo con gradiente sutil + glass effect */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(20px);
+  background-color: var(--mat-sys-primary-container);
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 15%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--mat-sys-primary) 8%, transparent),
+              0 4px 24px color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+}
+
+/* Línea decorativa multicolor en el borde inferior */
+.site-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  opacity: 0.5;
+}
+
+.toolbar {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  height: 72px;
+  padding: 0;
+  background: transparent;
+  gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+/* Marca / logo */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: inherit;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.brand:hover {
+  transform: translateY(-1px);
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--mat-sys-on-primary);
+  background: linear-gradient(135deg, var(--mat-sys-primary) 0%, var(--mat-sys-tertiary) 100%);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--mat-sys-primary) 40%, transparent),
+              0 2px 4px color-mix(in srgb, var(--mat-sys-tertiary) 30%, transparent),
+              inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  transition: box-shadow 0.2s ease;
+}
+
+.brand:hover .brand-icon {
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--mat-sys-primary) 50%, transparent),
+              0 3px 6px color-mix(in srgb, var(--mat-sys-tertiary) 40%, transparent),
+              inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.brand-icon mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-text strong {
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  background: linear-gradient(90deg, var(--mat-sys-on-surface), var(--mat-sys-primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand-text small {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--mat-sys-tertiary);
+  opacity: 0.9;
+}
+
+/* Navegación */
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 1.75rem;
+  padding: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mat-sys-surface-container) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 10%, transparent);
+}
+
+.desktop-nav a,
+.desktop-nav button {
+  border-radius: 999px !important;
+  color: var(--mat-sys-on-surface-variant);
+  font-weight: 500;
+  font-size: 0.88rem;
+  padding: 0 16px !important;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.desktop-nav mat-icon {
+  margin-right: 6px;
+  font-size: 19px;
+  width: 19px;
+  height: 19px;
+  vertical-align: middle;
+}
+
+.desktop-nav a:hover,
+.desktop-nav button:hover {
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+  color: var(--mat-sys-primary);
+}
+
+.active-link {
+  background: linear-gradient(135deg, var(--mat-sys-primary), color-mix(in srgb, var(--mat-sys-primary) 75%, var(--mat-sys-tertiary))) !important;
+  color: var(--mat-sys-on-primary) !important;
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--mat-sys-primary) 45%, transparent);
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* Botón de acción (calendario/carrito) */
+.icon-action {
+  color: var(--mat-sys-on-surface-variant);
+  margin-right: 6px;
+  border-radius: 12px !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.icon-action:hover {
+  color: var(--mat-sys-primary);
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+}
+
+::ng-deep .icon-action .mat-badge-content {
+  background: var(--mat-sys-tertiary) !important;
+  color: var(--mat-sys-on-tertiary) !important;
+}
+
+/* Chip de usuario autenticado */
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.8rem 0.35rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 15%, transparent);
+  font-size: 0.82rem;
+  color: var(--mat-sys-on-surface);
+  margin-right: 10px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-secondary) 15%, transparent);
+}
+
+.user-chip mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--mat-sys-secondary);
+}
+
+.user-chip strong {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  color: var(--mat-sys-on-tertiary);
+  background: var(--mat-sys-tertiary);
+}
+
+/* Botones de autenticación */
+.auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-auth {
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  transition: transform 0.15s ease, box-shadow 0.2s ease !important;
+}
+
+.btn-auth:hover {
+  transform: translateY(-1px);
+}
+
+.btn-auth[color="primary"] {
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--mat-sys-primary) 35%, transparent) !important;
+}
+
+.btn-auth[color="accent"] {
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--mat-sys-tertiary) 25%, transparent) !important;
+}
+
+/* Menú móvil */
+.mobile-menu-button {
+  display: none;
+  color: var(--mat-sys-on-surface-variant);
+  border-radius: 12px !important;
+}
+
+.mobile-menu-button:hover {
+  color: var(--mat-sys-primary);
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+}
+
+@media (max-width: 980px) {
+  .desktop-nav,
+  .user-chip,
+  .auth-actions {
+    display: none;
+  }
+
+  .mobile-menu-button {
+    display: inline-flex;
+  }
+
+  .brand-text small {
+    display: none;
+  }
+
+  .toolbar {
+    width: calc(100% - 1.5rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-text {
+    display: none;
+  }
+}

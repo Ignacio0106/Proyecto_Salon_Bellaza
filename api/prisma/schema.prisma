@@ -1,0 +1,237 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+//Modelos
+enum Rol {
+  ADMINISTRADOR
+  PROFESIONAL
+  CLIENTE
+}
+
+enum EstadoUsuario {
+  ACTIVO
+  INACTIVO
+}
+
+model Usuario {
+  id            Int           @id @default(autoincrement())
+  nombre        String
+  apellidos     String
+  correo        String        @unique
+  contrasena    String
+  rol           Rol           @default(CLIENTE)
+  telefono      String
+  estado        EstadoUsuario @default(ACTIVO)
+  fechaRegistro DateTime      @default(now())
+
+  // Relaciones
+  perfilProfesional PerfilProfesional?
+  citasCliente      Cita[]                @relation("ClienteCitas")
+  resenasCliente    Resena[]              @relation("ClienteResenas")
+  cambiosEstado     HistorialEstadoCita[]
+
+  @@map("usuarios")
+}
+
+enum Modalidad {
+  VIRTUAL
+  PRESENCIAL
+  MIXTA
+}
+
+model PerfilProfesional {
+  id Int @id @default(autoincrement())
+
+  usuarioId Int     @unique
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  tituloProfesional String
+  descripcion       String @db.Text
+  aniosExperiencia  Int
+
+  modalidad Modalidad @default(MIXTA)
+
+  provincia String
+  canton    String
+  distrito  String
+
+  tarifaBase Decimal @db.Decimal(10, 2)
+  disponible Boolean @default(true)
+
+  imagenPerfil String?
+
+  // Relaciones
+  servicios      Servicio[]
+  especialidades ProfesionalEspecialidad[]
+  citas          Cita[]
+  resenas        Resena[]                  @relation("ProfesionalResenas")
+
+  @@map("perfiles_profesionales")
+}
+
+enum EstadoGeneral {
+  ACTIVO
+  INACTIVO
+}
+
+model CategoriaServicio {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @unique
+  descripcion String        @db.Text
+  estado      EstadoGeneral @default(ACTIVO)
+
+  servicios Servicio[]
+
+  @@map("categorias_servicio")
+}
+
+model Servicio {
+  id Int @id @default(autoincrement())
+
+  profesionalId Int
+  profesional   PerfilProfesional @relation(fields: [profesionalId], references: [id], onDelete: Cascade)
+
+  categoriaId Int
+  categoria   CategoriaServicio @relation(fields: [categoriaId], references: [id])
+
+  nombre      String
+  descripcion String  @db.Text
+  precio      Decimal @db.Decimal(10, 2)
+
+  duracionEstimada Int
+
+  modalidad Modalidad     @default(MIXTA)
+  estado    EstadoGeneral @default(ACTIVO)
+
+  fechaCreacion DateTime @default(now())
+
+  especialidades ServicioEspecialidad[]
+  citas          Cita[]
+
+  @@map("servicios")
+}
+
+model Especialidad {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @unique
+  descripcion String        @db.Text
+  estado      EstadoGeneral @default(ACTIVO)
+
+  profesionales ProfesionalEspecialidad[]
+  servicios     ServicioEspecialidad[]
+
+  @@map("especialidades")
+}
+
+model ProfesionalEspecialidad {
+  perfilId Int
+  perfil   PerfilProfesional @relation(fields: [perfilId], references: [id], onDelete: Cascade)
+
+  especialidadId Int
+  especialidad   Especialidad @relation(fields: [especialidadId], references: [id], onDelete: Cascade)
+
+  @@id([perfilId, especialidadId])
+  @@map("profesionales_especialidades")
+}
+
+model ServicioEspecialidad {
+  servicioId Int
+  servicio   Servicio @relation(fields: [servicioId], references: [id], onDelete: Cascade)
+
+  especialidadId Int
+  especialidad   Especialidad @relation(fields: [especialidadId], references: [id], onDelete: Cascade)
+
+  @@id([servicioId, especialidadId])
+  @@map("servicios_especialidades")
+}
+
+enum EstadoCita {
+  PENDIENTE
+  ACEPTADA
+  RECHAZADA
+  CANCELADA
+  COMPLETADA
+}
+
+model Cita {
+  id Int @id @default(autoincrement())
+
+  clienteId Int
+  cliente   Usuario @relation("ClienteCitas", fields: [clienteId], references: [id])
+
+  profesionalId Int
+  profesional   PerfilProfesional @relation(fields: [profesionalId], references: [id], onDelete: Cascade)
+
+  servicioId Int
+  servicio   Servicio @relation(fields: [servicioId], references: [id])
+
+  fechaCreacion DateTime @default(now())
+
+  fechaCitaSolicitada DateTime @db.Date
+
+  horaInicio       DateTime
+  horaFinalizacion DateTime
+
+  modalidad Modalidad
+
+  estado EstadoCita @default(PENDIENTE)
+
+  comentarioNecesidad   String  @db.Text
+  comentarioProfesional String? @db.Text
+
+  montoCalculado Decimal @db.Decimal(10, 2)
+
+  resena           Resena?
+  historialEstados HistorialEstadoCita[]
+
+  @@map("citas")
+}
+
+model HistorialEstadoCita {
+  id Int @id @default(autoincrement())
+
+  citaId Int
+  cita   Cita @relation(fields: [citaId], references: [id], onDelete: Cascade)
+
+  estadoAnterior EstadoCita?
+  estadoNuevo    EstadoCita
+
+  fechaCambio DateTime @default(now())
+
+  comentario String? @db.Text
+
+  realizadoPorId Int
+  realizadoPor   Usuario @relation(fields: [realizadoPorId], references: [id])
+
+  @@map("historial_estado_citas")
+}
+
+model Resena {
+  id Int @id @default(autoincrement())
+
+  citaId Int  @unique
+  cita   Cita @relation(fields: [citaId], references: [id], onDelete: Cascade)
+
+  clienteId Int
+  cliente   Usuario @relation("ClienteResenas", fields: [clienteId], references: [id])
+
+  profesionalId Int
+  profesional   PerfilProfesional @relation("ProfesionalResenas", fields: [profesionalId], references: [id])
+
+  puntuacion  Int
+  comentario  String   @db.Text
+  fechaResena DateTime @default(now())
+
+  @@map("resenas")
+}

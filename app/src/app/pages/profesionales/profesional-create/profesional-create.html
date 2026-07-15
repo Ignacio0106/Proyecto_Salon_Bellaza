@@ -1,0 +1,20 @@
+<section class="page-container">
+  <header class="page-header">
+    <h1>Registrar Perfil Profesional</h1>
+    <p>Cree una cuenta de usuario con rol profesional y configure sus credenciales de atención.</p>
+  </header>
+    @if (loading()) {
+        <p>Cargando datos del formulario...</p>
+    } @else {
+        @if (error()) {
+            <p class="error-message">
+                {{ error() }}
+            </p>
+        }
+        <app-profesional-form
+            [saving]="saving()"
+            (guardar)="guardar($event)"
+            (cancelar)="cancelar()"
+        />
+    }
+</section>

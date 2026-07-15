@@ -1,0 +1,85 @@
+.citas-page {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.session-card,
+.cita-card,
+.empty-results {
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+
+.session-label,
+.cita-label {
+  display: inline-block;
+  color: #6b7280;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+
+.session-card h2,
+.empty-results h2,
+.cita-top h3 {
+  margin: 0;
+  color: #111827;
+}
+
+.session-card p,
+.empty-results p {
+  margin: 0.35rem 0 0;
+  color: #6b7280;
+}
+
+.empty-session mat-icon,
+.empty-results mat-icon {
+  font-size: 42px;
+  width: 42px;
+  height: 42px;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
+.citas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.cita-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cita-meta {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.cita-meta div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #374151;
+}
+
+.badge-estado {
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  background: #eef2ff;
+  color: #4338ca;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .citas-grid {
+    grid-template-columns: 1fr;
+  }
+}

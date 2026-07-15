@@ -1,0 +1,148 @@
+<div class="catalogo-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1>
+        <span class="page-icon"><mat-icon>badge</mat-icon></span>
+        Administración de Profesionales
+      </h1>
+      <p>Gestión de profesionales registrados en el sistema.</p>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="btn-nuevo"
+      [routerLink]="['/profesionales/create']">
+      <mat-icon>add</mat-icon>
+      Nuevo Profesional
+    </button>
+  </div>
+
+  <!-- FILTROS -->
+  <mat-card class="filter-card mb-4">
+    <mat-card-content>
+      <div class="filters-bar">
+
+        <!-- BUSCAR -->
+        <mat-form-field appearance="outline" class="filter-search">
+          <mat-label>Buscar profesional</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Nombre del profesional">
+        </mat-form-field>
+
+        <!-- MODALIDAD -->
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-label>Modalidad</mat-label>
+          <mat-select [ngModel]="modalidad()" (ngModelChange)="modalidad.set($event)">
+            <mat-option value="">Todas</mat-option>
+            @for (mod of modalidades(); track mod) {
+              <mat-option [value]="mod">{{ mod }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- DISPONIBILIDAD -->
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-label>Disponibilidad</mat-label>
+          <mat-select [ngModel]="disponibilidad()" (ngModelChange)="disponibilidad.set($event)">
+            <mat-option value="">Todas</mat-option>
+            <mat-option value="DISPONIBLE">Disponible</mat-option>
+            <mat-option value="NO DISPONIBLE">No disponible</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- LIMPIAR -->
+        <button mat-stroked-button class="clear-btn" (click)="clearFilters()">
+          <mat-icon>filter_alt_off</mat-icon>
+          Limpiar
+        </button>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- CONTADOR -->
+  <div class="results-counter">
+    <h5>
+      Profesionales encontrados
+      <span class="badge-count">{{ totalProfesionales() }}</span>
+    </h5>
+  </div>
+
+  <!-- TABLA -->
+  <mat-card class="table-card">
+    <div class="table-responsive">
+      <table class="services-table mb-0">
+        <thead>
+          <tr>
+            <th>Profesional</th>
+            <th>Título</th>
+            <th>Modalidad</th>
+            <th>Tarifa</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (profesional of profesionalesFiltrados(); track profesional.id) {
+          <tr>
+            <td>
+              <strong class="servicio-nombre">{{ profesional.nombre }}</strong>
+            </td>
+
+            <td>{{ profesional.tituloProfesional }}</td>
+
+            <td>
+              <span class="chip chip-categoria">{{ profesional.modalidad }}</span>
+            </td>
+
+            <td>
+              <strong class="precio">₡{{ profesional.tarifaBase }}</strong>
+            </td>
+
+            <td>
+              <span class="chip chip-dot" [class.chip-activo]="profesional.disponible"
+                [class.chip-inactivo]="!profesional.disponible">
+                @if (profesional.disponible) { Disponible } @else { No disponible }
+              </span>
+            </td>
+
+            <td class="text-center">
+              <button mat-icon-button
+                      class="btn-toggle-estado"
+                      [class.btn-desactivar]="profesional.disponible"
+                      [class.btn-activar]="!profesional.disponible"
+                      (click)="toggleDisponibilidad(profesional)"
+                      [title]="profesional.disponible ? 'Marcar como no disponible' : 'Marcar como disponible'">
+                <mat-icon>{{ profesional.disponible ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+              </button>
+
+              <a mat-icon-button class="btn-ver" matTooltip="Ver detalle" [routerLink]="['/profesionales', profesional.id]">
+                <mat-icon>visibility</mat-icon>
+              </a>
+
+              <a mat-icon-button class="btn-editar" matTooltip="Editar" [routerLink]="['/profesionales/edit', profesional.id]">
+                <mat-icon>edit</mat-icon>
+              </a>
+            </td>
+          </tr>
+          }
+
+          @empty {
+          <tr>
+            <td colspan="6" class="empty-row">
+              <mat-icon>search_off</mat-icon>
+              <h5>No hay profesionales disponibles</h5>
+              <p class="text-muted mb-0">Intenta ajustar los filtros de búsqueda.</p>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </mat-card>
+
+</div>

@@ -1,0 +1,247 @@
+<div class="page-container">
+
+    <div class="page-header">
+
+        <div>
+            <h1 class="page-title">
+                Crear Servicio
+            </h1>
+
+            <p class="page-subtitle">
+                Registra un nuevo servicio en el sistema.
+            </p>
+        </div>
+
+
+        <button
+            mat-stroked-button
+            color="warn"
+            (click)="cancelar()">
+
+            <mat-icon>
+                arrow_back
+            </mat-icon>
+
+            Volver
+
+        </button>
+
+    </div>
+
+
+    @if (loading()) {
+
+        <div class="state-box">
+
+            <mat-spinner diameter="45"></mat-spinner>
+
+            <p>
+                Cargando información...
+            </p>
+
+        </div>
+
+    }
+
+
+    @if (error()) {
+
+        <div class="alert-error">
+
+            {{error()}}
+
+        </div>
+
+    }
+
+
+    @if (!loading()) {
+
+    <mat-card class="form-card">
+
+        <mat-card-content>
+
+            <form
+            #form="ngForm"
+            (ngSubmit)="guardar(form.value)">
+
+
+                <!-- PROFESIONAL -->
+                <mat-form-field appearance="outline" class="field-full">
+
+                    <mat-label>Profesional</mat-label>
+
+                    <mat-select name="profesionalId" ngModel required>
+
+                        @for (profesional of profesionales(); track profesional.id) {
+                            <mat-option [value]="profesional.id">
+                                {{profesional.nombre}} - {{profesional.tituloProfesional}}
+                            </mat-option>
+                        }
+
+                    </mat-select>
+
+                </mat-form-field>
+
+
+                <!-- CATEGORIA -->
+                <mat-form-field appearance="outline" class="field-full">
+
+                    <mat-label>Categoría</mat-label>
+
+                    <mat-select name="categoriaId" ngModel required>
+
+                        @for (categoria of categorias(); track categoria.id) {
+                            <mat-option [value]="categoria.id">
+                                {{categoria.nombre}}
+                            </mat-option>
+                        }
+
+                    </mat-select>
+
+                </mat-form-field>
+
+
+                <!-- NOMBRE -->
+                <mat-form-field appearance="outline" class="field-full">
+
+                    <mat-label>Nombre del servicio</mat-label>
+
+                    <input matInput name="nombre" ngModel required maxlength="150" #nombreModel="ngModel">
+
+                    @if (nombreModel.invalid && nombreModel.touched) {
+                        <mat-error>El nombre es obligatorio</mat-error>
+                    }
+
+                </mat-form-field>
+
+
+                <!-- DESCRIPCIÓN -->
+                <mat-form-field appearance="outline" class="field-full">
+
+                    <mat-label>Descripción</mat-label>
+
+                    <textarea matInput rows="4" name="descripcion" ngModel required minlength="10" maxlength="1000" #descripcionModel="ngModel"></textarea>
+
+                    @if (descripcionModel.invalid && descripcionModel.touched) {
+                        @if (descripcionModel.errors?.['required']) {
+                            <mat-error>La descripción es obligatoria</mat-error>
+                        } @else if (descripcionModel.errors?.['minlength']) {
+                            <mat-error>La descripción debe tener al menos 10 caracteres</mat-error>
+                        }
+                    }
+
+                </mat-form-field>
+
+
+                <!-- PRECIO / DURACIÓN / MODALIDAD -->
+                <div class="field-row">
+
+                    <mat-form-field appearance="outline" class="field-third">
+
+                        <mat-label>Precio</mat-label>
+
+                        <input matInput type="number" name="precio" ngModel min="1" required #precioModel="ngModel">
+
+                        @if (precioModel.invalid && precioModel.touched) {
+                            <mat-error>El precio debe ser mayor a cero</mat-error>
+                        }
+
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="field-third">
+
+                        <mat-label>Duración (minutos)</mat-label>
+
+                        <input matInput type="number" name="duracionEstimada" ngModel min="1" required #duracionModel="ngModel">
+
+                        @if (duracionModel.invalid && duracionModel.touched) {
+                            <mat-error>La duración debe ser mayor a cero</mat-error>
+                        }
+
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="field-third">
+
+                        <mat-label>Modalidad</mat-label>
+
+                        <mat-select name="modalidad" ngModel required>
+
+                            <mat-option value="PRESENCIAL">Presencial</mat-option>
+                            <mat-option value="VIRTUAL">Virtual</mat-option>
+                            <mat-option value="MIXTA">Mixta</mat-option>
+
+                        </mat-select>
+
+                    </mat-form-field>
+
+                </div>
+
+
+                <!-- ESTADO -->
+                <mat-form-field appearance="outline" class="field-full">
+
+                    <mat-label>Estado</mat-label>
+
+                    <mat-select name="estado" [ngModel]="'ACTIVO'">
+
+                        <mat-option value="ACTIVO">Activo</mat-option>
+                        <mat-option value="INACTIVO">Inactivo</mat-option>
+
+                    </mat-select>
+
+                </mat-form-field>
+
+
+                <!-- ESPECIALIDADES -->
+                <mat-form-field appearance="outline" class="field-full">
+
+                    <mat-label>Especialidades</mat-label>
+
+                    <mat-select name="especialidadIds" ngModel multiple required>
+
+                        @for (especialidad of especialidades(); track especialidad.id) {
+                            <mat-option [value]="especialidad.id">
+                                {{especialidad.nombre}}
+                            </mat-option>
+                        }
+
+                    </mat-select>
+
+                </mat-form-field>
+
+
+                <!-- BOTONES -->
+                <div class="form-actions">
+
+                    <button type="button" mat-stroked-button (click)="cancelar()">
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        mat-flat-button
+                        color="primary"
+                        [disabled]="saving() || form.invalid">
+
+                        @if (saving()) {
+                            Guardando...
+                        } @else {
+                            <mat-icon>save</mat-icon>
+                            Guardar Servicio
+                        }
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </mat-card-content>
+
+    </mat-card>
+
+    }
+
+</div>

@@ -1,0 +1,120 @@
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.filtros-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filtro-select {
+  width: 220px;
+}
+
+.filtro-fecha {
+  width: 300px;
+}
+
+.secondary-button {
+  height: 56px;
+  padding: 0 24px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  background: white;
+}
+
+th.mat-mdc-header-cell {
+  background-color: #f5f5f5;
+  color: #555;
+  font-weight: 600;
+}
+
+td.mat-mdc-cell {
+  color: #444;
+  padding: 12px 16px;
+}
+
+/* Formato combinado Fecha y Hora */
+.fecha-celda {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fecha-texto, .hora-texto {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.fecha-texto mat-icon, .hora-texto mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #777;
+}
+
+.no-data {
+  text-align: center;
+  padding: 32px !important;
+  color: #777;
+  font-style: italic;
+}
+
+/* Badges Dinámicos basados en Atributos */
+.badge-estado {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-estado[data-estado="COMPLETADA"] {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge-estado[data-estado="PENDIENTE"] {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.badge-estado[data-estado="CANCELADA"] {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

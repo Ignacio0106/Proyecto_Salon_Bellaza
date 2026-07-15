@@ -1,0 +1,86 @@
+<header class="hero-section">
+  <div class="hero-content">
+    <span class="badge">Bienvenido a Naturale Beauty</span>
+    <h1>Reserva con los mejores profesionales de la estética</h1>
+    <p>
+      Tu marketplace de confianza para descubrir estilistas independientes,
+      consultar especialidades y gestionar tus citas de belleza en un solo lugar.
+    </p>
+    <div class="hero-actions">
+      <button mat-raised-button color="primary" routerLink="/servicios">
+        <mat-icon>search</mat-icon> Explorar Servicios
+      </button>
+      <button mat-stroked-button routerLink="/registro">
+        Crear una Cuenta
+      </button>
+    </div>
+  </div>
+  <div class="hero-decorative-box">
+    <!-- Espacio para una ilustración limpia o branding mediante CSS -->
+    <mat-icon class="big-spa-icon">spa</mat-icon>
+  </div>
+</header>
+
+<!-- SECCIÓN DE CATEGORÍAS (Estructura Visual Organizada) -->
+<section class="section-container">
+  <div class="section-header">
+    <h2>Categorías de Servicio Disponibles</h2>
+    <p>Explora la variedad de especialidades que nuestros profesionales ofrecen.</p>
+  </div>
+
+  <div class="grid-layout">
+    <mat-card class="category-card" *ngFor="let cat of categoriasDestacadas">
+      <mat-card-header>
+        <div mat-card-avatar class="category-icon-avatar">
+          <mat-icon>{{ cat.icono }}</mat-icon>
+        </div>
+        <mat-card-title>{{ cat.nombre }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ cat.desc }}</p>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-button color="tertiary" [routerLink]="['/servicios']" [queryParams]="{categoria: cat.nombre}">
+          Ver más <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</section>
+
+<!-- SECCIÓN DE ROLES / ACCESOS DIRECTOS -->
+<section class="section-container roles-section">
+  <div class="section-header">
+    <h2>¿Cómo funciona nuestro Marketplace?</h2>
+    <p>Soluciones personalizadas para cada miembro de nuestra comunidad.</p>
+  </div>
+
+  <div class="grid-layout roles-grid">
+    <!-- Acceso Cliente -->
+    <div class="role-box">
+      <mat-icon class="role-icon">person</mat-icon>
+      <h3>Para Clientes</h3>
+      <p>Encuentra a tu estilista ideal, filtra por precio o modalidad, reserva tu cita en segundos y califica tu
+        experiencia de forma transparente.</p>
+      <button mat-button routerLink="/servicios">Buscar Estilista</button>
+    </div>
+
+    <!-- Acceso Profesional -->
+    <div class="role-box central-role">
+      <mat-icon class="role-icon">content_cut</mat-icon>
+      <h3>Para Profesionales</h3>
+      <p>Gestiona tu perfil público, define tus tarifas, controla tu agenda visual y expande tu cartera de clientes de
+        manera autónoma.</p>
+      <button mat-button routerLink="/unirse">Ofrecer Servicios</button>
+    </div>
+
+    <!-- Seguridad / Transparencia -->
+    <div class="role-box">
+      <mat-icon class="role-icon">verified_user</mat-icon>
+      <h3>Garantía de Calidad</h3>
+      <p>Monitoreado bajo un estricto control administrativo para asegurar transiciones de citas transparentes y reseñas
+        100% reales.</p>
+      <button mat-button routerLink="/nosotros">Saber Más</button>
+    </div>
+  </div>
+</section>

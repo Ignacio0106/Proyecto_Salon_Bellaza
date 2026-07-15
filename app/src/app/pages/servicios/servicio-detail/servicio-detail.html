@@ -1,0 +1,157 @@
+<div class="container mt-4">
+
+    <!-- VOLVER -->
+    <a mat-button routerLink="/servicios" class="back-link">
+        <mat-icon>arrow_back</mat-icon>
+        Volver al catálogo
+    </a>
+
+    <!-- CARGANDO -->
+    @if (loading()) {
+        <div class="state">
+            <mat-spinner diameter="42"></mat-spinner>
+            <p>Cargando detalle del servicio...</p>
+        </div>
+    }
+
+    <!-- ERROR -->
+    @else if (error()) {
+        <div class="state error">
+            <mat-icon>error</mat-icon>
+            <p>{{error()}}</p>
+        </div>
+    }
+
+    <!-- DETALLE -->
+    @else if (servicio(); as servicio) {
+
+        <section class="detail-layout">
+
+            <!-- COLUMNA PRINCIPAL -->
+            <div class="detail-main">
+
+                <!-- INFORMACIÓN PRINCIPAL -->
+                <mat-card class="detail-card hero-card">
+                    <mat-card-header>
+                        <div class="hero-heading">
+                            <span class="category-tag">{{servicio.categoria.nombre || 'Sin categoría'}}</span>
+                            <mat-card-title>{{servicio.nombre}}</mat-card-title>
+                        </div>
+                    </mat-card-header>
+
+                    <mat-card-content>
+                        <p class="description">{{servicio.descripcion}}</p>
+
+                        <div class="info-grid">
+
+                            <div class="info-item">
+                                <div class="info-icon icon-price">
+                                    <mat-icon>payments</mat-icon>
+                                </div>
+                                <div class="info-text">
+                                    <strong>Precio</strong>
+                                    <p>₡{{servicio.precio}}</p>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon icon-time">
+                                    <mat-icon>schedule</mat-icon>
+                                </div>
+                                <div class="info-text">
+                                    <strong>Duración</strong>
+                                    <p>{{servicio.duracionEstimada}} minutos</p>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon icon-location">
+                                    <mat-icon>location_on</mat-icon>
+                                </div>
+                                <div class="info-text">
+                                    <strong>Modalidad</strong>
+                                    <p>{{servicio.modalidad}}</p>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon icon-status">
+                                    <mat-icon>toggle_on</mat-icon>
+                                </div>
+                                <div class="info-text">
+                                    <strong>Estado</strong>
+                                    <p>
+                                        <mat-chip class="status-chip" [class.status-activo]="servicio.estado==='ACTIVO'" [class.status-inactivo]="servicio.estado!=='ACTIVO'">
+                                            {{servicio.estado}}
+                                        </mat-chip>
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- ESPECIALIDADES -->
+                <mat-card class="detail-card mt-4">
+                    <mat-card-header>
+                        <mat-card-title>Especialidades</mat-card-title>
+                    </mat-card-header>
+
+                    <mat-card-content>
+                        @if (servicio.especialidades.length) {
+                            <div class="specialities">
+                                @for (especialidad of servicio.especialidades; track especialidad.nombre) {
+                                    <mat-chip class="speciality-chip">{{especialidad.nombre}}</mat-chip>
+                                }
+                            </div>
+                        }
+                        @else {
+                            <p class="muted">No hay especialidades registradas.</p>
+                        }
+                    </mat-card-content>
+                </mat-card>
+
+            </div>
+
+            <!-- COLUMNA LATERAL -->
+            <div class="detail-side">
+
+                <!-- PROFESIONAL -->
+                <mat-card class="detail-card professional-card">
+                    <mat-card-header>
+                        <mat-card-title>Profesional</mat-card-title>
+                    </mat-card-header>
+
+                    <mat-card-content>
+                        <div class="professional-avatar">
+                            {{servicio.profesional?.nombreCompleto?.charAt(0)}}
+                        </div>
+
+                        <h3 class="professional-name">{{servicio.profesional.nombreCompleto}}</h3>
+                        <p class="professional-title">{{servicio.profesional.tituloProfesional}}</p>
+
+                        <ul class="contact-list">
+                            <li>
+                                <mat-icon>email</mat-icon>
+                                <span>{{servicio.profesional.correo}}</span>
+                            </li>
+                            <li>
+                                <mat-icon>phone</mat-icon>
+                                <span>{{servicio.profesional.telefono}}</span>
+                            </li>
+                            <li>
+                                <mat-icon>place</mat-icon>
+                                <span>{{servicio.profesional.ubicacion}}</span>
+                            </li>
+                        </ul>
+                    </mat-card-content>
+                </mat-card>
+
+            </div>
+
+        </section>
+
+    }
+
+</div>
