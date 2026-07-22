@@ -1,0 +1,38 @@
+<main class="unauthorized-page">
+    <section class="unauthorized-container">
+        <mat-card class="unauthorized-card" appearance="outlined">
+            <mat-card-content>
+                <div class="status-badge" aria-hidden="true">
+                    <mat-icon>lock</mat-icon>
+                </div>
+                <p class="error-code">Error 403</p>
+                <h1>Acceso no autorizado</h1>
+                <p class="description">
+                    Su cuenta no posee los permisos necesarios para acceder a esta
+                    sección de la aplicación.
+                </p>
+                <mat-divider></mat-divider>
+                <div class="information-box">
+                    <mat-icon aria-hidden="true">info</mat-icon>
+                    <div>
+                        <strong>¿Por qué aparece este mensaje?</strong>
+                        <p>
+                            La página solicitada está restringida según el rol asignado al
+                            usuario autenticado.
+                        </p>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button mat-stroked-button type="button" class="secondary-action" (click)="regresar()">
+                        <mat-icon>arrow_back</mat-icon>
+                        Regresar
+                    </button>
+                    <button mat-flat-button type="button" class="primary-action" (click)="irAlInicio()">
+                        <mat-icon>home</mat-icon>
+                        Ir al inicio
+                    </button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </section>
+</main>

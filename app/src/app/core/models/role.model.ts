@@ -1,4 +1,8 @@
-export type Role = 'ADMINISTRADOR' | 'PROFESIONAL' | 'CLIENTE';
+export enum Role {
+    ADMIN = 'ADMINISTRADOR',
+    PROFESIONAL = 'PROFESIONAL',
+    CLIENTE = 'CLIENTE',
+}
 
 export interface RoleOption {
     value: Role;

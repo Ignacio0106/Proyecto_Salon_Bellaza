@@ -189,6 +189,8 @@ this.loading.set(false);
         this.saving.set(true);
 
         this.error.set(null);
+        
+        data.precio = Number(data.precio);
 
         this.serviciosService.editar(this.servicioId, data)
 

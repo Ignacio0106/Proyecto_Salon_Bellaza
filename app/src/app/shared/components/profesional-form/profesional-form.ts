@@ -267,7 +267,7 @@ export class ProfesionalForm {
         this.emitirGuardar()
       },
       error: () => {
-        alert('No se pudo subir la imagenfsdfsdf')
+        alert('No se pudo subir la imagen')
       },
       complete: () => {
         this.uploadingImage.set(false)

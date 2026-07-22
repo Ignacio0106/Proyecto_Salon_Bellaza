@@ -1,0 +1,54 @@
+<div class="auth-page">
+    <mat-card class="auth-card" appearance="outlined">
+        <mat-card-header>
+            <div mat-card-avatar class="auth-avatar">
+                <mat-icon>lock</mat-icon>
+            </div>
+            <mat-card-title>Iniciar sesión</mat-card-title>
+            <mat-card-subtitle>Acceda con su cuenta</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+            <form (submit)="$event.preventDefault(); submit()" class="auth-form">
+                <mat-form-field appearance="outline">
+                    <mat-label>Correo electrónico</mat-label>
+                    <mat-icon matPrefix>mail</mat-icon>
+                    <input matInput type="email" autocomplete="email" [formField]="loginForm.correo" />
+                    @if (loginForm.correo().touched() && loginForm.correo().invalid()) {
+                    <mat-error>{{ loginForm.correo().errors()[0].message }}</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Contraseña</mat-label>
+                    <mat-icon matPrefix>password</mat-icon>
+                    <input matInput [type]="ocultarPassword() ? 'contrasena' : 'text'" autocomplete="current-password"
+                        [formField]="loginForm.contrasena" />
+                    <button mat-icon-button matSuffix type="button" (click)="ocultarPassword.update(v => !v)"
+                        aria-label="Mostrar u ocultar contraseña">
+                        <mat-icon>{{ ocultarPassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+                    </button>
+                    @if (loginForm.contrasena().touched() && loginForm.contrasena().invalid()) {
+                    <mat-error>{{ loginForm.contrasena().errors()[0].message }}</mat-error>
+                    }
+                </mat-form-field>
+
+                @if (errorServidor()) {
+                <div class="server-error" role="alert">
+                    <mat-icon>error</mat-icon><span>{{ errorServidor() }}</span>
+                </div>
+                }
+
+                <button mat-flat-button class="submit-button" type="submit"
+                    [disabled]="enviando() || loginForm().invalid()">
+                    @if (enviando()) {
+                    <mat-spinner diameter="20" />
+                    <span>Ingresando...</span>
+                    } @else {
+                    <mat-icon>login</mat-icon><span>Ingresar</span>
+                    }
+                </button>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>

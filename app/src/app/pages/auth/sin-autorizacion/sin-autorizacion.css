@@ -1,0 +1,133 @@
+:host {
+    display: block;
+    min-height: 100%;
+}
+
+.unauthorized-page {
+    min-height: calc(100vh - 64px);
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+    background:
+        radial-gradient(circle at top left,
+            color-mix(in srgb, var(--mat-sys-primary) 10%, transparent),
+            transparent 38%),
+        var(--mat-sys-surface-container-low);
+}
+
+.unauthorized-container {
+    width: min(100%, 620px);
+}
+
+.unauthorized-card {
+    overflow: hidden;
+    border-radius: 24px;
+    background: var(--mat-sys-surface);
+    box-shadow: var(--mat-sys-level3);
+}
+
+mat-card-content {
+    padding: clamp(28px, 5vw, 52px);
+    text-align: center;
+}
+
+.status-badge {
+    width: 88px;
+    height: 88px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 20px;
+    border-radius: 28px;
+    color: var(--mat-sys-on-error-container);
+    background: var(--mat-sys-error-container);
+    transform: rotate(-4deg);
+
+    mat-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 44px;
+        transform: rotate(4deg);
+    }
+}
+
+.error-code {
+    margin: 0 0 8px;
+    color: var(--mat-sys-error);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+h1 {
+    margin: 0;
+    color: var(--mat-sys-on-surface);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.description {
+    max-width: 480px;
+    margin: 16px auto 28px;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+mat-divider {
+    margin-block: 8px 24px;
+}
+
+.information-box {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 18px;
+    border-radius: 16px;
+    text-align: left;
+    color: var(--mat-sys-on-secondary-container);
+    background: var(--mat-sys-secondary-container);
+
+    >mat-icon {
+        flex: 0 0 auto;
+        margin-top: 2px;
+    }
+
+    strong {
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    p {
+        margin: 0;
+        line-height: 1.5;
+    }
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 28px;
+
+    button {
+        min-height: 44px;
+        border-radius: 14px;
+        padding-inline: 22px;
+    }
+}
+
+@media (max-width: 540px) {
+    .unauthorized-page {
+        padding: 20px 14px;
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+
+        button {
+            width: 100%;
+        }
+    }
+}

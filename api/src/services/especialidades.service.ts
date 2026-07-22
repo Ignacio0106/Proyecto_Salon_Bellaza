@@ -24,7 +24,7 @@ export const EspecialidadesService = {
             where: { id }
         });
     },
-        async alternarEstado(id: number) {
+    async alternarEstado(id: number) {
         const especialidadActual = await prisma.especialidad.findUnique({
             where: { id },
             select: { estado: true }

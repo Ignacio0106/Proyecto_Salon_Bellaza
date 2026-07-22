@@ -20,6 +20,8 @@ import { ServicioCreatePage } from './pages/servicios/servicios-create/servicios
 import { ServicioEditPage } from './pages/servicios/servicios-edit/servicios-edit';
 import { ProfesionalEdit } from './pages/profesionales/profesional-edit/profesional-edit';
 import { ProfesionalCreate } from './pages/profesionales/profesional-create/profesional-create';
+import { SinAutorizacion } from './pages/auth/sin-autorizacion/sin-autorizacion';
+import { Login } from './pages/usuarios/login/login';
 
 export const routes: Routes = [
     {
@@ -27,103 +29,113 @@ export const routes: Routes = [
         component: MainLayout,
         children: [
             { path: '', component: Home, title: 'Inicio' },
-            { 
-                path: 'servicios', 
+            {
+                path: 'servicios',
                 component: ServiciosList,
-                title: 'Catálogo de Servicios' 
+                title: 'Catálogo de Servicios'
             },
-            { 
-                path: 'servicios/create', 
+            {
+                path: 'servicios/create',
                 component: ServicioCreatePage,
-                title: 'Crear Servicio' 
+                title: 'Crear Servicio'
             },
-            { 
-                path: 'servicios/edit/:id', 
+            {
+                path: 'servicios/edit/:id',
                 component: ServicioEditPage,
-                title: 'Editar Servicio' 
+                title: 'Editar Servicio'
             },
-            { 
-                path: 'servicios/:id', 
+            {
+                path: 'servicios/:id',
                 component: ServicioDetail,
-                title: 'Catálogo de Servicios' 
+                title: 'Catálogo de Servicios'
             },
-            { 
-                path: 'profesionales', 
+            {
+                path: 'profesionales',
                 component: ProfesionalesList,
-                title: 'Nuestros Profesionales' 
+                title: 'Nuestros Profesionales'
             },
-            { 
-                path: 'profesionales/create', 
+            {
+                path: 'profesionales/create',
                 component: ProfesionalCreate,
-                title: 'Crear Profesional' 
+                title: 'Crear Profesional'
             },
-            { 
-                path: 'profesionales/:id', 
+            {
+                path: 'profesionales/:id',
                 component: ProfesionalDetail,
-                title: 'Detalle del Profesional' 
-            }, 
-            { 
+                title: 'Detalle del Profesional'
+            },
+            {
                 path: 'profesionales/edit/:id',
                 component: ProfesionalEdit,
-                title: 'Editar Profesional' 
+                title: 'Editar Profesional'
             },
-            { 
-                path: 'citas', 
+            {
+                path: 'citas',
                 component: Citas,
-                title: 'Mis Citas' 
+                title: 'Mis Citas'
             },
-            { 
-                path: 'citas/cita-reserva', 
+            {
+                path: 'citas/cita-reserva',
                 component: CitaReserva,
-                title: 'Agendar Cita' 
+                title: 'Agendar Cita'
             },
             {
                 path: 'citas/:id',
                 component: CitaDetail,
                 title: 'Detalle de la Cita'
             },
-            { 
+            {
                 path: 'reserva', // Destino del icono del calendario en el header
                 component: CitaReserva,
-                title: 'Reserva de Citas' 
+                title: 'Reserva de Citas'
             },
 
             // ==========================================
             // MANTENIMIENTOS (ADMINISTRADOR)
             // ==========================================
-            { 
-                path: 'categorias', 
+            {
+                path: 'categorias',
                 component: CategoriasList,
-                title: 'Mantenimiento de Categorías' 
+                title: 'Mantenimiento de Categorías'
             },
-            { 
-                path: 'especialidades', 
+            {
+                path: 'especialidades',
                 component: EspecialidadesList,
-                title: 'Mantenimiento de Especialidades' 
+                title: 'Mantenimiento de Especialidades'
             },
-            { 
-                path: 'usuarios', 
+            {
+                path: 'usuarios',
                 component: UsuariosList,
-                title: 'Control de Usuarios' 
+                title: 'Control de Usuarios'
+            },
+            {
+                path: 'login',
+                component: Login,
+                title: 'Iniciar sesión'
             },
 
             // ==========================================
             // GESTIÓN (ADMIN / PROFESIONAL)
             // ==========================================
-            { 
-                path: 'gestion-citas', 
+            {
+                path: 'gestion-citas',
                 component: CitasList,
-                title: 'Control de Citas' 
+                title: 'Control de Citas'
             },
-            { 
-                path: 'resenas', 
+            {
+                path: 'resenas',
                 component: ResenasList,
-                title: 'Gestión de Reseñas' 
+                title: 'Gestión de Reseñas'
             },
-            { 
-                path: 'reportes', 
+            {
+                path: 'reportes',
                 component: ReportesDashboard,
-                title: 'Reportes y Estadísticas' 
+                title: 'Reportes y Estadísticas'
+            },
+            {
+                path: 'sin-autorizacion',
+                component: SinAutorizacion,
+                title: 'No autorizado'
             },
         ],
     },

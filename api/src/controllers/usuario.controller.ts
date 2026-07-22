@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express'; 
 import { StatusCodes } from "http-status-codes"; 
 import { UsuarioService } from '../services/usuario.service';
+import { sendSuccess } from '../utils/http-response';
+import { AuthRequest } from '../middlewares/auth.middleware';
 
  
 export class UsuarioController { 
@@ -59,6 +61,72 @@ cambiarEstado = async (request: Request, response: Response, next: NextFunction)
             console.error(error);
             next(error);
         }
+    };
+
+        registrar = async (
+        request: Request,
+        response: Response,
+        next: NextFunction
+    ) => {
+        const usuario = await UsuarioService.registrar(request.body);
+
+        return sendSuccess(
+            response,
+            usuario,
+            "Usuario registrado correctamente",
+            StatusCodes.CREATED
+        );
+    };
+
+    login = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const result = await UsuarioService.login(request.body);
+
+        return sendSuccess(
+            response,
+            result,
+            "Inicio de sesión correcto"
+        );
+    } catch (error) {
+        const message = error instanceof Error
+            ? error.message
+            : "Credenciales incorrectas";
+
+        if (
+            message === "Correo o contraseña incorrectos" ||
+            message === "El usuario se encuentra inactivo"
+        ) {
+            return response.status(StatusCodes.UNAUTHORIZED).json({
+                success: false,
+                message: "Credenciales incorrectas",
+            });
+        }
+
+        next(error);
+    }
+};
+
+    perfil = async (request: AuthRequest, response: Response, next: NextFunction) => {
+        const usuarioId = request.user?.id;
+
+        if (!usuarioId) {
+            return response.status(StatusCodes.UNAUTHORIZED).json({
+                success: false,
+                message: "Usuario no autenticado: " + usuarioId,
+            });
+        }
+        
+        const usuario = await UsuarioService.perfil(usuarioId);
+        if (!usuario) { 
+            return response 
+            .status(StatusCodes.NOT_FOUND) 
+            .json({ success: false, message: "El usuario autenticado no existe: " + usuarioId }) 
+        }
+        return sendSuccess(
+            response,
+            usuario,
+            "Perfil obtenido correctamente"
+        );
     };
 }
 

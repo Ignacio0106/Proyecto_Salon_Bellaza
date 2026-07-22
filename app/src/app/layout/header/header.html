@@ -1,6 +1,7 @@
 <header class="site-header">
   <mat-toolbar class="toolbar">
-    <a class="brand" routerLink="/">
+    <!-- Brand -->
+    <a class="brand" routerLink="/" aria-label="Ir al inicio">
       <span class="brand-icon">
         <mat-icon>spa</mat-icon>
       </span>
@@ -10,65 +11,70 @@
       </span>
     </a>
 
-    <nav class="desktop-nav">
+    <!-- Navegación principal -->
+    <nav class="desktop-nav" aria-label="Navegación principal">
       @for (item of publicMenu(); track item.path) {
         @if (canShowItem()(item)) {
           <a mat-button [routerLink]="item.path" routerLinkActive="active-link"
             [routerLinkActiveOptions]="{ exact: item.path === '/' }">
             <mat-icon>{{ item.icon }}</mat-icon>
-            {{ item.label }}
+            <span>{{ item.label }}</span>
           </a>
         }
       }
+
       @if (isAdmin()) {
         <button mat-button [matMenuTriggerFor]="maintenanceMenu">
           <mat-icon>settings</mat-icon>
-          Mantenimientos
+          <span>Mantenimientos</span>
+          <mat-icon>expand_more</mat-icon>
         </button>
         <button mat-button [matMenuTriggerFor]="managementMenu">
           <mat-icon>admin_panel_settings</mat-icon>
-          Gestión
+          <span>Gestión</span>
+          <mat-icon>expand_more</mat-icon>
         </button>
       }
     </nav>
 
     <span class="spacer"></span>
 
-    <button mat-icon-button class="icon-action" routerLink="/reserva" aria-label="Citas pendientes de confirmación">
+    <!-- Reservas / Carrito -->
+    <a mat-icon-button class="icon-action" routerLink="/reserva" matTooltip="Citas pendientes" aria-label="Abrir reservas">
       <mat-icon [matBadge]="cartCount()" [matBadgeHidden]="cartCount() === 0" matBadgeColor="accent">
         calendar_month
       </mat-icon>
-    </button>
+    </a>
 
+    <!-- Usuario Autenticado -->
     @if (currentUser(); as user) {
-      <div class="user-chip">
-        <mat-icon>person</mat-icon>
-        <span>{{ user.nombre }}</span>
-        <strong>{{ user.role }}</strong>
-      </div>
-      <button mat-flat-button color="primary" class="btn-auth" (click)="logoutUser.emit()">
-        Salir
+      <button type="button" class="user-menu-trigger" [matMenuTriggerFor]="userMenu" aria-label="Abrir menú de usuario">
+        <span class="user-avatar">
+          {{ iniciales() }}
+        </span>
+        <span class="user-summary">
+          <strong>{{ user.nombre }}</strong>
+          <small>{{ nombreRol() }}</small>
+        </span>
+        <mat-icon class="user-menu-arrow">expand_more</mat-icon>
       </button>
-    } @else {
-      <div class="auth-actions">
-        <button mat-stroked-button color="primary" class="btn-auth" (click)="loginClient.emit()">
-          Cliente demo
-        </button>
-        <button mat-stroked-button color="accent" class="btn-auth" (click)="loginAsProfesional.emit()">
-          Prof. demo
-        </button>
-        <button mat-flat-button color="primary" class="btn-auth" (click)="loginAdmin.emit()">
-          Admin demo
-        </button>
-      </div>
+    } 
+    <!-- Visitante / No Autenticado -->
+    @else {
+      <a mat-flat-button color="primary" routerLink="/login">
+        <mat-icon>login</mat-icon>
+        <span>Iniciar sesión</span>
+      </a>
     }
 
-    <button class="mobile-menu-button" mat-icon-button [matMenuTriggerFor]="mobileMenu">
+    <!-- Menú Mobile -->
+    <button class="mobile-menu-button" mat-icon-button [matMenuTriggerFor]="mobileMenu" aria-label="Abrir menú">
       <mat-icon>menu</mat-icon>
     </button>
   </mat-toolbar>
 </header>
 
+<!-- Menús desplegables de administración -->
 <mat-menu #maintenanceMenu="matMenu">
   @for (item of adminMaintenanceMenu(); track item.path) {
     <a mat-menu-item [routerLink]="item.path">
@@ -87,6 +93,40 @@
   }
 </mat-menu>
 
+<!-- Menú Desplegable de Usuario (Idéntico al de GameStore) -->
+<mat-menu #userMenu="matMenu">
+  @if (currentUser(); as user) {
+    <div class="user-menu-info">
+      <strong>{{ user.nombre }}</strong>
+      @if (user.correo) {
+        <span>{{ user.correo }}</span>
+      }
+      <small>{{ nombreRol() }}</small>
+    </div>
+    <mat-divider></mat-divider>
+    
+    <a mat-menu-item routerLink="/perfil">
+      <mat-icon>person</mat-icon>
+      <span>Mi perfil</span>
+    </a>
+
+    @if (isAdmin()) {
+      <a mat-menu-item routerLink="/admin/usuarios">
+        <mat-icon>manage_accounts</mat-icon>
+        <span>Gestión de usuarios</span>
+      </a>
+    }
+
+    <mat-divider></mat-divider>
+    
+    <button mat-menu-item type="button" (click)="cerrarSesion()">
+      <mat-icon>logout</mat-icon>
+      <span>Cerrar sesión</span>
+    </button>
+  }
+</mat-menu>
+
+<!-- Menú Mobile -->
 <mat-menu #mobileMenu="matMenu">
   @for (item of publicMenu(); track item.path) {
     @if (canShowItem()(item)) {
@@ -104,12 +144,6 @@
     <button mat-menu-item [matMenuTriggerFor]="managementMenu">
       <mat-icon>admin_panel_settings</mat-icon>
       <span>Gestión</span>
-    </button>
-  }
-  @if (currentUser()?.role === 'PROFESIONAL') {
-    <button mat-menu-item [matMenuTriggerFor]="managementMenu">
-      <mat-icon>admin_panel_settings</mat-icon>
-      <span>Mi Gestión</span>
     </button>
   }
 </mat-menu>
