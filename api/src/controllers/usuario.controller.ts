@@ -104,7 +104,7 @@ cambiarEstado = async (request: Request, response: Response, next: NextFunction)
 
         next(error);
     }
-};
+    };
 
     perfil = async (request: AuthRequest, response: Response, next: NextFunction) => {
         const usuarioId = request.user?.id;

@@ -7,6 +7,7 @@ import { CategoriaRoutes } from './categoria.routes';
 import { EspecialidadesRoutes } from './especialidades.routes';
 import { CitaRoutes } from './cita.routes';
 import { ImageRoutes } from './image.routes';
+import { ReporteRoutes } from './reporte.routes';
 
 
 export class AppRoutes { 
@@ -21,6 +22,7 @@ export class AppRoutes {
         router.use('/especialidades', EspecialidadesRoutes.routes) 
         router.use('/cita', CitaRoutes.routes) 
         router.use('/images', ImageRoutes.routes)
+        router.use('/reporte', ReporteRoutes.routes)
         
         return router; 
         

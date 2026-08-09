@@ -2,6 +2,7 @@ import { prisma } from "../config/prisma";
 import bcrypt from "bcryptjs";
 import { Rol } from "../../generated/prisma/enums";
 import jwt, { SignOptions, Secret } from "jsonwebtoken"
+import { AppError } from "../utils/app-error";
 
 export const UsuarioService = {
     async listar() {
@@ -57,33 +58,32 @@ async alternarEstado(id: number) {
         });
     },
     async registrar(data: {
-        correo: string;
-        telefono: string;
-        contrasena: string;
-        nombre: string;
-        apellidos: string;
-        rol?: Rol;
-    }) {
-        const usuarioExists = await prisma.usuario.findUnique({
-            where: { correo: data.correo }
-        });
-        if (usuarioExists) {
-            throw new Error("El correo ya está registrado");
-        }
-        const hashedPassword = await bcrypt.hash(data.contrasena, 10);
-        const usuario = await prisma.usuario.create({
-            data: {
-                correo: data.correo,
-                contrasena: hashedPassword,
-                nombre: data.nombre,
-                apellidos: data.apellidos,
-                rol: data.rol ?? Rol.CLIENTE,
-                telefono: data.telefono,
-            },
-        });
-        const { contrasena, ...usuarioWithoutPassword } = usuario;
-        return usuarioWithoutPassword;
-    },
+    correo: string;
+    telefono: string;
+    contrasena: string;
+    nombre: string;
+    apellidos: string;
+}) {
+    const usuarioExists = await prisma.usuario.findUnique({
+        where: { correo: data.correo }
+    });
+    if (usuarioExists) {
+        throw AppError.conflict("El correo ya está registrado");
+    }
+    const hashedPassword = await bcrypt.hash(data.contrasena, 10);
+    const usuario = await prisma.usuario.create({
+        data: {
+            correo: data.correo,
+            contrasena: hashedPassword,
+            nombre: data.nombre,
+            apellidos: data.apellidos,
+            rol: Rol.CLIENTE, 
+            telefono: data.telefono,
+        },
+    });
+    const { contrasena, ...usuarioWithoutPassword } = usuario;
+    return usuarioWithoutPassword;
+},
 
     async login(data: { correo: string; contrasena: string }) {
         const usuario = await prisma.usuario.findUnique({

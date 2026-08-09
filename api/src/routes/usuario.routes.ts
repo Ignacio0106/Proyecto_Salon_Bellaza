@@ -10,7 +10,6 @@ export class UsuarioRoutes {
         const router = Router();
         const controller = new UsuarioController();
 
-        // 1. Rutas específicas primero
         router.get('/', controller.listar);
         
         router.get(
@@ -31,10 +30,9 @@ export class UsuarioRoutes {
             asyncHandler(controller.login)
         );
 
-        // 2. Rutas dinámicas con :id AL FINAL
         router.get('/:id', controller.obtenerPorId);
         router.put('/estado/:id', controller.cambiarEstado);
 
         return router; 
-    } 
+    }
 }
