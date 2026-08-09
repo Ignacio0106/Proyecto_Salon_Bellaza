@@ -1,0 +1,87 @@
+<div class="auth-page">
+  <mat-card class="auth-card" appearance="outlined">
+    <mat-card-header>
+      <div mat-card-avatar class="auth-avatar">
+        <mat-icon>person_add</mat-icon>
+      </div>
+      <mat-card-title>Crear cuenta</mat-card-title>
+      <mat-card-subtitle>Regístrese como cliente</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (exito()) {
+        <div class="server-success" role="status">
+          <mat-icon>check_circle</mat-icon>
+          <span>Cuenta creada correctamente. Redirigiendo a iniciar sesión...</span>
+        </div>
+      } @else {
+        <form (submit)="$event.preventDefault(); submit()" class="auth-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput [formField]="registroForm.nombre" />
+            @if (registroForm.nombre().touched() && registroForm.nombre().invalid()) {
+              <mat-error>{{ registroForm.nombre().errors()[0].message }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Apellidos</mat-label>
+            <input matInput [formField]="registroForm.apellidos" />
+            @if (registroForm.apellidos().touched() && registroForm.apellidos().invalid()) {
+              <mat-error>{{ registroForm.apellidos().errors()[0].message }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Correo electrónico</mat-label>
+            <mat-icon matPrefix>mail</mat-icon>
+            <input matInput type="email" autocomplete="email" [formField]="registroForm.correo" />
+            @if (registroForm.correo().touched() && registroForm.correo().invalid()) {
+              <mat-error>{{ registroForm.correo().errors()[0].message }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Teléfono</mat-label>
+            <mat-icon matPrefix>call</mat-icon>
+            <input matInput [formField]="registroForm.telefono" />
+            @if (registroForm.telefono().touched() && registroForm.telefono().invalid()) {
+              <mat-error>{{ registroForm.telefono().errors()[0].message }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Contraseña</mat-label>
+            <mat-icon matPrefix>password</mat-icon>
+            <input matInput [type]="ocultarPassword() ? 'password' : 'text'" autocomplete="new-password"
+              [formField]="registroForm.contrasena" />
+            <button mat-icon-button matSuffix type="button" (click)="ocultarPassword.update(v => !v)"
+              aria-label="Mostrar u ocultar contraseña">
+              <mat-icon>{{ ocultarPassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+            @if (registroForm.contrasena().touched() && registroForm.contrasena().invalid()) {
+              <mat-error>{{ registroForm.contrasena().errors()[0].message }}</mat-error>
+            }
+          </mat-form-field>
+
+          @if (errorServidor()) {
+            <div class="server-error" role="alert">
+              <mat-icon>error</mat-icon><span>{{ errorServidor() }}</span>
+            </div>
+          }
+
+          <button mat-flat-button class="submit-button" type="submit"
+            [disabled]="enviando() || registroForm().invalid()">
+            @if (enviando()) {
+              <mat-spinner diameter="20" /><span>Creando cuenta...</span>
+            } @else {
+              <mat-icon>person_add</mat-icon><span>Registrarme</span>
+            }
+          </button>
+
+          <a routerLink="/login" class="auth-link">¿Ya tiene cuenta? Inicie sesión</a>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

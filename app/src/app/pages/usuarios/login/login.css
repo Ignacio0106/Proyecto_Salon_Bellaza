@@ -51,3 +51,21 @@ mat-spinner {
     display: inline-block;
     margin-right: 8px;
 }
+
+.auth-switch {
+    margin-top: 4px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.auth-switch a {
+    color: var(--mat-sys-primary);
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 4px;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}

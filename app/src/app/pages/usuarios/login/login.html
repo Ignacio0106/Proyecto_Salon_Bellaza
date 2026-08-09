@@ -22,7 +22,7 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Contraseña</mat-label>
                     <mat-icon matPrefix>password</mat-icon>
-                    <input matInput [type]="ocultarPassword() ? 'contrasena' : 'text'" autocomplete="current-password"
+                    <input matInput [type]="ocultarPassword() ? 'password' : 'text'" autocomplete="current-password"
                         [formField]="loginForm.contrasena" />
                     <button mat-icon-button matSuffix type="button" (click)="ocultarPassword.update(v => !v)"
                         aria-label="Mostrar u ocultar contraseña">
@@ -48,6 +48,10 @@
                     <mat-icon>login</mat-icon><span>Ingresar</span>
                     }
                 </button>
+                 <p class="auth-switch">
+                    ¿No tiene una cuenta?
+                    <a routerLink="/registro">Crear cuenta</a>
+                </p>
             </form>
         </mat-card-content>
     </mat-card>

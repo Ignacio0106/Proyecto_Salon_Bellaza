@@ -1,0 +1,17 @@
+/* Copia el contenido de login.css tal cual — mismas clases: .auth-page, .auth-card,
+   .auth-avatar, .auth-form, .server-error, .submit-button */
+.server-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+.auth-link {
+  text-align: center;
+  display: block;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}

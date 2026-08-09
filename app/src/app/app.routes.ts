@@ -13,7 +13,6 @@ import { EspecialidadesList } from './pages/especialidades/especialidades-list/e
 import { UsuariosList } from './pages/usuarios/usuarios-list/usuarios-list';
 import { GestionCitasList } from './pages/gestion-citas/gestion-citas-list/gestion-citas-list';
 import { ResenasList } from './pages/resenas/resenas-list/resenas-list';
-import { ReportesDashboard } from './pages/reportes/reportes-dashboard/reportes-dashboard';
 import { ServiciosList } from './pages/servicios/servicios-list/servicios-list';
 import { ServicioDetail } from './pages/servicios/servicio-detail/servicio-detail';
 import { ServicioCreatePage } from './pages/servicios/servicios-create/servicios-create';
@@ -22,7 +21,12 @@ import { ProfesionalEdit } from './pages/profesionales/profesional-edit/profesio
 import { ProfesionalCreate } from './pages/profesionales/profesional-create/profesional-create';
 import { SinAutorizacion } from './pages/auth/sin-autorizacion/sin-autorizacion';
 import { Login } from './pages/usuarios/login/login';
-
+import { Role } from './core/models/role.model';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
+import { Perfil } from './pages/usuarios/usuarios-perfil/usuarios-perfil';
+import { Registro } from './pages/usuarios/registro/registro';
+    
 export const routes: Routes = [
     {
         path: '',
@@ -35,16 +39,6 @@ export const routes: Routes = [
                 title: 'Catálogo de Servicios'
             },
             {
-                path: 'servicios/create',
-                component: ServicioCreatePage,
-                title: 'Crear Servicio'
-            },
-            {
-                path: 'servicios/edit/:id',
-                component: ServicioEditPage,
-                title: 'Editar Servicio'
-            },
-            {
                 path: 'servicios/:id',
                 component: ServicioDetail,
                 title: 'Catálogo de Servicios'
@@ -55,82 +49,120 @@ export const routes: Routes = [
                 title: 'Nuestros Profesionales'
             },
             {
-                path: 'profesionales/create',
-                component: ProfesionalCreate,
-                title: 'Crear Profesional'
-            },
-            {
                 path: 'profesionales/:id',
                 component: ProfesionalDetail,
                 title: 'Detalle del Profesional'
             },
+            // Profesional solo puede acceder
+            {
+                path: 'servicios/create',
+                component: ServicioCreatePage,
+                title: 'Crear Servicio',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.PROFESIONAL] }
+            },
+            {
+                path: 'servicios/edit/:id',
+                component: ServicioEditPage,
+                title: 'Editar Servicio',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.PROFESIONAL] }
+            },
+            // Admin solo puede acceder
+            {
+                path: 'profesionales/create',
+                component: ProfesionalCreate,
+                title: 'Crear Profesional',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN] }
+            },
             {
                 path: 'profesionales/edit/:id',
                 component: ProfesionalEdit,
-                title: 'Editar Profesional'
+                title: 'Editar Profesional',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
             },
+            // Cliente y Profesional pueden acceder
             {
                 path: 'citas',
                 component: Citas,
-                title: 'Mis Citas'
+                title: 'Mis Citas',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.CLIENTE, Role.PROFESIONAL] }
             },
             {
                 path: 'citas/cita-reserva',
                 component: CitaReserva,
-                title: 'Agendar Cita'
+                title: 'Agendar Cita',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.CLIENTE] }
             },
             {
                 path: 'citas/:id',
                 component: CitaDetail,
-                title: 'Detalle de la Cita'
+                title: 'Detalle de la Cita',
+                canActivate: [authGuard]
             },
             {
-                path: 'reserva', // Destino del icono del calendario en el header
+                path: 'reserva',
                 component: CitaReserva,
-                title: 'Reserva de Citas'
+                title: 'Reserva de Citas',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.CLIENTE] }
             },
-
-            // ==========================================
-            // MANTENIMIENTOS (ADMINISTRADOR)
-            // ==========================================
+            //Admin solo puede acceder
             {
                 path: 'categorias',
                 component: CategoriasList,
-                title: 'Mantenimiento de Categorías'
+                title: 'Mantenimiento de Categorías',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN] }
             },
             {
                 path: 'especialidades',
                 component: EspecialidadesList,
-                title: 'Mantenimiento de Especialidades'
+                title: 'Mantenimiento de Especialidades',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN] }
             },
             {
                 path: 'usuarios',
                 component: UsuariosList,
-                title: 'Control de Usuarios'
+                title: 'Control de Usuarios',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN] }
             },
             {
                 path: 'login',
                 component: Login,
                 title: 'Iniciar sesión'
             },
-
-            // ==========================================
-            // GESTIÓN (ADMIN / PROFESIONAL)
-            // ==========================================
+            {
+                path: 'registro',
+                component: Registro,
+                title: 'Registro de Usuarios'
+            },
+            {
+                path: 'perfil',
+                component: Perfil,
+                title: 'Mi perfil',
+                canActivate: [authGuard]
+            },
+            //Admin y Profesional pueden acceder
             {
                 path: 'gestion-citas',
                 component: CitasList,
-                title: 'Control de Citas'
+                title: 'Control de Citas',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
             },
             {
                 path: 'resenas',
                 component: ResenasList,
-                title: 'Gestión de Reseñas'
-            },
-            {
-                path: 'reportes',
-                component: ReportesDashboard,
-                title: 'Reportes y Estadísticas'
+                title: 'Gestión de Reseñas',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
             },
             {
                 path: 'sin-autorizacion',

@@ -1,0 +1,89 @@
+.perfil-page {
+  width: min(640px, calc(100% - 2rem));
+  margin: 2.5rem auto;
+}
+
+.perfil-card {
+  padding: 1.75rem;
+  border-radius: 20px;
+}
+
+.perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.perfil-avatar {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-primary);
+  background: linear-gradient(135deg, var(--mat-sys-primary) 0%, var(--mat-sys-tertiary) 100%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+
+.perfil-header-info h1 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
+.perfil-rol {
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  color: var(--mat-sys-on-tertiary);
+  background: var(--mat-sys-tertiary);
+}
+
+.perfil-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-top: 1.25rem;
+}
+
+.dato {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.dato mat-icon {
+  color: var(--mat-sys-primary);
+  margin-top: 2px;
+}
+
+.dato small {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.dato p {
+  margin: 0.15rem 0 0;
+  font-size: 0.95rem;
+  color: var(--mat-sys-on-surface);
+}
+
+.perfil-vacio {
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+  margin-top: 3rem;
+}

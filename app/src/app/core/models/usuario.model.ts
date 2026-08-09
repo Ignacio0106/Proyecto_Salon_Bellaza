@@ -50,6 +50,8 @@ export interface LoginResult {
 
 export interface RegisterRequest {
     nombre: string;
+    apellidos: string;
     correo: string;
-    password: string;
+    contrasena: string;
+    telefono: string;
 }

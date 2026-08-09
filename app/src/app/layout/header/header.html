@@ -1,6 +1,6 @@
 <header class="site-header">
   <mat-toolbar class="toolbar">
-    <!-- Brand -->
+    <!-- Brand / Logo -->
     <a class="brand" routerLink="/" aria-label="Ir al inicio">
       <span class="brand-icon">
         <mat-icon>spa</mat-icon>
@@ -13,22 +13,23 @@
 
     <!-- Navegación principal -->
     <nav class="desktop-nav" aria-label="Navegación principal">
-      @for (item of publicMenu(); track item.path) {
-        @if (canShowItem()(item)) {
-          <a mat-button [routerLink]="item.path" routerLinkActive="active-link"
-            [routerLinkActiveOptions]="{ exact: item.path === '/' }">
-            <mat-icon>{{ item.icon }}</mat-icon>
-            <span>{{ item.label }}</span>
-          </a>
-        }
+      @for (item of publicMenuVisible(); track item.path) {
+        <a mat-button [routerLink]="item.path" routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: item.path === '/' }">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
       }
 
-      @if (isAdmin()) {
+      @if (mostrarMenuMantenimientos()) {
         <button mat-button [matMenuTriggerFor]="maintenanceMenu">
           <mat-icon>settings</mat-icon>
           <span>Mantenimientos</span>
           <mat-icon>expand_more</mat-icon>
         </button>
+      }
+
+      @if (mostrarMenuGestion()) {
         <button mat-button [matMenuTriggerFor]="managementMenu">
           <mat-icon>admin_panel_settings</mat-icon>
           <span>Gestión</span>
@@ -39,15 +40,25 @@
 
     <span class="spacer"></span>
 
-    <!-- Reservas / Carrito -->
-    <a mat-icon-button class="icon-action" routerLink="/reserva" matTooltip="Citas pendientes" aria-label="Abrir reservas">
-      <mat-icon [matBadge]="cartCount()" [matBadgeHidden]="cartCount() === 0" matBadgeColor="accent">
-        calendar_month
-      </mat-icon>
-    </a>
+    <!-- Reservas / Citas pendientes -->
+    @if (rol() === null || rol() === 'CLIENTE') {
+      <a mat-icon-button class="icon-action" routerLink="/reserva" matTooltip="Citas pendientes" aria-label="Abrir reservas">
+        <mat-icon [matBadge]="CitasCount()" [matBadgeHidden]="CitasCount() === 0" matBadgeColor="accent">
+          calendar_month
+        </mat-icon>
+      </a>
+    }
 
-    <!-- Usuario Autenticado -->
-    @if (currentUser(); as user) {
+    <!-- ESTADO 1: Cargando sesión -->
+    @if (!sesionInicializada() || cargandoSesion()) {
+      <button mat-button type="button" disabled class="session-loading">
+        <mat-icon>hourglass_top</mat-icon>
+        <span>Cargando...</span>
+      </button>
+    }
+
+    <!-- ESTADO 2: Usuario autenticado -->
+    @else if (usuario(); as user) {
       <button type="button" class="user-menu-trigger" [matMenuTriggerFor]="userMenu" aria-label="Abrir menú de usuario">
         <span class="user-avatar">
           {{ iniciales() }}
@@ -59,7 +70,8 @@
         <mat-icon class="user-menu-arrow">expand_more</mat-icon>
       </button>
     } 
-    <!-- Visitante / No Autenticado -->
+
+    <!-- ESTADO 3: Visitante / No Autenticado -->
     @else {
       <a mat-flat-button color="primary" routerLink="/login">
         <mat-icon>login</mat-icon>
@@ -74,9 +86,9 @@
   </mat-toolbar>
 </header>
 
-<!-- Menús desplegables de administración -->
+<!-- Menú desplegable: Mantenimientos -->
 <mat-menu #maintenanceMenu="matMenu">
-  @for (item of adminMaintenanceMenu(); track item.path) {
+  @for (item of adminMaintenanceMenuVisible(); track item.path) {
     <a mat-menu-item [routerLink]="item.path">
       <mat-icon>{{ item.icon }}</mat-icon>
       <span>{{ item.label }}</span>
@@ -84,8 +96,27 @@
   }
 </mat-menu>
 
+<!-- Menú desplegable: Gestión -->
 <mat-menu #managementMenu="matMenu">
-  @for (item of adminManagementMenu(); track item.path) {
+  @for (item of adminManagementMenuVisible(); track item.path) {
+    <a mat-menu-item [routerLink]="item.path">
+      <mat-icon>{{ item.icon }}</mat-icon>
+      <span>{{ item.label }}</span>
+    </a>
+  }
+
+  <!-- Opción con submenú para Reportes -->
+  @if (mostrarMenuReportes()) {
+    <button mat-menu-item [matMenuTriggerFor]="reportsSubMenu">
+      <mat-icon>assessment</mat-icon>
+      <span>Reportes</span>
+    </button>
+  }
+</mat-menu>
+
+<!-- Submenú desplegable: Reportes (Se activa desde el menú Gestión) -->
+<mat-menu #reportsSubMenu="matMenu">
+  @for (item of reportsMenuVisible(); track item.path) {
     <a mat-menu-item [routerLink]="item.path">
       <mat-icon>{{ item.icon }}</mat-icon>
       <span>{{ item.label }}</span>
@@ -93,14 +124,12 @@
   }
 </mat-menu>
 
-<!-- Menú Desplegable de Usuario (Idéntico al de GameStore) -->
+<!-- Menú desplegable del Usuario Logueado -->
 <mat-menu #userMenu="matMenu">
-  @if (currentUser(); as user) {
+  @if (usuario(); as user) {
     <div class="user-menu-info">
-      <strong>{{ user.nombre }}</strong>
-      @if (user.correo) {
-        <span>{{ user.correo }}</span>
-      }
+      <strong>{{ user.nombre }} {{ user.apellidos }}</strong>
+      <span>{{ user.correo }}</span>
       <small>{{ nombreRol() }}</small>
     </div>
     <mat-divider></mat-divider>
@@ -110,8 +139,8 @@
       <span>Mi perfil</span>
     </a>
 
-    @if (isAdmin()) {
-      <a mat-menu-item routerLink="/admin/usuarios">
+    @if (esAdmin()) {
+      <a mat-menu-item routerLink="/usuarios">
         <mat-icon>manage_accounts</mat-icon>
         <span>Gestión de usuarios</span>
       </a>
@@ -128,19 +157,19 @@
 
 <!-- Menú Mobile -->
 <mat-menu #mobileMenu="matMenu">
-  @for (item of publicMenu(); track item.path) {
-    @if (canShowItem()(item)) {
-      <a mat-menu-item [routerLink]="item.path">
-        <mat-icon>{{ item.icon }}</mat-icon>
-        <span>{{ item.label }}</span>
-      </a>
-    }
+  @for (item of publicMenuVisible(); track item.path) {
+    <a mat-menu-item [routerLink]="item.path">
+      <mat-icon>{{ item.icon }}</mat-icon>
+      <span>{{ item.label }}</span>
+    </a>
   }
-  @if (isAdmin()) {
+  @if (mostrarMenuMantenimientos()) {
     <button mat-menu-item [matMenuTriggerFor]="maintenanceMenu">
       <mat-icon>settings</mat-icon>
       <span>Mantenimientos</span>
     </button>
+  }
+  @if (mostrarMenuGestion()) {
     <button mat-menu-item [matMenuTriggerFor]="managementMenu">
       <mat-icon>admin_panel_settings</mat-icon>
       <span>Gestión</span>

@@ -1,15 +1,10 @@
 <div class="app-shell">
   <app-header
-    [publicMenu]="publicMenu()"
-    [adminMaintenanceMenu]="adminMaintenanceMenu()"
-    [adminManagementMenu]="adminManagementMenu()"
-    [cartCount]="cartCount()"
-    [isAdmin]="isAdmin()"
-    [canShowItem]="canShowItem.bind(this)"
-    (loginClient)="loginAsClient()"
-    (loginAdmin)="loginAsAdmin()"
-    (loginAsProfesional)="loginAsProfesional()"
-    (logoutUser)="logout()"
+[publicMenu]="publicMenu()"
+  [adminMaintenanceMenu]="adminMaintenanceMenu()"
+  [adminManagementMenu]="adminManagementMenu()"
+  [reportsMenu]="reportsMenu()"
+    [CitasCount]="CitasCount()"
   />
   <main class="content">
     <router-outlet />

@@ -1,0 +1,53 @@
+<div class="perfil-page">
+  @if (usuario(); as user) {
+    <mat-card class="perfil-card" appearance="outlined">
+      <div class="perfil-header">
+        <span class="perfil-avatar">{{ iniciales() }}</span>
+        <div class="perfil-header-info">
+          <h1>{{ nombreCompleto() }}</h1>
+          <span class="perfil-rol">{{ nombreRol() }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="perfil-datos">
+        <div class="dato">
+          <mat-icon>mail</mat-icon>
+          <div>
+            <small>Correo electrónico</small>
+            <p>{{ user.correo }}</p>
+          </div>
+        </div>
+
+        @if (user.telefono) {
+          <div class="dato">
+            <mat-icon>call</mat-icon>
+            <div>
+              <small>Teléfono</small>
+              <p>{{ user.telefono }}</p>
+            </div>
+          </div>
+        }
+
+        <div class="dato">
+          <mat-icon>badge</mat-icon>
+          <div>
+            <small>Rol</small>
+            <p>{{ nombreRol() }}</p>
+          </div>
+        </div>
+
+        <div class="dato">
+          <mat-icon>{{ user.estado === 'ACTIVO' ? 'check_circle' : 'cancel' }}</mat-icon>
+          <div>
+            <small>Estado de la cuenta</small>
+            <p>{{ user.estado === 'ACTIVO' ? 'Activo' : 'Inactivo' }}</p>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  } @else {
+    <p class="perfil-vacio">No fue posible cargar la información del perfil.</p>
+  }
+</div>
