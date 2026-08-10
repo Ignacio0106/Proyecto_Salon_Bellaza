@@ -528,24 +528,66 @@ async function main() {
             montoCalculado: 12000,
         },
     });
+    // Pares profesional-servicio (cada servicio pertenece a su profesional)
+    const paresProfesionalServicio = [
+        { profesional: maria, servicio: corte },
+        { profesional: maria, servicio: color },
+        { profesional: sofia, servicio: maquillaje },
+        { profesional: sofia, servicio: maquillajeNovia },
+        { profesional: laura, servicio: barberia },
+        { profesional: laura, servicio: barba },
+        { profesional: valeria, servicio: masaje },
+        { profesional: valeria, servicio: spaFacial },
+        { profesional: jose, servicio: facial },
+        { profesional: jose, servicio: pedicure },
+    ];
+
+    // Distribución de estados: fuerte mayoría de COMPLETADAS (60%),
+    // manteniendo presencia real de todos los demás estados.
+    const estadosDistribucion: (typeof EstadoCita)[keyof typeof EstadoCita][] = [
+        EstadoCita.COMPLETADA,
+        EstadoCita.COMPLETADA,
+        EstadoCita.COMPLETADA,
+        EstadoCita.COMPLETADA,
+        EstadoCita.COMPLETADA,
+        EstadoCita.COMPLETADA,
+        EstadoCita.ACEPTADA,
+        EstadoCita.PENDIENTE,
+        EstadoCita.CANCELADA,
+        EstadoCita.RECHAZADA,
+    ];
+
+    const totalCitasAdicionales = 40;
+    const fechaBase = new Date("2026-07-01T09:00:00");
+
     // Citas adicionales
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < totalCitasAdicionales; i++) {
+        const par = paresProfesionalServicio[i % paresProfesionalServicio.length];
+        const estado = estadosDistribucion[i % estadosDistribucion.length];
+
+        const fechaCita = new Date(fechaBase);
+        fechaCita.setDate(fechaBase.getDate() + i);
+
+        const horaInicio = new Date(fechaCita);
+        horaInicio.setHours(9, 0, 0, 0);
+
+        const horaFinalizacion = new Date(horaInicio);
+        horaFinalizacion.setMinutes(
+            horaInicio.getMinutes() + par.servicio.duracionEstimada
+        );
+
         await prisma.cita.create({
             data: {
                 clienteId: clientes[i % clientes.length],
-                profesionalId: profesionales[i].id,
-                servicioId: servicios[i].id,
-                fechaCitaSolicitada: new Date(`2026-07-${String(i + 1).padStart(2, "0")}`),
-                horaInicio: new Date(`2026-07-${String(i + 1).padStart(2, "0")}T09:00:00`),
-                horaFinalizacion: new Date(`2026-07-${String(i + 1).padStart(2, "0")}T10:00:00`),
-                modalidad: servicios[i].modalidad,
-                estado: i % 3 === 0
-                    ? EstadoCita.PENDIENTE
-                    : i % 3 === 1
-                        ? EstadoCita.ACEPTADA
-                        : EstadoCita.COMPLETADA,
+                profesionalId: par.profesional.id,
+                servicioId: par.servicio.id,
+                fechaCitaSolicitada: fechaCita,
+                horaInicio,
+                horaFinalizacion,
+                modalidad: par.servicio.modalidad,
+                estado,
                 comentarioNecesidad: `Cita de prueba ${i + 1}`,
-                montoCalculado: servicios[i].precio,
+                montoCalculado: par.servicio.precio,
             },
         });
     }
