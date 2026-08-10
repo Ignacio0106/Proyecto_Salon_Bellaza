@@ -57,7 +57,7 @@ export class PdfReporteService {
     autoTable(doc, {
       startY: 100,
       margin: { left: this.margen, right: this.margen },
-      head: [['Profesional', 'Título profesional', 'Total de citas', 'Citas completadas', '% Finalización']],
+      head: [['Profesional', 'Título profesional', 'Total de citas', 'Citas completadas', 'Porcentaje de Finalización']],
       body: datos.map((fila) => [
         fila.profesional,
         fila.tituloProfesional,
@@ -92,7 +92,7 @@ export class PdfReporteService {
     doc.setFont('helvetica', 'bold');
     doc.text(`Total de citas: ${totalCitas}`, this.margen, finalY + 24);
     doc.text(`Citas completadas: ${totalCompletadas}`, this.margen, finalY + 40);
-    doc.text(`% Finalización global: ${porcentajeGlobal}%`, this.margen, finalY + 56);
+    doc.text(`Porcentaje de Finalización global: ${porcentajeGlobal}%`, this.margen, finalY + 56);
 
     // ---------- PIE DE PÁGINA / NUMERACIÓN ----------
     const alturaPagina = doc.internal.pageSize.getHeight();
