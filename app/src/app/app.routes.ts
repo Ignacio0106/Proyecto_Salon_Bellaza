@@ -26,6 +26,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 import { Perfil } from './pages/usuarios/usuarios-perfil/usuarios-perfil';
 import { Registro } from './pages/usuarios/registro/registro';
+import { ReporteCitasByProfesional } from './pages/reportes/reporte-citas-by-profesional/reporte-citas-by-profesional';
     
 export const routes: Routes = [
     {
@@ -161,6 +162,13 @@ export const routes: Routes = [
                 path: 'resenas',
                 component: ResenasList,
                 title: 'Gestión de Reseñas',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
+            },
+            {
+                path: 'reportes/citasProfesional',
+                component: ReporteCitasByProfesional,
+                title: 'Reportes y Estadísticas',
                 canActivate: [authGuard, roleGuard],
                 data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
             },

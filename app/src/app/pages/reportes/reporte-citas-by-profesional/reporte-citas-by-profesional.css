@@ -1,0 +1,85 @@
+
+.reportes-container {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.6rem;
+  color: #1c1b1b;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin: 0 0 4px;
+}
+
+.page-header p {
+  margin: 0;
+  color: #616161;
+  font-size: 0.95rem;
+}
+
+.page-icon {
+  display: flex;
+  align-items: center;
+}
+
+.btn-exportar {
+  height: 44px;
+}
+
+.estado-carga {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 0;
+  color: #616161;
+}
+
+.tarjeta-error mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #b3261e;
+}
+
+.tarjeta-reporte {
+  border-radius: 12px;
+}
+
+.sin-datos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 0;
+  color: #757575;
+}
+
+.tabla-reporte {
+  width: 100%;
+}
+
+.col-centrada {
+  text-align: center;
+}
+
+.total-reporte {
+  margin-top: 16px;
+  text-align: right;
+  font-size: 1rem;
+  color: #1c1b1b;
+}

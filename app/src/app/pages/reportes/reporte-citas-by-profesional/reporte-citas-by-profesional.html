@@ -1,0 +1,89 @@
+<div class="reportes-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1>
+        <span class="page-icon"><mat-icon>picture_as_pdf</mat-icon></span>
+        Reporte de Citas por Profesional
+      </h1>
+      <p>
+        @if (esAdmin()) {
+          Cantidad de citas completadas por cada profesional registrado en el sistema.
+        } @else {
+          Cantidad de citas completadas asociadas a su perfil profesional.
+        }
+      </p>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="btn-exportar"
+      [disabled]="loading() || !datos().length"
+      (click)="exportarPdf()">
+      <mat-icon>download</mat-icon>
+      Exportar a PDF
+    </button>
+  </div>
+
+  <!-- ESTADO DE CARGA -->
+  @if (loading()) {
+    <div class="estado-carga">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Cargando reporte...</p>
+    </div>
+  }
+
+  <!-- ERROR -->
+  @if (!loading() && error()) {
+    <mat-card class="tarjeta-error">
+      <mat-card-content>
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error() }}</span>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- REPORTE -->
+  @if (!loading() && !error()) {
+    <mat-card class="tarjeta-reporte">
+      <mat-card-content>
+
+        @if (!datos().length) {
+          <div class="sin-datos">
+            <mat-icon>inbox</mat-icon>
+            <span>Aún no hay citas completadas para mostrar.</span>
+          </div>
+        } @else {
+          <table mat-table [dataSource]="datos()" class="tabla-reporte">
+
+            <ng-container matColumnDef="profesional">
+              <th mat-header-cell *matHeaderCellDef>Profesional</th>
+              <td mat-cell *matCellDef="let fila">{{ fila.profesional }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="tituloProfesional">
+              <th mat-header-cell *matHeaderCellDef>Título profesional</th>
+              <td mat-cell *matCellDef="let fila">{{ fila.tituloProfesional }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="citasCompletadas">
+              <th mat-header-cell *matHeaderCellDef class="col-centrada">Citas completadas</th>
+              <td mat-cell *matCellDef="let fila" class="col-centrada">{{ fila.citasCompletadas }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <div class="total-reporte">
+            Total de citas completadas: <strong>{{ totalCitasCompletadas() }}</strong>
+          </div>
+        }
+
+      </mat-card-content>
+    </mat-card>
+  }
+
+</div>
