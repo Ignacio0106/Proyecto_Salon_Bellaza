@@ -7,7 +7,7 @@ import { CitasPorProfesional } from '../models/reporte.model';
 @Injectable({
   providedIn: 'root',
 })
-export class PdfReporteService { 
+export class PdfReporteService {
   private readonly margen = 40;
 
   /**
@@ -43,18 +43,27 @@ export class PdfReporteService {
 
     // ---------- TABLA DE DATOS ----------
     const totalCitas = datos.reduce(
+      (acumulado, fila) => acumulado + fila.totalCitas,
+      0
+    );
+    const totalCompletadas = datos.reduce(
       (acumulado, fila) => acumulado + fila.citasCompletadas,
       0
     );
+    const porcentajeGlobal = totalCitas > 0
+      ? Math.round((totalCompletadas / totalCitas) * 100)
+      : 0;
 
     autoTable(doc, {
       startY: 100,
       margin: { left: this.margen, right: this.margen },
-      head: [['Profesional', 'Título profesional', 'Citas completadas']],
+      head: [['Profesional', 'Título profesional', 'Total de citas', 'Citas completadas', '% Finalización']],
       body: datos.map((fila) => [
         fila.profesional,
         fila.tituloProfesional,
+        fila.totalCitas.toString(),
         fila.citasCompletadas.toString(),
+        `${fila.porcentajeFinalizacion}%`,
       ]),
       headStyles: {
         fillColor: [21, 101, 192],
@@ -62,7 +71,11 @@ export class PdfReporteService {
         fontStyle: 'bold',
       },
       alternateRowStyles: { fillColor: [245, 245, 245] },
-      columnStyles: { 2: { halign: 'center' } },
+      columnStyles: {
+        2: { halign: 'center' },
+        3: { halign: 'center' },
+        4: { halign: 'center' },
+      },
       didDrawPage: () => {
         // Repite el encabezado si el reporte ocupa varias páginas
         if (doc.getNumberOfPages() > 1) {
@@ -71,13 +84,15 @@ export class PdfReporteService {
       },
     });
 
-    // ---------- TOTAL ----------
+    // ---------- TOTALES ----------
     const finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
       .lastAutoTable.finalY;
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Total de citas completadas: ${totalCitas}`, this.margen, finalY + 24);
+    doc.text(`Total de citas: ${totalCitas}`, this.margen, finalY + 24);
+    doc.text(`Citas completadas: ${totalCompletadas}`, this.margen, finalY + 40);
+    doc.text(`% Finalización global: ${porcentajeGlobal}%`, this.margen, finalY + 56);
 
     // ---------- PIE DE PÁGINA / NUMERACIÓN ----------
     const alturaPagina = doc.internal.pageSize.getHeight();

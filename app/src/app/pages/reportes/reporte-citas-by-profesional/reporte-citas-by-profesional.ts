@@ -31,7 +31,13 @@ export class ReporteCitasByProfesional {
   datos = signal<CitasPorProfesional[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
-  displayedColumns = ['profesional', 'tituloProfesional', 'citasCompletadas'];
+displayedColumns = [
+  'profesional',
+  'tituloProfesional',
+  'totalCitas',
+  'citasCompletadas',
+  'porcentajeFinalizacion'
+];
   esAdmin = computed(() => this.authService.rol() === Role.ADMIN);
   totalCitasCompletadas = computed(() =>
     this.datos().reduce((acumulado, fila) => acumulado + fila.citasCompletadas, 0)
@@ -75,4 +81,4 @@ export class ReporteCitasByProfesional {
       'Exportación exitosa'
     );
   }
-} 
+}

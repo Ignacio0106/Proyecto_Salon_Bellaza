@@ -200,7 +200,15 @@ td.mat-mdc-cell {
   text-align: center !important;
 }
 
-/* Badge del conteo */
+/* Subtexto debajo del nombre del profesional */
+.subtexto-titulo {
+  font-size: 0.78rem;
+  color: #797675;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Badge del conteo de citas completadas */
 .badge-count {
   display: inline-flex;
   align-items: center;
@@ -212,6 +220,21 @@ td.mat-mdc-cell {
   padding: 4px 14px;
   border-radius: 20px;
   min-width: 40px;
+  letter-spacing: 0.1px;
+}
+
+/* Badge del porcentaje de finalización */
+.badge-porcentaje {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e1f5fe;
+  color: #0277bd;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  min-width: 48px;
   letter-spacing: 0.1px;
 }
 

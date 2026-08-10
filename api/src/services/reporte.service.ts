@@ -3,9 +3,9 @@ import { AppError } from "../utils/app-error";
 import { AuthTokenPayload } from "../middlewares/auth.middleware";
 
 // Los nombres de los estados deben coincidir con tu Enum de Prisma
-export const ReporteService = { 
+export const ReporteService = {
     /**
-     * Reporte: cantidad de citas COMPLETADAS agrupadas por profesional. 
+     * Reporte: cantidad de citas COMPLETADAS agrupadas por profesional.
      */
     async citasPorProfesional(user: AuthTokenPayload) {
         if (user.rol === "ADMINISTRADOR") {
@@ -33,25 +33,45 @@ export const ReporteService = {
             },
         });
 
-        const conteos = await prisma.cita.groupBy({
+        // Conteo de citas COMPLETADAS por profesional
+        const conteosCompletadas = await prisma.cita.groupBy({
             by: ["profesionalId"],
             where: { estado: "COMPLETADA" },
             _count: { _all: true },
         });
 
-        const conteoPorProfesional = new Map<number, number>(
-            conteos.map((conteo) => [
-                conteo.profesionalId,
-                conteo._count._all,
-            ])
+        // Conteo de TODAS las citas por profesional (independiente del estado)
+        const conteosTotales = await prisma.cita.groupBy({
+            by: ["profesionalId"],
+            _count: { _all: true },
+        });
+
+        const completadasPorProfesional = new Map<number, number>(
+            conteosCompletadas.map((c) => [c.profesionalId, c._count._all])
         );
 
-        return profesionales.map((profesional) => ({
-            profesionalId: profesional.id,
-            profesional: `${profesional.usuario.nombre} ${profesional.usuario.apellidos}`,
-            tituloProfesional: profesional.tituloProfesional,
-            citasCompletadas: conteoPorProfesional.get(profesional.id) ?? 0,
-        }));
+        const totalesPorProfesional = new Map<number, number>(
+            conteosTotales.map((c) => [c.profesionalId, c._count._all])
+        );
+
+        return profesionales.map((profesional) => {
+            const citasCompletadas =
+                completadasPorProfesional.get(profesional.id) ?? 0;
+            const totalCitas = totalesPorProfesional.get(profesional.id) ?? 0;
+            const porcentajeFinalizacion =
+                totalCitas > 0
+                    ? Math.round((citasCompletadas / totalCitas) * 100)
+                    : 0;
+
+            return {
+                profesionalId: profesional.id,
+                profesional: `${profesional.usuario.nombre} ${profesional.usuario.apellidos}`,
+                tituloProfesional: profesional.tituloProfesional,
+                totalCitas,
+                citasCompletadas,
+                porcentajeFinalizacion,
+            };
+        });
     },
 
     async reportePorProfesional(usuarioId: number) {
@@ -82,12 +102,23 @@ export const ReporteService = {
             },
         });
 
+        const totalCitas = await prisma.cita.count({
+            where: { profesionalId: perfil.id },
+        });
+
+        const porcentajeFinalizacion =
+            totalCitas > 0
+                ? Math.round((citasCompletadas / totalCitas) * 100)
+                : 0;
+
         return [
             {
                 profesionalId: perfil.id,
                 profesional: `${perfil.usuario.nombre} ${perfil.usuario.apellidos}`,
                 tituloProfesional: perfil.tituloProfesional,
+                totalCitas,
                 citasCompletadas,
+                porcentajeFinalizacion,
             },
         ];
     },
