@@ -8,7 +8,7 @@ import { CitasPorProfesional } from '../models/reporte.model';
 @Injectable({
   providedIn: 'root',
 })
-export class ReporteService {
+export class ReporteService { 
   private readonly http = inject(HttpClient);
 
   private readonly apiUrl = `${environment.apiUrl}/reporte`;

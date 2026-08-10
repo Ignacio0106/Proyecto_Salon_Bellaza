@@ -7,7 +7,7 @@ import { CitasPorProfesional } from '../models/reporte.model';
 @Injectable({
   providedIn: 'root',
 })
-export class PdfReporteService {
+export class PdfReporteService { 
   private readonly margen = 40;
 
   /**

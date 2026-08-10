@@ -64,7 +64,7 @@ export class MainLayout {
     {
       label: 'Reportes Citas por Profesional',
       path: '/reportes/citasProfesional',
-      icon: 'picture_as_pdf',
+      icon: 'person_search',
       roles: [Role.ADMIN, Role.PROFESIONAL],
     },
     {

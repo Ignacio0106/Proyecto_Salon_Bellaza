@@ -3,11 +3,9 @@ import { AppError } from "../utils/app-error";
 import { AuthTokenPayload } from "../middlewares/auth.middleware";
 
 // Los nombres de los estados deben coincidir con tu Enum de Prisma
-type EstadoCitaType = "PENDIENTE" | "ACEPTADA" | "RECHAZADA" | "CANCELADA" | "COMPLETADA";
-const UMBRAL_BAJA_CALIFICACION = 3.0;
 export const ReporteService = { 
     /**
-     * Reporte: cantidad de citas COMPLETADAS agrupadas por profesional.
+     * Reporte: cantidad de citas COMPLETADAS agrupadas por profesional. 
      */
     async citasPorProfesional(user: AuthTokenPayload) {
         if (user.rol === "ADMINISTRADOR") {

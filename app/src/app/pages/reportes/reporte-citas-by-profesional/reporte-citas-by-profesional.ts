@@ -75,4 +75,4 @@ export class ReporteCitasByProfesional {
       'Exportación exitosa'
     );
   }
-}
+} 
