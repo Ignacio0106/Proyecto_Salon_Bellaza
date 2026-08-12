@@ -9,7 +9,11 @@ export const CitaService = {
                 id: true,
                 fechaCitaSolicitada: true,
                 horaInicio: true,
+                horaFinalizacion: true,
                 estado: true,
+
+                clienteId: true,
+                profesionalId: true,
 
                 cliente: {
                     select: {
@@ -39,11 +43,16 @@ export const CitaService = {
 
         return citas.map((cita) => ({
             id: cita.id,
+            clienteId: cita.clienteId,
+            profesionalId: cita.profesionalId,
             cliente: `${cita.cliente.nombre} ${cita.cliente.apellidos}`,
             profesional: `${cita.profesional.usuario.nombre} ${cita.profesional.usuario.apellidos}`,
             servicio: cita.servicio.nombre,
             fecha: cita.fechaCitaSolicitada,
             hora: cita.horaInicio,
+            // Se agrega la hora de finalización para pintar correctamente
+            // el rango del evento en la Agenda Visual (FullCalendar)
+            horaFin: cita.horaFinalizacion,
             estado: cita.estado,
         }));
     },
@@ -257,5 +266,32 @@ export const CitaService = {
         return resultado;
     },
         
-    
+// Actualiza el estado de una cita (usado desde la Agenda Visual)
+    async editarEstado(id: number, estado: "PENDIENTE" | "ACEPTADA" | "RECHAZADA" | "CANCELADA" | "COMPLETADA") {
+         
+        const citaExistente = await prisma.cita.findUnique({
+            where: { id },
+        });
+
+        if (!citaExistente) {
+            throw AppError.notFound("La cita indicada no existe");
+        }
+
+        const citaActualizada = await prisma.cita.update({
+            where: { id },
+            data: { estado },
+            include: {
+                cliente: true,
+                profesional: {
+                    include: {
+                        usuario: true,
+                    },
+                },
+                servicio: true,
+            },
+        });
+
+        return citaActualizada;
+    },
 };
+

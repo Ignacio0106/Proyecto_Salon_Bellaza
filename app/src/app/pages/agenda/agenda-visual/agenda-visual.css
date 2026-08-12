@@ -1,0 +1,356 @@
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+h2 {
+  color: #333;
+  margin: 0 0 4px 0;
+  font-weight: 500;
+}
+
+.subtitulo {
+  margin: 0;
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  background: #fafafa;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.leyenda-punto {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.04);
+}
+
+.filtros-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filtro-select {
+  width: 220px;
+}
+
+.secondary-button {
+  height: 56px;
+  padding: 0 24px;
+}
+
+.mensaje-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.calendario-wrapper {
+  position: relative;
+  min-height: 500px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #eee;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: 16px;
+}
+
+.loading-shade {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #666;
+  font-size: 0.9rem;
+  border-radius: 14px;
+}
+
+.nota-ayuda {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  color: #777;
+  font-size: 0.85rem;
+}
+
+.nota-ayuda mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #999;
+}
+
+/* ============================= */
+/* FullCalendar — ajustes generales */
+/* ============================= */
+::ng-deep .fc {
+  font-family: inherit;
+}
+
+::ng-deep .fc .fc-toolbar {
+  margin-bottom: 20px !important;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+::ng-deep .fc .fc-toolbar-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  text-transform: capitalize;
+}
+
+::ng-deep .fc .fc-button {
+  background-color: #fff;
+  border-color: #ddd;
+  color: #444;
+  text-transform: capitalize;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+  padding: 6px 14px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+::ng-deep .fc .fc-button:hover {
+  background-color: #f5f0f8;
+  border-color: #c9a8dd;
+  color: #6a1b9a;
+}
+
+::ng-deep .fc .fc-button-primary:not(:disabled).fc-button-active,
+::ng-deep .fc .fc-button-primary:not(:disabled):active {
+  background-color: #6a1b9a;
+  border-color: #6a1b9a;
+  color: #fff;
+}
+
+::ng-deep .fc .fc-today-button {
+  text-transform: capitalize;
+}
+
+::ng-deep .fc .fc-button:disabled {
+  opacity: 0.5;
+}
+
+/* ============================= */
+/* Vista de mes (dayGrid) */
+/* ============================= */
+
+/* Bordes generales más suaves */
+::ng-deep .fc-theme-standard td,
+::ng-deep .fc-theme-standard th {
+  border-color: #edecee;
+}
+
+::ng-deep .fc-theme-standard .fc-scrollgrid {
+  border-color: #edecee;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Encabezado de días de la semana (lun, mar, mié...) */
+::ng-deep .fc .fc-col-header-cell {
+  background-color: #faf7fb;
+  padding: 10px 0;
+}
+
+::ng-deep .fc .fc-col-header-cell-cushion {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6a1b9a;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+}
+
+/* Celdas del mes */
+::ng-deep .fc .fc-daygrid-day {
+  transition: background-color 0.15s ease;
+}
+
+::ng-deep .fc .fc-daygrid-day:hover {
+  background-color: #faf8fc;
+}
+
+::ng-deep .fc .fc-daygrid-day-frame {
+  padding: 4px;
+  min-height: 100px;
+}
+
+/* Número del día */
+::ng-deep .fc .fc-daygrid-day-top {
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 4px 6px 0 0;
+}
+
+::ng-deep .fc .fc-daygrid-day-number {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555;
+  padding: 2px 6px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+/* Día de hoy resaltado */
+::ng-deep .fc .fc-daygrid-day.fc-day-today,
+::ng-deep .fc .fc-timegrid-col.fc-day-today {
+  background-color: #f6eefa;
+}
+
+::ng-deep .fc .fc-day-today .fc-daygrid-day-number {
+  background-color: #6a1b9a;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Días fuera del mes actual, más apagados */
+::ng-deep .fc .fc-day-other .fc-daygrid-day-number {
+  color: #bbb;
+}
+
+::ng-deep .fc .fc-day-other {
+  background-color: #fcfcfc;
+}
+
+/* Fines de semana con un tono sutil */
+::ng-deep .fc .fc-day-sat,
+::ng-deep .fc .fc-day-sun {
+  background-color: #fbfafc;
+}
+
+/* ============================= */
+/* Eventos en vista de mes — estilo "píldora rellena" */
+/* ============================= */
+::ng-deep .fc-daygrid-event-harness {
+  margin: 2px 4px !important;
+}
+
+::ng-deep .fc .fc-daygrid-event {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none !important;
+  color: #fff !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.12);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+::ng-deep .fc .fc-daygrid-event:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.15),
+    0 3px 8px rgba(0, 0, 0, 0.18);
+  filter: brightness(1.05);
+}
+
+/* Oculta el puntito de color por defecto de FullCalendar (ya no hace falta, el fondo es el color) */
+::ng-deep .fc .fc-daygrid-event .fc-daygrid-event-dot {
+  display: none;
+}
+
+::ng-deep .fc .fc-daygrid-event .fc-event-time {
+  font-weight: 700;
+  opacity: 0.95;
+  margin-right: 3px;
+}
+
+::ng-deep .fc .fc-daygrid-event .fc-event-title {
+  font-weight: 600;
+}
+
+/* Un poco más de aire entre eventos apilados */
+::ng-deep .fc .fc-daygrid-day-events {
+  margin-top: 3px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* Link "+2 más" */
+::ng-deep .fc .fc-daygrid-more-link {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6a1b9a;
+  padding: 1px 6px;
+}
+
+::ng-deep .fc .fc-daygrid-more-link:hover {
+  text-decoration: underline;
+}
+
+/* Popover al hacer clic en "+N más" */
+::ng-deep .fc .fc-more-popover {
+  border-radius: 10px;
+  border: 1px solid #eee;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+::ng-deep .fc .fc-popover-header {
+  background-color: #faf7fb;
+  padding: 8px 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Eventos genéricos (semana/día también se benefician) */
+::ng-deep .fc .fc-event {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 1px 4px;
+  font-size: 0.8rem;
+}

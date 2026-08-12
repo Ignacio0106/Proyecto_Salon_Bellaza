@@ -27,6 +27,7 @@ import { roleGuard } from './core/guards/role.guard';
 import { Perfil } from './pages/usuarios/usuarios-perfil/usuarios-perfil';
 import { Registro } from './pages/usuarios/registro/registro';
 import { ReporteCitasByProfesional } from './pages/reportes/reporte-citas-by-profesional/reporte-citas-by-profesional';
+import { AgendaVisual } from './pages/agenda/agenda-visual/agenda-visual';
     
 export const routes: Routes = [
     {
@@ -155,6 +156,13 @@ export const routes: Routes = [
                 path: 'gestion-citas',
                 component: CitasList,
                 title: 'Control de Citas',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
+            },
+                 {
+                path: 'agenda-visual',
+                component: AgendaVisual,
+                title: 'Agenda Visual',
                 canActivate: [authGuard, roleGuard],
                 data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
             },

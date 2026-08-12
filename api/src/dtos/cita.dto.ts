@@ -48,5 +48,15 @@ horaFinalizacion: z
 
 export const updateCitaSchema = createCitaSchema.partial();
 
+// Schema específico para actualizar el estado de una cita
+// (usado por la Agenda Visual al cambiar el estado desde el detalle de la cita)
+export const updateEstadoCitaSchema = z.object({
+    estado: z.enum(
+        ["PENDIENTE", "CONFIRMADA", "COMPLETADA", "CANCELADA"],
+        { message: "El estado indicado no es válido" }
+    ),
+});
+
 export type CreateCitaDto = z.infer<typeof createCitaSchema>;
 export type UpdateCitaDto = z.infer<typeof updateCitaSchema>;
+export type UpdateEstadoCitaDto = z.infer<typeof updateEstadoCitaSchema>;

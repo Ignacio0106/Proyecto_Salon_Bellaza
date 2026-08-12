@@ -1,0 +1,87 @@
+<div class="container">
+  <mat-card>
+    <mat-card-content>
+      <div class="encabezado">
+        <div>
+          <h2>Agenda Visual</h2>
+          <p class="subtitulo">
+            @if (esAdmin()) {
+              Vista general de todas las citas del salón.
+            } @else if (esProfesional()) {
+              Tu agenda personal de citas.
+            } @else {
+              Agenda de citas.
+            }
+          </p>
+        </div>
+
+        <!-- Leyenda de colores por estado -->
+        <div class="leyenda">
+          @for (item of leyendaEstados; track item.estado) {
+            <span class="leyenda-item">
+              <span class="leyenda-punto" [style.background-color]="item.color"></span>
+              {{ item.estado }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Filtros: solo aplican de forma útil para el Administrador -->
+      @if (esAdmin()) {
+        <div class="filtros-container">
+          <mat-form-field appearance="outline" class="filtro-select">
+            <mat-label>Estado</mat-label>
+            <mat-select [ngModel]="estadoFiltro()" (ngModelChange)="estadoFiltro.set($event); aplicarFiltros()">
+              <mat-option value="">Todos los estados</mat-option>
+              @for (est of estadosDisponibles; track est) {
+                <mat-option [value]="est">{{ est }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filtro-select">
+            <mat-label>Profesional</mat-label>
+            <mat-select [ngModel]="profesionalFiltro()" (ngModelChange)="profesionalFiltro.set($event); aplicarFiltros()">
+              <mat-option value="">Todos los profesionales</mat-option>
+              @for (prof of profesionalesDisponibles(); track prof) {
+                <mat-option [value]="prof">{{ prof }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <button mat-stroked-button class="secondary-button" (click)="limpiarFiltros()">
+            <mat-icon>filter_alt_off</mat-icon>
+            Limpiar filtros
+          </button>
+        </div>
+      }
+
+      <!-- Manejo de errores -->
+      @if (error()) {
+        <div class="mensaje-error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      <!-- Contenedor del calendario -->
+      <div class="calendario-wrapper">
+        @if (loading()) {
+          <div class="loading-shade">
+            <mat-spinner diameter="42"></mat-spinner>
+            <span>Cargando citas...</span>
+          </div>
+        }
+
+        <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+      </div>
+
+      <p class="nota-ayuda">
+        <mat-icon>info</mat-icon>
+        Haz clic sobre cualquier cita para ver su detalle{{ esAdmin() || esProfesional() ? ' y gestionar su estado' : '' }}.
+        En la vista semanal, las citas que se traslapan en horario se muestran una junto a la otra.
+      </p>
+
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -47,6 +47,12 @@ export class MainLayout {
       roles: [Role.ADMIN, Role.PROFESIONAL],
     },
     {
+      label: 'Agenda Visual',
+      path: '/agenda-visual',
+      icon: 'event_available',
+      roles: [Role.ADMIN, Role.PROFESIONAL],
+    },
+    {
       label: 'Reseñas',
       path: '/resenas',
       icon: 'rate_review',

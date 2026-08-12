@@ -1,0 +1,104 @@
+<h2 mat-dialog-title>
+  <mat-icon>event_note</mat-icon>
+  Detalle de la cita
+</h2>
+
+<mat-dialog-content class="contenido">
+
+  @if (loading()) {
+    <div class="estado-carga">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Cargando información de la cita...</p>
+    </div>
+  }
+
+  @if (!loading() && error()) {
+    <div class="estado-error">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  @if (!loading() && !error() && cita(); as c) {
+    <div class="cabecera-detalle">
+      <span class="badge-estado" [attr.data-estado]="c.estado">{{ c.estado }}</span>
+      <span class="monto">₡{{ c.montoCalculado }}</span>
+    </div>
+
+    <div class="fila">
+      <mat-icon>calendar_today</mat-icon>
+      <span>{{ c.fecha | date: 'dd/MM/yyyy' }}</span>
+    </div>
+
+    <div class="fila">
+      <mat-icon>schedule</mat-icon>
+      <span>{{ c.horaInicio | date: 'HH:mm' }} - {{ c.horaFinalizacion | date: 'HH:mm' }}</span>
+    </div>
+
+    <div class="fila">
+      <mat-icon>content_cut</mat-icon>
+      <span>{{ c.servicio.nombre }}</span>
+    </div>
+
+    <div class="fila">
+      <mat-icon>person</mat-icon>
+      <span><strong>Cliente:</strong> {{ c.cliente.nombreCompleto }}</span>
+    </div>
+
+    <div class="fila">
+      <mat-icon>badge</mat-icon>
+      <span><strong>Profesional:</strong> {{ c.profesional.nombreCompleto }} ({{ c.profesional.tituloProfesional }})</span>
+    </div>
+
+    <div class="fila">
+      <mat-icon>place</mat-icon>
+      <span><strong>Modalidad:</strong> {{ c.modalidad }}</span>
+    </div>
+
+    @if (c.descripcion) {
+      <div class="fila descripcion">
+        <mat-icon>notes</mat-icon>
+        <span>{{ c.descripcion }}</span>
+      </div>
+    }
+
+    @if (c.comentarioProfesional) {
+      <div class="fila descripcion">
+        <mat-icon>chat</mat-icon>
+        <span><strong>Comentario del profesional:</strong> {{ c.comentarioProfesional }}</span>
+      </div>
+    }
+
+    @if (data.puedeGestionar) {
+      <div class="acciones-gestion">
+        <mat-form-field appearance="outline" class="select-estado">
+          <mat-label>Cambiar estado</mat-label>
+          <mat-select [ngModel]="estadoSeleccionado()" (ngModelChange)="estadoSeleccionado.set($event)">
+            @for (est of estados; track est) {
+              <mat-option [value]="est">{{ est }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    }
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="cerrar()">Cerrar</button>
+  @if (data.puedeGestionar && !loading() && !error()) {
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="guardando()"
+      (click)="guardarEstado()">
+      @if (guardando()) {
+        <mat-spinner diameter="18"></mat-spinner>
+      } @else {
+        <mat-icon>save</mat-icon>
+      }
+      Guardar cambios
+    </button>
+  }
+</mat-dialog-actions>

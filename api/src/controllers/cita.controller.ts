@@ -46,5 +46,23 @@ export class CitaController {
             StatusCodes.CREATED 
         ); 
     } 
+    // Actualiza el estado de la cita (usado por la Agenda Visual)
+    editar = async (request: Request, response: Response, next: NextFunction) => {
+        const rawId = Array.isArray(request.params.id) ? request.params.id[0] : request.params.id;
+        const id = parseInt(rawId ?? '', 10);
+
+        if (isNaN(id)) {
+            return response.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "ID inválido" });
+        }
+
+        const cita = await CitaService.editarEstado(id, request.body.estado);
+
+        return sendSuccess(
+            response,
+            cita,
+            "Cita actualizada correctamente",
+            StatusCodes.OK
+        );
+    }
 }
 

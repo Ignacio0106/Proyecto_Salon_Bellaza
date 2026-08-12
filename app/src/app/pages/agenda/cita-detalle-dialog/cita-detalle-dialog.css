@@ -1,0 +1,107 @@
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 320px;
+  padding-top: 8px !important;
+}
+
+.estado-carga,
+.estado-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+  color: #666;
+}
+
+.estado-error {
+  color: #c62828;
+}
+
+.cabecera-detalle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.monto {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.fila {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.fila mat-icon {
+  color: #777;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.fila.descripcion span {
+  color: #555;
+  line-height: 1.4;
+}
+
+.acciones-gestion {
+  margin-top: 8px;
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+}
+
+.select-estado {
+  width: 100%;
+}
+
+.badge-estado {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.badge-estado[data-estado='COMPLETADA'] {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge-estado[data-estado='PENDIENTE'] {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.badge-estado[data-estado='CANCELADA'] {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.badge-estado[data-estado='CONFIRMADA'] {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+button[mat-flat-button] mat-spinner {
+  display: inline-block;
+  margin-right: 6px;
+}

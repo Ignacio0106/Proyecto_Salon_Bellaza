@@ -23,11 +23,14 @@ export interface Cita {
 
 export interface CitaListado {
     id: number;
+    clienteId?: number;
+    profesionalId?: number;
     cliente: string;
     profesional: string;
     servicio: string;
     fecha: string;
     hora: string;
+    horaFin?: string;
     estado: EstadoCita | string;
 }
 
