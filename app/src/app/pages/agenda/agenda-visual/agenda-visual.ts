@@ -33,7 +33,8 @@ import {
 // Colores por estado, coherentes con el resto de la aplicación (badges de citas-list)
 const COLORES_ESTADO: Record<string, { bg: string; border: string }> = {
   PENDIENTE: { bg: '#fb8c00', border: '#e65100' },
-  CONFIRMADA: { bg: '#1e88e5', border: '#1565c0' },
+  ACEPTADA: { bg: '#1e88e5', border: '#1565c0' },
+  RECHAZADA: { bg: '#8e24aa', border: '#6a1b9a' },
   COMPLETADA: { bg: '#43a047', border: '#2e7d32' },
   CANCELADA: { bg: '#e53935', border: '#c62828' },
 };
@@ -83,7 +84,7 @@ export class AgendaVisual {
     return Array.from(set.values()).sort();
   });
 
-  readonly estadosDisponibles: string[] = ['PENDIENTE', 'CONFIRMADA', 'COMPLETADA', 'CANCELADA'];
+readonly estadosDisponibles: string[] = ['PENDIENTE', 'ACEPTADA', 'RECHAZADA', 'COMPLETADA', 'CANCELADA'];
 
   readonly leyendaEstados = Object.entries(COLORES_ESTADO).map(([estado, color]) => ({
     estado,
