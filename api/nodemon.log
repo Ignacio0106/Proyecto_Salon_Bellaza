@@ -155,3 +155,14 @@ Presione CTRL-C para detenerlo
 [0mGET /Servicio [32m200[0m 10.030 ms - 2068[0m
 [0mGET /Servicio [36m304[0m 7.747 ms - -[0m
 [0mGET /perfilProfesional [36m304[0m 3.665 ms - -[0m
+[0mPOST /usuario/login [32m200[0m 71.916 ms - 279[0m
+[0mGET /usuario/perfil [32m200[0m 3.631 ms - 275[0m
+[0mGET /categoria [36m304[0m 4.000 ms - -[0m
+[0mGET /perfilProfesional [36m304[0m 5.167 ms - -[0m
+[0mGET /Servicio [36m304[0m 8.701 ms - -[0m
+[0mGET /Servicio [36m304[0m 5.082 ms - -[0m
+[0mGET /Servicio/81 [36m304[0m 6.822 ms - -[0m
+[0mGET /Servicio [36m304[0m 5.305 ms - -[0m
+[0mGET /Servicio/82 [32m200[0m 4.845 ms - 720[0m
+[0mGET /Servicio [36m304[0m 5.345 ms - -[0m
+[0mGET /perfilProfesional [36m304[0m 3.723 ms - -[0m
