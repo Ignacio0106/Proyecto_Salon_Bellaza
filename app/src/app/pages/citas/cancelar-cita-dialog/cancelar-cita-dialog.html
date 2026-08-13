@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>
+  <mat-icon>event_busy</mat-icon>
+  Cancelar cita
+</h2>
+
+<mat-dialog-content class="contenido">
+  <p class="texto-info">{{ data.descripcionEstado }}</p>
+
+  <mat-form-field appearance="outline" class="campo-motivo">
+    <mat-label>Motivo de la cancelación</mat-label>
+    <textarea
+      matInput
+      rows="3"
+      [formControl]="motivo"
+      placeholder="Cuéntanos por qué cancelas esta cita"
+      maxlength="300">
+    </textarea>
+    @if (motivo.touched && motivo.hasError('required')) {
+      <mat-error>El motivo es obligatorio.</mat-error>
+    }
+    @if (motivo.touched && motivo.hasError('minlength')) {
+      <mat-error>Escribe al menos 5 caracteres.</mat-error>
+    }
+    <mat-hint align="end">{{ motivo.value.length }}/300</mat-hint>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button [disabled]="guardando()" (click)="cerrar()">Volver</button>
+  <button
+    mat-flat-button
+    color="warn"
+    [disabled]="guardando()"
+    (click)="confirmar()">
+    @if (guardando()) {
+      <mat-spinner diameter="18"></mat-spinner>
+    } @else {
+      <mat-icon>close</mat-icon>
+    }
+    Confirmar cancelación
+  </button>
+</mat-dialog-actions>

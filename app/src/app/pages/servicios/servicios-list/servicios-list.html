@@ -10,6 +10,7 @@
       <p>Gestión de servicios registrados en el sistema.</p>
     </div>
 
+    @if (puedeCrearServicio()) {
     <button
       mat-raised-button
       color="primary"
@@ -18,6 +19,7 @@
       <mat-icon>add</mat-icon>
       Nuevo Servicio
     </button>
+    }
   </div>
 
   <!-- FILTROS -->
@@ -138,6 +140,7 @@
             </td>
 
             <td class="text-center">
+              @if (puedeGestionarServicio(servicio)) {
               <button mat-icon-button
                       class="btn-toggle-estado"
                       [class.btn-desactivar]="servicio.estado === 'ACTIVO'"
@@ -146,14 +149,17 @@
                       [title]="servicio.estado === 'ACTIVO' ? 'Desactivar servicio' : 'Activar servicio'">
                 <mat-icon>{{ servicio.estado === 'ACTIVO' ? 'toggle_on' : 'toggle_off' }}</mat-icon>
               </button>
+              }
 
               <a mat-icon-button class="btn-ver" matTooltip="Ver detalle" [routerLink]="['/servicios', servicio.id]">
                 <mat-icon>visibility</mat-icon>
               </a>
 
+              @if (puedeGestionarServicio(servicio)) {
               <a mat-icon-button class="btn-editar" matTooltip="Editar" [routerLink]="['/servicios/edit', servicio.id]">
                 <mat-icon>edit</mat-icon>
               </a>
+              }
             </td>
           </tr>
           }

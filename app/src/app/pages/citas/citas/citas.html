@@ -1,33 +1,23 @@
 <div class="page-container citas-page">
   <div class="page-header">
     <div>
-      <h1 class="page-title">Mis Citas</h1>
-      <p class="page-subtitle">Solo se muestran las citas del usuario activo.</p>
+      <h1 class="page-title">{{ esCliente() ? 'Mis Citas' : 'Mis Citas' }}</h1>
+      <p class="page-subtitle">
+        @if (esCliente()) {
+          Historial cronológico de tus citas, de la más reciente a la más antigua.
+        } @else {
+          Solo se muestran las citas del usuario activo.
+        }
+      </p>
     </div>
 
-    <a mat-stroked-button routerLink="/citas/cita-reserva">
-      <mat-icon>add</mat-icon>
-      Nueva cita
-    </a>
+    @if (esCliente()) {
+      <a mat-stroked-button routerLink="/citas/cita-reserva">
+        <mat-icon>add</mat-icon>
+        Nueva cita
+      </a>
+    }
   </div>
-
-  @if (currentUser(); as user) {
-    <mat-card class="session-card">
-      <mat-card-content>
-        <span class="session-label">Sesión activa</span>
-        <h2>{{ user.nombre }}</h2>
-        <p>{{ user.role }}</p>
-      </mat-card-content>
-    </mat-card>
-  } @else {
-    <mat-card class="session-card empty-session">
-      <mat-card-content>
-        <mat-icon>person_off</mat-icon>
-        <h2>No hay usuario activo</h2>
-        <p>Usa los botones del encabezado para seleccionar un cliente o profesional de prueba.</p>
-      </mat-card-content>
-    </mat-card>
-  }
 
   @if (loading()) {
     <div class="state-box">
@@ -42,51 +32,135 @@
     </div>
   }
 
-  @if (currentUser(); as user) {
-    @if (citasVisibles().length) {
-      <div class="citas-grid">
-        @for (cita of citasVisibles(); track cita.id) {
-          <mat-card class="cita-card">
-            <mat-card-content>
-              <div class="cita-top">
-                <div>
-                  <span class="cita-label">{{ user.role === 'CLIENTE' ? 'Profesional' : 'Cliente' }}</span>
-                  <h3>{{ user.role === 'CLIENTE' ? cita.profesional : cita.cliente }}</h3>
-                </div>
+  @if (!loading() && !error()) {
 
-                <span class="badge-estado" [attr.data-estado]="cita.estado">{{ cita.estado }}</span>
+    <!-- Historial cronológico del Cliente -->
+    @if (esCliente()) {
+      @if (historialAgrupado().length) {
+        <div class="historial">
+          @for (grupo of historialAgrupado(); track grupo.fecha) {
+            <div class="grupo-fecha">
+              <h2 class="fecha-titulo">{{ grupo.fecha | date: "EEEE d 'de' MMMM, yyyy" }}</h2>
+
+              <div class="linea-tiempo">
+                @for (cita of grupo.citas; track cita.id) {
+                  <mat-card class="cita-card" [attr.data-estado]="cita.estado">
+                    <mat-card-content>
+                      <div class="cita-top">
+                        <div>
+                          <span class="cita-label">Profesional</span>
+                          <h3>{{ cita.profesional }}</h3>
+                        </div>
+
+                        <span class="badge-estado" [attr.data-estado]="cita.estado">
+                          {{ estadoTexto(cita.estado) }}
+                        </span>
+                      </div>
+
+                      <div class="cita-meta">
+                        <div>
+                          <mat-icon>spa</mat-icon>
+                          <span>{{ cita.servicio }}</span>
+                        </div>
+                        <div>
+                          <mat-icon>schedule</mat-icon>
+                          <span>{{ cita.hora }}</span>
+                        </div>
+                      </div>
+
+                      @if (yaResenada(cita)) {
+                        <div class="chip-resenada">
+                          <mat-icon>star</mat-icon>
+                          Ya calificaste esta cita
+                        </div>
+                      }
+
+                      <div class="cita-acciones">
+                        <a mat-stroked-button [routerLink]="['/citas', cita.id]">
+                          Ver detalle
+                        </a>
+
+                        @if (puedeCancelar(cita)) {
+                          <button mat-stroked-button color="warn" (click)="abrirCancelar(cita)">
+                            <mat-icon>close</mat-icon>
+                            Cancelar
+                          </button>
+                        }
+
+                        @if (puedeResenar(cita)) {
+                          <button mat-flat-button color="primary" (click)="abrirResena(cita)">
+                            <mat-icon>star_rate</mat-icon>
+                            Dejar reseña
+                          </button>
+                        }
+                      </div>
+                    </mat-card-content>
+                  </mat-card>
+                }
               </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <mat-card class="empty-results">
+          <mat-card-content>
+            <mat-icon>event_busy</mat-icon>
+            <h2>Aún no tienes citas</h2>
+            <p>Cuando reserves una cita, aparecerá aquí tu historial cronológico.</p>
+          </mat-card-content>
+        </mat-card>
+      }
+    }
 
-              <div class="cita-meta">
-                <div>
-                  <mat-icon>spa</mat-icon>
-                  <span>{{ cita.servicio }}</span>
-                </div>
-                <div>
-                  <mat-icon>event</mat-icon>
-                  <span>{{ cita.fecha | date:'dd/MM/yyyy' }}</span>
-                </div>
-                <div>
-                  <mat-icon>schedule</mat-icon>
-                  <span>{{ cita.hora }}</span>
-                </div>
-              </div>
+    <!-- Vista simple para el Profesional (su vista principal es la Agenda Visual) -->
+    @if (esProfesional()) {
+      @if (citasVisibles().length) {
+        <div class="citas-grid">
+          @for (cita of citasVisibles(); track cita.id) {
+            <mat-card class="cita-card">
+              <mat-card-content>
+                <div class="cita-top">
+                  <div>
+                    <span class="cita-label">Cliente</span>
+                    <h3>{{ cita.cliente }}</h3>
+                  </div>
 
-              <a mat-stroked-button color="primary" [routerLink]="['/citas', cita.id]">
-                Ver detalle
-              </a>
-            </mat-card-content>
-          </mat-card>
-        }
-      </div>
-    } @else {
-      <mat-card class="empty-results">
-        <mat-card-content>
-          <mat-icon>event_busy</mat-icon>
-          <h2>No hay citas para este usuario</h2>
-          <p>Si cambias de usuario desde el encabezado, aquí aparecerán solo sus citas.</p>
-        </mat-card-content>
-      </mat-card>
+                  <span class="badge-estado" [attr.data-estado]="cita.estado">
+                    {{ estadoTexto(cita.estado) }}
+                  </span>
+                </div>
+
+                <div class="cita-meta">
+                  <div>
+                    <mat-icon>spa</mat-icon>
+                    <span>{{ cita.servicio }}</span>
+                  </div>
+                  <div>
+                    <mat-icon>event</mat-icon>
+                    <span>{{ cita.fecha | date: 'dd/MM/yyyy' }}</span>
+                  </div>
+                  <div>
+                    <mat-icon>schedule</mat-icon>
+                    <span>{{ cita.hora }}</span>
+                  </div>
+                </div>
+
+                <a mat-stroked-button color="primary" [routerLink]="['/citas', cita.id]">
+                  Ver detalle
+                </a>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      } @else {
+        <mat-card class="empty-results">
+          <mat-card-content>
+            <mat-icon>event_busy</mat-icon>
+            <h2>No hay citas para este usuario</h2>
+            <p>Usa la Agenda Visual para gestionar tus citas.</p>
+          </mat-card-content>
+        </mat-card>
+      }
     }
   }
-</div><p>citas works!</p>
+</div>

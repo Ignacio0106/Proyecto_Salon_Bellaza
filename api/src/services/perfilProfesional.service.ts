@@ -96,6 +96,14 @@ export const PerfilProfesionalService = {
             })),
         };
     },
+    async obtenerPorUsuarioId(usuarioId: number) {
+        return prisma.perfilProfesional.findUnique({
+            where: { usuarioId },
+            select: {
+                id: true,
+            },
+        });
+    },
     async alternarEstado(id: number) {
         const profesionalActual = await prisma.perfilProfesional.findUnique({
             where: { id },

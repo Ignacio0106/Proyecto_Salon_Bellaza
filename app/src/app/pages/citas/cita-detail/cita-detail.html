@@ -30,7 +30,7 @@
         <div class="header-grid">
           <div>
             <span class="detail-label">Estado</span>
-            <h2 class="detail-title">{{ cita.estado }}</h2>
+            <h2 class="detail-title">{{ estadoTexto(cita.estado) }}</h2>
           </div>
           <span class="chip chip-estado">#{{ cita.id }}</span>
         </div>
@@ -98,6 +98,33 @@
           <div class="text-section">
             <h3>Comentario profesional</h3>
             <p>{{ cita.comentarioProfesional }}</p>
+          </div>
+        }
+
+        @if (cita.resena) {
+          <div class="text-section review-section">
+            <div class="review-header">
+              <h3>Tu reseña</h3>
+              <div class="review-stars" aria-label="Puntuación">
+                @for (valor of estrellas; track valor) {
+                  <mat-icon class="review-star"
+                    [class.filled]="valor <= cita.resena.puntuacion">
+                    {{ valor <= cita.resena.puntuacion ? 'star' : 'star_border' }}
+                  </mat-icon>
+                }
+              </div>
+            </div>
+            <p class="review-comment">{{ cita.resena.comentario }}</p>
+            <small class="review-date">
+              {{ cita.resena.fechaResena | date: "d 'de' MMMM, yyyy" }}
+            </small>
+          </div>
+        }
+
+        @if (cita.motivoCancelacion) {
+          <div class="text-section cancel-reason">
+            <h3>Motivo de cancelación</h3>
+            <p>{{ cita.motivoCancelacion }}</p>
           </div>
         }
       </mat-card-content>

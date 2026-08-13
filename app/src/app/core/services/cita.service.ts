@@ -36,4 +36,13 @@ export class CitaService {
       data
     );
   }
+
+  // Cancela una cita propia (Cliente) indicando un motivo obligatorio.
+  cancelar(id: number, motivo: string) {
+    return this.http.put<ApiResponse<Cita>>(
+      `${this.apiUrl}/${id}/cancelar`,
+      { motivo }
+    );
+  }
 }
+

@@ -50,13 +50,27 @@ export const updateCitaSchema = createCitaSchema.partial();
 
 // Schema específico para actualizar el estado de una cita
 // (usado por la Agenda Visual al cambiar el estado desde el detalle de la cita)
+// NOTA: se corrige para que coincida con el enum real de Prisma (schema.prisma).
+// Antes decía "CONFIRMADA", valor que no existe en la base de datos y provocaba
+// que Prisma rechazara la actualización de estado.
 export const updateEstadoCitaSchema = z.object({
     estado: z.enum(
-        ["PENDIENTE", "CONFIRMADA", "COMPLETADA", "CANCELADA"],
+        ["PENDIENTE", "ACEPTADA", "RECHAZADA", "COMPLETADA", "CANCELADA"],
         { message: "El estado indicado no es válido" }
     ),
+});
+
+// Schema para la cancelación de una cita desde "Mis Citas" del Cliente.
+// El motivo es obligatorio tanto para Pendiente como para Aceptada.
+export const cancelarCitaSchema = z.object({
+    motivo: z
+        .string()
+        .trim()
+        .min(5, "El motivo debe tener al menos 5 caracteres")
+        .max(300, "El motivo no puede superar 300 caracteres"),
 });
 
 export type CreateCitaDto = z.infer<typeof createCitaSchema>;
 export type UpdateCitaDto = z.infer<typeof updateCitaSchema>;
 export type UpdateEstadoCitaDto = z.infer<typeof updateEstadoCitaSchema>;
+export type CancelarCitaDto = z.infer<typeof cancelarCitaSchema>;

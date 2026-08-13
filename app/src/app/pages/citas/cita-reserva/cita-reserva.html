@@ -29,12 +29,7 @@
 					<div class="form-grid">
 						<mat-form-field appearance="outline">
 							<mat-label>Cliente</mat-label>
-							<mat-select name="clienteId" [(ngModel)]="form.clienteId" required>
-								<mat-option [value]="null">Selecciona un cliente</mat-option>
-								@for (cliente of clientes(); track cliente.id) {
-									<mat-option [value]="cliente.id">{{ cliente.nombreCompleto ?? (cliente.nombre + ' ' + cliente.apellidos) }}</mat-option>
-								}
-							</mat-select>
+							<input matInput [value]="clienteActual()" readonly />
 							@if (citaForm.submitted && !form.clienteId) {
 								<mat-error>El cliente es obligatorio</mat-error>
 							}

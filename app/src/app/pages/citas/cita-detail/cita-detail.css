@@ -80,6 +80,55 @@
   line-height: 1.6;
 }
 
+/* --- Reseña --- */
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.review-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.review-star {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  color: #d1d5db;
+}
+
+.review-star.filled {
+  color: #f59e0b;
+}
+
+.review-comment {
+  font-style: italic;
+}
+
+.review-date {
+  display: block;
+  margin-top: 0.5rem;
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
+/* --- Motivo de cancelación --- */
+.cancel-reason {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.cancel-reason h3 {
+  color: #b91c1c;
+}
+
 @media (max-width: 768px) {
   .info-grid {
     grid-template-columns: 1fr;

@@ -1,0 +1,193 @@
+<mat-card class="form-card">
+  <mat-card-content>
+
+    @if (loading()) {
+      <div class="state-box">
+        <mat-spinner diameter="45"></mat-spinner>
+        <p>Cargando información...</p>
+      </div>
+    } @else {
+      <form class="form" (submit)="$event.preventDefault(); submit()">
+
+        <!-- 🔹 INFORMACIÓN GENERAL -->
+        <section class="form-section">
+          <div class="section-title">
+            <span class="section-icon"><mat-icon>spa</mat-icon></span>
+            <div>
+              <h3>Información general</h3>
+              <p>Nombre y categoría del servicio</p>
+            </div>
+          </div>
+
+          <div class="form-grid two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre del servicio</mat-label>
+              <input matInput [formField]="servicioForm.nombre" />
+              @if (servicioForm.nombre().touched() && servicioForm.nombre().invalid()) {
+                <mat-error>{{ servicioForm.nombre().errors()[0].message }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Categoría</mat-label>
+              <mat-select [formField]="servicioForm.categoriaId">
+                @for (categoria of categorias(); track categoria.id) {
+                  <mat-option [value]="categoria.id">{{ categoria.nombre }}</mat-option>
+                }
+              </mat-select>
+              @if (servicioForm.categoriaId().touched() && servicioForm.categoriaId().invalid()) {
+                <mat-error>{{ servicioForm.categoriaId().errors()[0].message }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </section>
+
+        <!-- 🔹 PRECIO Y DURACIÓN -->
+        <section class="form-section">
+          <div class="section-title">
+            <span class="section-icon"><mat-icon>payments</mat-icon></span>
+            <div>
+              <h3>Precio y duración</h3>
+              <p>Costo del servicio y tiempo estimado</p>
+            </div>
+          </div>
+
+          <div class="form-grid three-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Precio</mat-label>
+              <span matPrefix>₡&nbsp;</span>
+              <input matInput type="number" [formField]="servicioForm.precio" />
+              @if (servicioForm.precio().touched() && servicioForm.precio().invalid()) {
+                <mat-error>{{ servicioForm.precio().errors()[0].message }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Duración (minutos)</mat-label>
+              <input matInput type="number" [formField]="servicioForm.duracionEstimada" />
+              @if (servicioForm.duracionEstimada().touched() && servicioForm.duracionEstimada().invalid()) {
+                <mat-error>{{ servicioForm.duracionEstimada().errors()[0].message }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Modalidad</mat-label>
+              <mat-select [formField]="servicioForm.modalidad">
+                <mat-option value="PRESENCIAL">Presencial</mat-option>
+                <mat-option value="VIRTUAL">Virtual</mat-option>
+                <mat-option value="MIXTA">Mixta</mat-option>
+              </mat-select>
+              @if (servicioForm.modalidad().touched() && servicioForm.modalidad().invalid()) {
+                <mat-error>{{ servicioForm.modalidad().errors()[0].message }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </section>
+
+        <!-- 🔹 PROFESIONAL Y ESTADO -->
+        <section class="form-section">
+          <div class="section-title">
+            <span class="section-icon"><mat-icon>badge</mat-icon></span>
+            <div>
+              <h3>Profesional y estado</h3>
+              <p>Encargado de brindar el servicio</p>
+            </div>
+          </div>
+
+          <div class="form-grid two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Profesional</mat-label>
+              <mat-select [formField]="servicioForm.profesionalId">
+                @for (profesional of profesionalesVisibles(); track profesional.id) {
+                  <mat-option [value]="profesional.id">
+                    {{ profesional.nombre }} - {{ profesional.tituloProfesional }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (servicioForm.profesionalId().touched() && servicioForm.profesionalId().invalid()) {
+                <mat-error>{{ servicioForm.profesionalId().errors()[0].message }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Estado</mat-label>
+              <mat-select [formField]="servicioForm.estado">
+                <mat-option value="ACTIVO">Activo</mat-option>
+                <mat-option value="INACTIVO">Inactivo</mat-option>
+              </mat-select>
+              @if (servicioForm.estado().touched() && servicioForm.estado().invalid()) {
+                <mat-error>{{ servicioForm.estado().errors()[0].message }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </section>
+
+        <!-- 🔹 DESCRIPCIÓN Y ESPECIALIDADES -->
+        <section class="form-section">
+          <div class="section-title">
+            <span class="section-icon"><mat-icon>description</mat-icon></span>
+            <div>
+              <h3>Descripción y especialidades</h3>
+              <p>Detalle del servicio y áreas que cubre</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Descripción</mat-label>
+              <textarea matInput rows="4" [formField]="servicioForm.descripcion"></textarea>
+              @if (servicioForm.descripcion().touched() && servicioForm.descripcion().invalid()) {
+                <mat-error>{{ servicioForm.descripcion().errors()[0].message }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Especialidades</mat-label>
+              <mat-select
+                name="especialidadIds"
+                [ngModel]="especialidadIds()"
+                (ngModelChange)="especialidadIds.set($event)"
+                multiple
+                required
+                #especialidadesModel="ngModel">
+                @for (especialidad of especialidades(); track especialidad.id) {
+                  <mat-option [value]="especialidad.id">{{ especialidad.nombre }}</mat-option>
+                }
+              </mat-select>
+              @if (especialidadesModel.touched && especialidadesModel.invalid) {
+                <mat-error>Selecciona al menos una especialidad</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </section>
+
+        <!-- 🔹 ACCIONES -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" class="btn-cancelar" (click)="cancelar.emit()">
+            <mat-icon>close</mat-icon>
+            Cancelar
+          </button>
+
+          <button mat-flat-button type="submit"
+            class="btn-submit"
+            [color]="isEdit() ? 'accent' : 'primary'"
+            [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+              <span class="button-content">
+                <mat-icon>hourglass_top</mat-icon>
+                <span>Guardando...</span>
+              </span>
+            } @else {
+              <span class="button-content">
+                <mat-icon>{{ isEdit() ? 'edit' : 'add' }}</mat-icon>
+                <span>{{ isEdit() ? 'Actualizar' : 'Registrar' }}</span>
+              </span>
+            }
+          </button>
+        </div>
+
+      </form>
+    }
+
+  </mat-card-content>
+</mat-card>

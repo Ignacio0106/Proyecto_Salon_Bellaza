@@ -10,6 +10,7 @@
       <p>Gestión de profesionales registrados en el sistema.</p>
     </div>
 
+    @if (puedeCrearProfesional()) {
     <button
       mat-raised-button
       color="primary"
@@ -18,6 +19,7 @@
       <mat-icon>add</mat-icon>
       Nuevo Profesional
     </button>
+    }
   </div>
 
   <!-- FILTROS -->
@@ -111,6 +113,7 @@
             </td>
 
             <td class="text-center">
+              @if (puedeGestionarProfesional(profesional)) {
               <button mat-icon-button
                       class="btn-toggle-estado"
                       [class.btn-desactivar]="profesional.disponible"
@@ -119,14 +122,17 @@
                       [title]="profesional.disponible ? 'Marcar como no disponible' : 'Marcar como disponible'">
                 <mat-icon>{{ profesional.disponible ? 'toggle_on' : 'toggle_off' }}</mat-icon>
               </button>
+              }
 
               <a mat-icon-button class="btn-ver" matTooltip="Ver detalle" [routerLink]="['/profesionales', profesional.id]">
                 <mat-icon>visibility</mat-icon>
               </a>
 
+              @if (puedeGestionarProfesional(profesional)) {
               <a mat-icon-button class="btn-editar" matTooltip="Editar" [routerLink]="['/profesionales/edit', profesional.id]">
                 <mat-icon>edit</mat-icon>
               </a>
+              }
             </td>
           </tr>
           }

@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express'; 
 import { StatusCodes } from "http-status-codes"; 
 import { ResenaService } from '../services/resena.service';
+import { sendSuccess } from '../utils/http-response';
+import { AuthRequest } from '../middlewares/auth.middleware';
 
  
 export class ResenaController { 
@@ -33,6 +35,24 @@ export class ResenaController {
 
         return response.status(StatusCodes.OK).json({ success: true, data: categoria });
 
+    };
+
+    // Registra la reseña de una cita completada (acción del Cliente
+    // desde "Mis Citas"). El clienteId se toma del token, no del body.
+    crear = async (request: AuthRequest, response: Response, next: NextFunction) => {
+        const usuario = request.user;
+        if (!usuario) {
+            return response.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: "Usuario no autenticado" });
+        }
+
+        const resena = await ResenaService.crear(request.body, usuario.id);
+
+        return sendSuccess(
+            response,
+            resena,
+            "Reseña registrada correctamente",
+            StatusCodes.CREATED
+        );
     };
 }
 

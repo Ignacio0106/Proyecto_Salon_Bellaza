@@ -2,7 +2,8 @@ import { Router } from "express";
 import { CitaController } from "../controllers/cita.controller";
 import { asyncHandler } from "../middlewares/async-handler.middleware";
 import { validateRequest } from "../middlewares/validate-request.middleware";
-import { createCitaSchema, updateCitaSchema, updateEstadoCitaSchema } from "../dtos/cita.dto";
+import { createCitaSchema, updateCitaSchema, updateEstadoCitaSchema, cancelarCitaSchema } from "../dtos/cita.dto";
+import { authenticateToken } from "../middlewares/auth.middleware";
 
  
 export class CitaRoutes { 
@@ -15,6 +16,7 @@ export class CitaRoutes {
                 router.get('/:id', asyncHandler(controller.obtenerPorId)) 
                 router.post( 
                     "/", 
+                    authenticateToken,
                     validateRequest(createCitaSchema), 
                     asyncHandler(controller.crear) 
                 ) 
@@ -23,7 +25,13 @@ export class CitaRoutes {
             validateRequest(updateEstadoCitaSchema),
             asyncHandler(controller.editar)
         )
-                
+                router.put(
+                    '/:id/cancelar',
+                    authenticateToken,
+                    validateRequest(cancelarCitaSchema),
+                    asyncHandler(controller.cancelar)
+                )
+
                 return router;
     } 
 } 

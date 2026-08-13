@@ -1,17 +1,151 @@
-/* Copia el contenido de login.css tal cual — mismas clases: .auth-page, .auth-card,
-   .auth-avatar, .auth-form, .server-error, .submit-button */
-.server-success {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 8px;
-  background: #e8f5e9;
-  color: #1b5e20;
+:host {
+    display: block;
+    min-height: calc(100dvh - 64px);
 }
-.auth-link {
-  text-align: center;
-  display: block;
-  margin-top: 8px;
-  font-size: 0.9rem;
+
+.auth-page {
+    min-height: inherit;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: linear-gradient(135deg, var(--mat-sys-surface-container-low),
+            var(--mat-sys-primary-container));
+}
+
+.auth-card {
+    width: min(100%, 480px);
+    border-radius: 24px;
+    padding: 12px;
+}
+
+.auth-avatar {
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+}
+
+.auth-form {
+    display: grid;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+/* Nombre y apellidos en una fila en pantallas anchas */
+.name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.submit-button {
+    min-height: 48px;
+    border-radius: 14px;
+}
+
+.server-error {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 12px;
+    border-radius: 12px;
+    color: var(--mat-sys-error);
+    background: var(--mat-sys-error-container);
+}
+
+.server-success {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 20px;
+    border-radius: 12px;
+    color: #1b5e20;
+    background: #e8f5e9;
+}
+
+.server-success mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.server-success strong,
+.server-success span {
+    display: block;
+}
+
+.server-success span {
+    font-size: 0.9rem;
+    margin-top: 2px;
+}
+
+mat-spinner {
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.auth-switch {
+    margin-top: 4px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.auth-switch a {
+    color: var(--mat-sys-primary);
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 4px;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* --- Indicador de fortaleza de la contraseña --- */
+.password-strength {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: -6px;
+}
+
+.strength-bars {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+}
+
+.strength-bar {
+    height: 6px;
+    flex: 1;
+    border-radius: 4px;
+    background: var(--mat-sys-surface-container-highest);
+    transition: background 0.2s;
+}
+
+.password-strength[data-level="weak"] .strength-bar.filled {
+    background: var(--mat-sys-error);
+}
+
+.password-strength[data-level="medium"] .strength-bar.filled {
+    background: #f59e0b;
+}
+
+.password-strength[data-level="strong"] .strength-bar.filled {
+    background: #22c55e;
+}
+
+.strength-text {
+    font-size: 0.78rem;
+    color: var(--mat-sys-on-surface-variant);
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .name-row {
+        grid-template-columns: 1fr;
+    }
 }

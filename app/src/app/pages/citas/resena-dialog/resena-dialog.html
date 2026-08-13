@@ -1,0 +1,61 @@
+<h2 mat-dialog-title>
+  <mat-icon>star_rate</mat-icon>
+  Calificar cita
+</h2>
+
+<mat-dialog-content class="contenido">
+  <p class="texto-info">
+    ¿Cómo estuvo tu servicio de <strong>{{ data.servicio }}</strong> con <strong>{{ data.profesional }}</strong>?
+  </p>
+
+  <div class="estrellas" role="radiogroup" aria-label="Puntuación">
+    @for (valor of estrellas; track valor) {
+      <button
+        type="button"
+        class="estrella-btn"
+        [class.activa]="valor <= puntuacion()"
+        [attr.aria-checked]="valor === puntuacion()"
+        role="radio"
+        (click)="seleccionarPuntuacion(valor)">
+        <mat-icon>{{ valor <= puntuacion() ? 'star' : 'star_border' }}</mat-icon>
+      </button>
+    }
+  </div>
+  @if (puntuacion() === 0) {
+    <p class="hint-estrellas">Selecciona una puntuación de 1 a 5.</p>
+  }
+
+  <mat-form-field appearance="outline" class="campo-comentario">
+    <mat-label>Comentario</mat-label>
+    <textarea
+      matInput
+      rows="3"
+      [formControl]="comentario"
+      placeholder="Cuéntanos tu experiencia"
+      maxlength="500">
+    </textarea>
+    @if (comentario.touched && comentario.hasError('required')) {
+      <mat-error>El comentario es obligatorio.</mat-error>
+    }
+    @if (comentario.touched && comentario.hasError('minlength')) {
+      <mat-error>Escribe al menos 5 caracteres.</mat-error>
+    }
+    <mat-hint align="end">{{ comentario.value.length }}/500</mat-hint>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button [disabled]="guardando()" (click)="cerrar()">Cancelar</button>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="guardando()"
+    (click)="confirmar()">
+    @if (guardando()) {
+      <mat-spinner diameter="18"></mat-spinner>
+    } @else {
+      <mat-icon>send</mat-icon>
+    }
+    Enviar reseña
+  </button>
+</mat-dialog-actions>

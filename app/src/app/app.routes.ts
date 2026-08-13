@@ -40,6 +40,21 @@ export const routes: Routes = [
                 component: ServiciosList,
                 title: 'Catálogo de Servicios'
             },
+            // Profesional solo puede acceder
+            {
+                path: 'servicios/create',
+                component: ServicioCreatePage,
+                title: 'Crear Servicio',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.PROFESIONAL, Role.ADMIN] }
+            },
+            {
+                path: 'servicios/edit/:id',
+                component: ServicioEditPage,
+                title: 'Editar Servicio',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.PROFESIONAL, Role.ADMIN] }
+            },
             {
                 path: 'servicios/:id',
                 component: ServicioDetail,
@@ -49,26 +64,6 @@ export const routes: Routes = [
                 path: 'profesionales',
                 component: ProfesionalesList,
                 title: 'Nuestros Profesionales'
-            },
-            {
-                path: 'profesionales/:id',
-                component: ProfesionalDetail,
-                title: 'Detalle del Profesional'
-            },
-            // Profesional solo puede acceder
-            {
-                path: 'servicios/create',
-                component: ServicioCreatePage,
-                title: 'Crear Servicio',
-                canActivate: [authGuard, roleGuard],
-                data: { roles: [Role.PROFESIONAL] }
-            },
-            {
-                path: 'servicios/edit/:id',
-                component: ServicioEditPage,
-                title: 'Editar Servicio',
-                canActivate: [authGuard, roleGuard],
-                data: { roles: [Role.PROFESIONAL] }
             },
             // Admin solo puede acceder
             {
@@ -84,6 +79,11 @@ export const routes: Routes = [
                 title: 'Editar Profesional',
                 canActivate: [authGuard, roleGuard],
                 data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
+            },
+            {
+                path: 'profesionales/:id',
+                component: ProfesionalDetail,
+                title: 'Detalle del Profesional'
             },
             // Cliente y Profesional pueden acceder
             {

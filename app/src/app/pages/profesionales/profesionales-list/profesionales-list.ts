@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 
 import { ProfesionalService } from '../../../core/services/profesional.service';
 import { Profesional } from '../../../core/models/profesional.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { Role } from '../../../core/models/role.model';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -40,6 +42,7 @@ import { NotificationService } from '../../../core/services/notification.service
 export class ProfesionalesList {
   private readonly profesionalService = inject(ProfesionalService);
   private readonly notificationService = inject(NotificationService);
+  private readonly authService = inject(AuthService);
 
   profesionales = signal<Profesional[]>([]);
   search = signal('');
@@ -137,6 +140,26 @@ export class ProfesionalesList {
     this.search.set('');
     this.modalidad.set('');
     this.disponibilidad.set('');
+  }
+
+  esAdmin = computed(() => this.authService.esAdmin());
+
+  perfilProfesionalId = computed(
+    () => this.authService.usuario()?.perfilProfesionalId ?? null
+  );
+
+  puedeCrearProfesional = computed(
+    () => this.authService.rol() === Role.ADMIN
+  );
+
+  puedeGestionarProfesional(profesional: Profesional): boolean {
+    if (this.esAdmin()) {
+      return true;
+    }
+    if (this.authService.rol() !== Role.PROFESIONAL) {
+      return false;
+    }
+    return profesional.id === this.perfilProfesionalId();
   }
 
   toggleDisponibilidad(profesional: Profesional): void {

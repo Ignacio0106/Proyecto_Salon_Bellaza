@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { CitaDetalle } from '../../../core/models/cita.model';
 import { CitaService } from '../../../core/services/cita.service';
+import { ESTADO_CITA_LABEL } from '../../../core/models/estado-cita.model';
 
 @Component({
   selector: 'app-cita-detail',
@@ -28,9 +29,18 @@ export class CitaDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly citaService = inject(CitaService);
 
+  readonly estadoLabel = ESTADO_CITA_LABEL;
+  readonly estrellas = [1, 2, 3, 4, 5];
+
   cita = signal<CitaDetalle | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
+
+  // Devuelve la etiqueta en español de un estado; acepta 'string' con
+  // seguridad de tipos porque CitaDetalle.estado es 'EstadoCita | string'.
+  estadoTexto(estado: string): string {
+    return (this.estadoLabel as Record<string, string>)[estado] ?? estado;
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));

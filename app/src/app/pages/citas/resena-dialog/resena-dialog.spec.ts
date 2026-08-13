@@ -1,19 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
 
-import { Home } from './home';
+import { ResenaDialog } from './resena-dialog';
 
-describe('Home', () => {
-  let component: Home;
-  let fixture: ComponentFixture<Home>;
+describe('ResenaDialog', () => {
+  let component: ResenaDialog;
+  let fixture: ComponentFixture<ResenaDialog>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Home],
-      providers: [provideHttpClient()],
+      imports: [ResenaDialog],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Home);
+    fixture = TestBed.createComponent(ResenaDialog);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

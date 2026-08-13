@@ -114,12 +114,22 @@ async alternarEstado(id: number) {
     async perfil(usuarioId: number) {
     const usuario = await prisma.usuario.findUnique({
         where: { id: usuarioId },
+        include: {
+            perfilProfesional: {
+                select: {
+                    id: true,
+                },
+            },
+        },
     });
     if (!usuario) {
         throw new Error("El usuario no existe");
     }
-    const { contrasena, ...usuarioSinPassword } = usuario;
+    const { contrasena, perfilProfesional, ...usuarioSinPassword } = usuario;
 
-    return usuarioSinPassword;
+    return {
+        ...usuarioSinPassword,
+        perfilProfesionalId: perfilProfesional?.id ?? null,
+    };
 },
 };

@@ -1,19 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
 
-import { Home } from './home';
+import { CancelarCitaDialog } from './cancelar-cita-dialog';
 
-describe('Home', () => {
-  let component: Home;
-  let fixture: ComponentFixture<Home>;
+describe('CancelarCitaDialog', () => {
+  let component: CancelarCitaDialog;
+  let fixture: ComponentFixture<CancelarCitaDialog>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Home],
-      providers: [provideHttpClient()],
+      imports: [CancelarCitaDialog],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Home);
+    fixture = TestBed.createComponent(CancelarCitaDialog);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -1,0 +1,50 @@
+.contenido {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 320px;
+}
+
+.texto-info {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.estrellas {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.estrella-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.15rem;
+  color: #cbd5e1;
+  display: flex;
+}
+
+.estrella-btn.activa {
+  color: #f59e0b;
+}
+
+.estrella-btn mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.hint-estrellas {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #ef4444;
+}
+
+.campo-comentario {
+  width: 100%;
+}
+
+mat-dialog-actions button mat-spinner {
+  display: inline-block;
+  margin-right: 0.4rem;
+}

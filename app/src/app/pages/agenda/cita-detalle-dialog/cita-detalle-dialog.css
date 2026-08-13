@@ -96,9 +96,14 @@ h2[mat-dialog-title] {
   color: #c62828;
 }
 
-.badge-estado[data-estado='CONFIRMADA'] {
+.badge-estado[data-estado='ACEPTADA'] {
   background-color: #e3f2fd;
   color: #1565c0;
+}
+
+.badge-estado[data-estado='RECHAZADA'] {
+  background-color: #f3e5f5;
+  color: #6a1b9a;
 }
 
 button[mat-flat-button] mat-spinner {

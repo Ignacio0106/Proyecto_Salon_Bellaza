@@ -1,86 +1,261 @@
-<header class="hero-section">
-  <div class="hero-content">
-    <span class="badge">Bienvenido a Naturale Beauty</span>
-    <h1>Reserva con los mejores profesionales de la estética</h1>
-    <p>
-      Tu marketplace de confianza para descubrir estilistas independientes,
-      consultar especialidades y gestionar tus citas de belleza en un solo lugar.
-    </p>
-    <div class="hero-actions">
-      <button mat-raised-button color="primary" routerLink="/servicios">
-        <mat-icon>search</mat-icon> Explorar Servicios
-      </button>
-      <button mat-stroked-button routerLink="/registro">
-        Crear una Cuenta
-      </button>
-    </div>
-  </div>
-  <div class="hero-decorative-box">
-    <!-- Espacio para una ilustración limpia o branding mediante CSS -->
-    <mat-icon class="big-spa-icon">spa</mat-icon>
-  </div>
-</header>
+<div class="home-container">
 
-<!-- SECCIÓN DE CATEGORÍAS (Estructura Visual Organizada) -->
-<section class="section-container">
-  <div class="section-header">
-    <h2>Categorías de Servicio Disponibles</h2>
-    <p>Explora la variedad de especialidades que nuestros profesionales ofrecen.</p>
+  <!-- ESTADO DE CARGA -->
+  @if (loading()) {
+  <div class="state-block">
+    <mat-spinner diameter="42"></mat-spinner>
+    <p>Cargando contenido...</p>
   </div>
+  }
 
-  <div class="grid-layout">
-    <mat-card class="category-card" *ngFor="let cat of categoriasDestacadas">
-      <mat-card-header>
-        <div mat-card-avatar class="category-icon-avatar">
-          <mat-icon>{{ cat.icono }}</mat-icon>
-        </div>
-        <mat-card-title>{{ cat.nombre }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>{{ cat.desc }}</p>
-      </mat-card-content>
-      <mat-card-actions align="end">
-        <button mat-button color="tertiary" [routerLink]="['/servicios']" [queryParams]="{categoria: cat.nombre}">
-          Ver más <mat-icon>arrow_forward</mat-icon>
+  <!-- ERROR -->
+  @else if (error()) {
+  <div class="state-block error">
+    <mat-icon>cloud_off</mat-icon>
+    <p>{{ error() }}</p>
+    <button mat-stroked-button color="primary" (click)="cargarDatos()">
+      <mat-icon>refresh</mat-icon> Reintentar
+    </button>
+  </div>
+  }
+
+  <!-- CONTENIDO -->
+  @else {
+
+  <!-- HERO -->
+  <header class="hero-section">
+    <div class="hero-content">
+      <span class="badge">Bienvenido a Naturale Beauty</span>
+      <h1>Reserva con los mejores profesionales de la estética</h1>
+      <p>
+        Tu marketplace de confianza para descubrir estilistas independientes,
+        consultar especialidades y gestionar tus citas de belleza en un solo lugar.
+      </p>
+      <div class="hero-actions">
+        <button mat-raised-button color="primary" routerLink="/servicios">
+          <mat-icon>search</mat-icon> Explorar Servicios
         </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-</section>
+        <button mat-stroked-button routerLink="/registro">
+          Crear una Cuenta
+        </button>
+      </div>
+    </div>
+    <div class="hero-decorative-box">
+      <div class="deco-circle deco-circle-1"></div>
+      <div class="deco-circle deco-circle-2"></div>
+      <mat-icon class="big-spa-icon">spa</mat-icon>
+    </div>
+  </header>
 
-<!-- SECCIÓN DE ROLES / ACCESOS DIRECTOS -->
-<section class="section-container roles-section">
-  <div class="section-header">
-    <h2>¿Cómo funciona nuestro Marketplace?</h2>
-    <p>Soluciones personalizadas para cada miembro de nuestra comunidad.</p>
-  </div>
+  <!-- ESTADÍSTICAS -->
+  <section class="stats-strip" aria-label="Estadísticas del sitio">
+    <div class="stat-item">
+      <mat-icon class="stat-icon">spa</mat-icon>
+      <div class="stat-text">
+        <strong>{{ totalServicios() }}</strong>
+        <span>Servicios</span>
+      </div>
+    </div>
+    <div class="stat-item">
+      <mat-icon class="stat-icon">content_cut</mat-icon>
+      <div class="stat-text">
+        <strong>{{ totalProfesionales() }}</strong>
+        <span>Profesionales</span>
+      </div>
+    </div>
+    <div class="stat-item">
+      <mat-icon class="stat-icon">category</mat-icon>
+      <div class="stat-text">
+        <strong>{{ totalCategorias() }}</strong>
+        <span>Categorías</span>
+      </div>
+    </div>
+    <div class="stat-item">
+      <mat-icon class="stat-icon">star</mat-icon>
+      <div class="stat-text">
+        <strong>100%</strong>
+        <span>Reseñas reales</span>
+      </div>
+    </div>
+  </section>
 
-  <div class="grid-layout roles-grid">
-    <!-- Acceso Cliente -->
-    <div class="role-box">
-      <mat-icon class="role-icon">person</mat-icon>
-      <h3>Para Clientes</h3>
-      <p>Encuentra a tu estilista ideal, filtra por precio o modalidad, reserva tu cita en segundos y califica tu
-        experiencia de forma transparente.</p>
-      <button mat-button routerLink="/servicios">Buscar Estilista</button>
+  <!-- SERVICIOS DESTACADOS -->
+  @if (serviciosDestacados().length) {
+  <section class="section-container">
+    <div class="section-header">
+      <h2>Servicios Destacados</h2>
+      <p>Los servicios más solicitados por nuestra comunidad.</p>
     </div>
 
-    <!-- Acceso Profesional -->
-    <div class="role-box central-role">
-      <mat-icon class="role-icon">content_cut</mat-icon>
-      <h3>Para Profesionales</h3>
-      <p>Gestiona tu perfil público, define tus tarifas, controla tu agenda visual y expande tu cartera de clientes de
-        manera autónoma.</p>
-      <button mat-button routerLink="/unirse">Ofrecer Servicios</button>
+    <div class="grid-layout">
+      @for (servicio of serviciosDestacados(); track servicio.id) {
+      <mat-card class="service-card">
+        <div class="service-media">
+          @if (servicio.imagen) {
+          <img [src]="getImagenServicio(servicio.imagen)" [alt]="servicio.nombre" />
+          }
+          @else {
+          <mat-icon>auto_awesome</mat-icon>
+          }
+          <span class="media-chip" [class.chip-virtual]="servicio.modalidad === 'VIRTUAL'"
+            [class.chip-presencial]="servicio.modalidad === 'PRESENCIAL'">
+            {{ servicio.modalidad === 'VIRTUAL' ? 'Virtual' : servicio.modalidad === 'PRESENCIAL' ? 'Presencial' : servicio.modalidad }}
+          </span>
+        </div>
+
+        <mat-card-content>
+          <span class="category-chip">{{ servicio.categoria }}</span>
+          <h3>{{ servicio.nombre }}</h3>
+          <p class="service-desc">{{ servicio.descripcion }}</p>
+
+          <div class="service-meta">
+            <span class="service-price">₡{{ formatearPrecio(servicio.precio) }}</span>
+            <span class="service-professional">
+              <mat-icon>person</mat-icon> {{ servicio.profesional }}
+            </span>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+          <a mat-button color="primary" [routerLink]="['/servicios', servicio.id]">
+            Ver detalle <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </mat-card-actions>
+      </mat-card>
+      }
     </div>
 
-    <!-- Seguridad / Transparencia -->
-    <div class="role-box">
-      <mat-icon class="role-icon">verified_user</mat-icon>
-      <h3>Garantía de Calidad</h3>
-      <p>Monitoreado bajo un estricto control administrativo para asegurar transiciones de citas transparentes y reseñas
-        100% reales.</p>
-      <button mat-button routerLink="/nosotros">Saber Más</button>
+    <div class="section-footer">
+      <a mat-raised-button color="primary" routerLink="/servicios">
+        Ver todos los servicios <mat-icon>arrow_forward</mat-icon>
+      </a>
     </div>
-  </div>
-</section>
+  </section>
+  }
+
+  <!-- CATEGORÍAS -->
+  <section class="section-container">
+    <div class="section-header">
+      <h2>Categorías de Servicio</h2>
+      <p>Explora la variedad de especialidades que nuestros profesionales ofrecen.</p>
+    </div>
+
+    <div class="grid-layout categories-grid">
+      @for (categoria of categoriasConConteo(); track categoria.id) {
+      <mat-card class="category-card" [routerLink]="['/servicios']">
+        <mat-card-header>
+          <div mat-card-avatar class="category-icon-avatar">
+            <mat-icon>{{ categoria.icono }}</mat-icon>
+          </div>
+          <mat-card-title>{{ categoria.nombre }}</mat-card-title>
+          <mat-card-subtitle>
+            {{ categoria.totalServicios }} {{ categoria.totalServicios === 1 ? 'servicio' : 'servicios' }}
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-actions align="end">
+          <button mat-button color="tertiary">
+            Explorar <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+      }
+
+      @empty {
+      <p class="empty-note">Aún no hay categorías disponibles.</p>
+      }
+    </div>
+  </section>
+
+  <!-- PROFESIONALES DESTACADOS -->
+  @if (profesionalesDestacados().length) {
+  <section class="section-container">
+    <div class="section-header">
+      <h2>Profesionales Destacados</h2>
+      <p>Conoce a los expertos que hacen posible tu próxima experiencia.</p>
+    </div>
+
+    <div class="grid-layout professionals-grid">
+      @for (profesional of profesionalesDestacados(); track profesional.id) {
+      <mat-card class="professional-card">
+        <div class="professional-avatar">
+          @if (profesional.imagenPerfil) {
+          <img [src]="getImagenPerfil(profesional.imagenPerfil)" [alt]="profesional.nombre" />
+          }
+          @else {
+          <span>{{ iniciales(profesional.nombre) }}</span>
+          }
+        </div>
+        <h3>{{ profesional.nombre }}</h3>
+        <p class="professional-title">{{ profesional.tituloProfesional }}</p>
+        <div class="professional-tags">
+          <span class="chip">
+            <mat-icon>work_history</mat-icon>
+            {{ profesional.aniosExperiencia }} años
+          </span>
+          <span class="chip" [class.chip-virtual]="profesional.modalidad === 'VIRTUAL'"
+            [class.chip-presencial]="profesional.modalidad === 'PRESENCIAL'">
+            <mat-icon>place</mat-icon>
+            {{ profesional.modalidad }}
+          </span>
+        </div>
+        <a mat-stroked-button color="primary" [routerLink]="['/profesionales', profesional.id]">
+          Ver perfil
+        </a>
+      </mat-card>
+      }
+    </div>
+  </section>
+  }
+
+  <!-- CÓMO FUNCIONA -->
+  <section class="section-container roles-section">
+    <div class="section-header">
+      <h2>¿Cómo funciona nuestro Marketplace?</h2>
+      <p>Soluciones personalizadas para cada miembro de nuestra comunidad.</p>
+    </div>
+
+    <div class="grid-layout roles-grid">
+      <div class="role-box">
+        <mat-icon class="role-icon">person</mat-icon>
+        <h3>Para Clientes</h3>
+        <p>Encuentra a tu estilista ideal, filtra por precio o modalidad, reserva tu cita en segundos y califica tu
+          experiencia de forma transparente.</p>
+        <button mat-button routerLink="/servicios">Buscar Estilista</button>
+      </div>
+
+      <div class="role-box central-role">
+        <mat-icon class="role-icon">content_cut</mat-icon>
+        <h3>Para Profesionales</h3>
+        <p>Gestiona tu perfil público, define tus tarifas, controla tu agenda visual y expande tu cartera de clientes de
+          manera autónoma.</p>
+        <button mat-button routerLink="/registro">Ofrecer Servicios</button>
+      </div>
+
+      <div class="role-box">
+        <mat-icon class="role-icon">verified_user</mat-icon>
+        <h3>Garantía de Calidad</h3>
+        <p>Monitoreado bajo un estricto control administrativo para asegurar transiciones de citas transparentes y
+          reseñas 100% reales.</p>
+        <button mat-button routerLink="/profesionales">Saber Más</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>¿Lista para tu próxima cita?</h2>
+      <p>Reserva en minutos y descubre el talento de nuestros profesionales.</p>
+      <div class="cta-actions">
+        <button mat-raised-button color="primary" routerLink="/servicios">
+          <mat-icon>event_available</mat-icon> Agendar Cita
+        </button>
+        <button mat-stroked-button routerLink="/registro">
+          <mat-icon>person_add</mat-icon> Crear Cuenta
+        </button>
+      </div>
+    </div>
+  </section>
+
+  }
+</div>

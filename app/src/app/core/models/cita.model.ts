@@ -32,6 +32,8 @@ export interface CitaListado {
     hora: string;
     horaFin?: string;
     estado: EstadoCita | string;
+    // Indica si el Cliente ya registró una reseña para esta cita
+    tieneResena?: boolean;
 }
 
 export interface CitaDetalle {
@@ -60,6 +62,14 @@ export interface CitaDetalle {
     comentarioProfesional?: string | null;
     estado: EstadoCita | string;
     montoCalculado: number | string;
+    // Reseña registrada por el Cliente para esta cita (si existe)
+    resena?: {
+        puntuacion: number;
+        comentario: string;
+        fechaResena: string;
+    } | null;
+    // Motivo con el que se canceló la cita (si fue cancelada)
+    motivoCancelacion?: string | null;
 }
 
 export interface CitaCreateDto {

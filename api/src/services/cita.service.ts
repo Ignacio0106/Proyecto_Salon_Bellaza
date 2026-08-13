@@ -2,6 +2,12 @@ import { prisma } from "../config/prisma";
 import { CreateCitaDto } from "../dtos/cita.dto";
 import { AppError } from "../utils/app-error";
 
+// Roles que pueden solicitar la cancelación de una cita
+type RolSolicitante = "ADMINISTRADOR" | "PROFESIONAL" | "CLIENTE";
+
+// Estados desde los que una cita se puede cancelar (regla de cancelación)
+const ESTADOS_CANCELABLES = ["PENDIENTE", "ACEPTADA"] as const;
+
 export const CitaService = {
     async listar() {
         const citas = await prisma.cita.findMany({
@@ -38,6 +44,12 @@ export const CitaService = {
                         nombre: true,
                     },
                 },
+
+                // Se usa para saber si el cliente ya calificó una cita
+                // completada (historial cronológico del Cliente)
+                resena: {
+                    select: { id: true },
+                },
             },
         });
 
@@ -54,6 +66,7 @@ export const CitaService = {
             // el rango del evento en la Agenda Visual (FullCalendar)
             horaFin: cita.horaFinalizacion,
             estado: cita.estado,
+            tieneResena: cita.resena !== null,
         }));
     },
 
@@ -101,6 +114,27 @@ export const CitaService = {
                         precio: true,
                     },
                 },
+
+                // Reseña que el Cliente dejó para esta cita (se muestra
+                // en el detalle junto con la puntuación y el comentario)
+                resena: {
+                    select: {
+                        id: true,
+                        puntuacion: true,
+                        comentario: true,
+                        fechaResena: true,
+                    },
+                },
+
+                // Historial de estados para recuperar el motivo de la
+                // cancelación (se registra al cancelar la cita)
+                historialEstados: {
+                    select: {
+                        estadoNuevo: true,
+                        comentario: true,
+                    },
+                    orderBy: { id: 'desc' },
+                },
             },
         });
 
@@ -142,6 +176,19 @@ export const CitaService = {
             estado: cita.estado,
 
             montoCalculado: cita.montoCalculado,
+
+            resena: cita.resena
+                ? {
+                    puntuacion: cita.resena.puntuacion,
+                    comentario: cita.resena.comentario,
+                    fechaResena: cita.resena.fechaResena,
+                }
+                : null,
+
+            motivoCancelacion:
+                cita.historialEstados.find(
+                    (h) => h.estadoNuevo === "CANCELADA"
+                )?.comentario ?? null,
         };
     },
 
@@ -293,5 +340,73 @@ export const CitaService = {
 
         return citaActualizada;
     },
-};
 
+    // Cancela una cita desde "Mis Citas" del Cliente (o desde la gestión
+    // del Profesional). Aplica la regla de cancelación, exige motivo y
+    // deja registro en el historial de estados.
+    async cancelar(
+        id: number,
+        motivo: string,
+        solicitante: { id: number; rol: RolSolicitante }
+    ) {
+        const cita = await prisma.cita.findUnique({
+            where: { id },
+            include: {
+                profesional: { select: { usuarioId: true } },
+            },
+        });
+
+        if (!cita) {
+            throw AppError.notFound("La cita indicada no existe");
+        }
+
+        const esDuenoCliente = cita.clienteId === solicitante.id;
+        const esDuenoProfesional =
+            cita.profesional.usuarioId === solicitante.id;
+        const esAdmin = solicitante.rol === "ADMINISTRADOR";
+
+        if (!esDuenoCliente && !esDuenoProfesional && !esAdmin) {
+            throw AppError.forbidden(
+                "No tiene permisos para cancelar esta cita"
+            );
+        }
+
+        if (
+            !ESTADOS_CANCELABLES.includes(
+                cita.estado as (typeof ESTADOS_CANCELABLES)[number]
+            )
+        ) {
+            throw AppError.conflict(
+                "Solo se pueden cancelar citas en estado Pendiente o Aceptada"
+            );
+        }
+
+        const estadoAnterior = cita.estado;
+
+        const citaCancelada = await prisma.$transaction(async (tx) => {
+            const actualizada = await tx.cita.update({
+                where: { id },
+                data: { estado: "CANCELADA" },
+                include: {
+                    cliente: true,
+                    profesional: { include: { usuario: true } },
+                    servicio: true,
+                },
+            });
+
+            await tx.historialEstadoCita.create({
+                data: {
+                    citaId: id,
+                    estadoAnterior,
+                    estadoNuevo: "CANCELADA",
+                    comentario: motivo,
+                    realizadoPorId: solicitante.id,
+                },
+            });
+
+            return actualizada;
+        });
+
+        return citaCancelada;
+    },
+};

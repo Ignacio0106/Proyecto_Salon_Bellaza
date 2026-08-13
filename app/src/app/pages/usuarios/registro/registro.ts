@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { form, FormField, required, email, minLength } from '@angular/forms/signals';
 import { finalize } from 'rxjs';
@@ -36,6 +36,39 @@ export class Registro {
   readonly errorServidor = signal<string | null>(null);
   readonly exito = signal(false);
 
+  // Confirmación de contraseña (no se envía al API: solo valida la coincidencia)
+  readonly confirmacion = signal('');
+  readonly confirmacionTocada = signal(false);
+
+  readonly coincidenPasswords = computed(
+    () => this.model().contrasena === this.confirmacion()
+  );
+
+  readonly confirmacionInvalida = computed(
+    () => this.confirmacionTocada() && this.model().contrasena !== this.confirmacion()
+  );
+
+  // Fuerza de la contraseña: 0 a 5 puntos según largo y variedad
+  readonly fuerzaPassword = computed(() => {
+    const valor = this.model().contrasena;
+    if (!valor) return 0;
+
+    let puntos = 0;
+    if (valor.length >= 6) puntos += 1;
+    if (valor.length >= 8) puntos += 1;
+    if (/[A-Z]/.test(valor)) puntos += 1;
+    if (/[0-9]/.test(valor)) puntos += 1;
+    if (/[^A-Za-z0-9]/.test(valor)) puntos += 1;
+    return puntos;
+  });
+
+  readonly fuerzaLabel = computed<{ clase: string; texto: string }>(() => {
+    const puntos = this.fuerzaPassword();
+    if (puntos <= 2) return { clase: 'weak', texto: 'Débil' };
+    if (puntos <= 4) return { clase: 'medium', texto: 'Media' };
+    return { clase: 'strong', texto: 'Fuerte' };
+  });
+
   readonly model = signal<RegisterRequest>({
     nombre: '',
     apellidos: '',
@@ -60,6 +93,9 @@ export class Registro {
   submit(): void {
     this.submitted.set(true);
     if (this.registroForm().invalid()) return;
+
+    this.confirmacionTocada.set(true);
+    if (this.model().contrasena !== this.confirmacion()) return;
 
     this.enviando.set(true);
     this.errorServidor.set(null);

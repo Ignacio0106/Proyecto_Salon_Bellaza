@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
@@ -16,11 +16,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { CitaCreateDto } from '../../../core/models/cita.model';
 import { Profesional } from '../../../core/models/profesional.model';
 import { Servicio, ServicioDetalle } from '../../../core/models/servicio.model';
-import { Usuario } from '../../../core/models/usuario.model';
 import { CitaService } from '../../../core/services/cita.service';
 import { ProfesionalService } from '../../../core/services/profesional.service';
 import { ServiciosService } from '../../../core/services/servicios.service';
-import { UsuariosService } from '../../../core/services/usuarios.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -61,11 +60,10 @@ export class CitaReserva {
   private readonly citaService = inject(CitaService);
   private readonly profesionalService = inject(ProfesionalService);
   private readonly serviciosService = inject(ServiciosService);
-  private readonly usuariosService = inject(UsuariosService);
+  private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
 
-  clientes = signal<Usuario[]>([]);
   profesionales = signal<Profesional[]>([]);
   servicios = signal<Servicio[]>([]);
 
@@ -75,8 +73,19 @@ export class CitaReserva {
 
   servicioDetalle = signal<ServicioDetalle | null>(null);
 
+  clienteActual = computed(() => {
+    const usuario = this.authService.usuario();
+    if (!usuario) {
+      return '';
+    }
+    return (
+      usuario.nombreCompleto ??
+      `${usuario.nombre ?? ''} ${usuario.apellidos ?? ''}`.trim()
+    );
+  });
+
   form: CitaFormValue = {
-    clienteId: null,
+    clienteId: this.authService.usuario()?.id ?? null,
     profesionalId: null,
     servicioId: null,
     fechaCitaSolicitada: '',
@@ -118,12 +127,10 @@ export class CitaReserva {
     this.error.set(null);
 
     forkJoin({
-      clientes: this.usuariosService.listar(),
       profesionales: this.profesionalService.listar(),
       servicios: this.serviciosService.listar(),
     }).subscribe({
       next: (response) => {
-        this.clientes.set((response.clientes.data ?? []).filter((usuario) => usuario.rol === 'CLIENTE'));
         this.profesionales.set(response.profesionales.data ?? []);
         this.servicios.set(response.servicios.data ?? []);
         this.loading.set(false);

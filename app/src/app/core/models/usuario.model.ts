@@ -11,6 +11,7 @@ export interface Usuario {
     telefono?: string | null;
     rol: Role;
     estado: 'ACTIVO' | 'INACTIVO';
+    perfilProfesionalId?: number | null;
     
     // Relaciones según el rol
     citasCliente?: Cita[];

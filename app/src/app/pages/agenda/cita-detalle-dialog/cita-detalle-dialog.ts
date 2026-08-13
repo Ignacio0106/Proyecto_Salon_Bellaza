@@ -51,7 +51,7 @@ export class CitaDetalleDialog {
 
   estadoSeleccionado = signal<EstadoCita | ''>('');
 
-  readonly estados: EstadoCita[] = ['PENDIENTE', 'CONFIRMADA', 'COMPLETADA', 'CANCELADA'];
+  readonly estados: EstadoCita[] = ['PENDIENTE', 'ACEPTADA', 'RECHAZADA', 'COMPLETADA', 'CANCELADA'];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: CitaDetalleDialogData) {
     this.cargar();

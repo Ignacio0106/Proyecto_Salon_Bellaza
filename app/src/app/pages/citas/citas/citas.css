@@ -76,6 +76,107 @@
   background: #eef2ff;
   color: #4338ca;
   white-space: nowrap;
+  height: fit-content;
+}
+
+.badge-estado[data-estado='PENDIENTE'] {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.badge-estado[data-estado='ACEPTADA'] {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.badge-estado[data-estado='RECHAZADA'] {
+  background: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.badge-estado[data-estado='COMPLETADA'] {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge-estado[data-estado='CANCELADA'] {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Historial cronológico (Cliente) */
+.historial {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.grupo-fecha {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.fecha-titulo {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: capitalize;
+  padding-left: 0.75rem;
+  border-left: 4px solid #4338ca;
+}
+
+.linea-tiempo {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.linea-tiempo .cita-card {
+  border-left: 4px solid #cbd5e1;
+}
+
+.linea-tiempo .cita-card[data-estado='PENDIENTE'] {
+  border-left-color: #fb8c00;
+}
+
+.linea-tiempo .cita-card[data-estado='ACEPTADA'] {
+  border-left-color: #1e88e5;
+}
+
+.linea-tiempo .cita-card[data-estado='RECHAZADA'] {
+  border-left-color: #8e24aa;
+}
+
+.linea-tiempo .cita-card[data-estado='COMPLETADA'] {
+  border-left-color: #43a047;
+}
+
+.linea-tiempo .cita-card[data-estado='CANCELADA'] {
+  border-left-color: #e53935;
+}
+
+.chip-resenada {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: #b45309;
+  background: #fffbeb;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  margin-bottom: 0.85rem;
+  width: fit-content;
+}
+
+.chip-resenada mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.cita-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 @media (max-width: 900px) {

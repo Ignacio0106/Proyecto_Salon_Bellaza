@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 
 import { ServiciosService } from '../../../core/services/servicios.service';
 import { Servicio } from '../../../core/models/servicio.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { Role } from '../../../core/models/role.model';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -37,6 +39,7 @@ export class ServiciosList {
 
   private readonly serviciosService = inject(ServiciosService);
   private readonly notificationService = inject(NotificationService);
+  private readonly authService = inject(AuthService);
 
 
   servicios = signal<Servicio[]>([]);
@@ -158,6 +161,26 @@ estadosDisponibles = computed<string[]>(() => {
     this.modalidad.set('');
     this.precioDesde.set(null);
     this.precioHasta.set(null);
+  }
+
+  esAdmin = computed(() => this.authService.esAdmin());
+
+  perfilProfesionalId = computed(
+    () => this.authService.usuario()?.perfilProfesionalId ?? null
+  );
+
+  puedeCrearServicio = computed(
+    () => this.authService.rol() === Role.PROFESIONAL
+  );
+
+  puedeGestionarServicio(servicio: Servicio): boolean {
+    if (this.esAdmin()) {
+      return true;
+    }
+    if (this.authService.rol() !== Role.PROFESIONAL) {
+      return false;
+    }
+    return servicio.idProfesional === this.perfilProfesionalId();
   }
 
   toggleEstado(servicio: Servicio): void {
