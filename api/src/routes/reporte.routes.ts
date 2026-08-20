@@ -10,7 +10,11 @@ export class ReporteRoutes {
 
         // localhost:3000/reporte/citas-por-profesional
         router.get("/citas-por-profesional", authenticateToken, asyncHandler(controller.citasPorProfesional))
-        
+        // localhost:3000/reporte/citas-por-estado
+        router.get('/citas-por-estado', authenticateToken, asyncHandler(controller.citasPorEstado));
+        // localhost:3000/reporte/calificaciones
+        router.get('/calificaciones', authenticateToken, asyncHandler(controller.calificaciones));
+
         return router;
     }
 }

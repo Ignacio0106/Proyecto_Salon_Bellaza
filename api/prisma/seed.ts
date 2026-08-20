@@ -619,16 +619,79 @@ async function main() {
     });
 
     // 11. Reseñas
+await prisma.resena.create({
+    data: {
+        citaId: cita1.id,
+        clienteId: userMap["ana@correo.com"],
+        profesionalId: maria.id,
+        puntuacion: 5,
+        comentario: "Excelente atención y resultado.",
+    },
+});
+
+// Obtener todas las citas completadas
+const citasCompletadas = await prisma.cita.findMany({
+    where: {
+        estado: EstadoCita.COMPLETADA,
+    },
+    include: {
+        servicio: true,
+    },
+});
+
+// Diferentes calificaciones para poder probar el reporte
+const calificaciones = [
+    {
+        puntuacion: 5,
+        comentario: "Excelente servicio, muy profesional y recomendado.",
+    },
+    {
+        puntuacion: 5,
+        comentario: "Me encantó el resultado. Volvería sin duda.",
+    },
+    {
+        puntuacion: 4,
+        comentario: "Muy buen servicio y excelente atención.",
+    },
+    {
+        puntuacion: 4,
+        comentario: "El resultado fue muy bueno y la atención excelente.",
+    },
+    {
+        puntuacion: 3,
+        comentario: "Buen servicio, aunque hay algunos aspectos que podrían mejorar.",
+    },
+    {
+        puntuacion: 2,
+        comentario: "El servicio estuvo regular y esperaba un mejor resultado.",
+    },
+    {
+        puntuacion: 1,
+        comentario: "El resultado no cumplió con mis expectativas.",
+    },
+];
+
+// Crear reseñas para las citas completadas que todavía no tengan una
+for (let i = 0; i < citasCompletadas.length; i++) {
+    const cita = citasCompletadas[i];
+
+    // Evitar duplicar la reseña de cita1
+    if (cita.id === cita1.id) {
+        continue;
+    }
+
+    const calificacion = calificaciones[(i - 1) % calificaciones.length];
+
     await prisma.resena.create({
         data: {
-            citaId: cita1.id,
-            clienteId: userMap["ana@correo.com"],
-            profesionalId: maria.id,
-            puntuacion: 5,
-            comentario:
-                "Excelente atención y resultado.",
+            citaId: cita.id,
+            clienteId: cita.clienteId,
+            profesionalId: cita.profesionalId,
+            puntuacion: calificacion.puntuacion,
+            comentario: calificacion.comentario,
         },
     });
+}
 
     console.log("Seed completado con éxito.");
 }

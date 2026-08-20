@@ -1,0 +1,172 @@
+<div class="reportes-container">
+  <div class="custom-card">
+
+    <!-- HEADER -->
+    <div class="card-header">
+      <div class="header-left">
+        <div class="header-icon">
+          <mat-icon>star_half</mat-icon>
+        </div>
+        <div class="header-text">
+          <h2>Reporte de Calificaciones</h2>
+          <p>Promedio, reseñas y destacados por profesional</p>
+        </div>
+      </div>
+
+      <button mat-raised-button color="primary" class="btn-exportar"
+        [disabled]="loading() || !datos().length"
+        (click)="exportarPdf()">
+        <mat-icon>download</mat-icon>
+        Exportar a PDF
+      </button>
+    </div>
+
+    <!-- ── FILTROS ── -->
+    @if (!loading() && !error() && datos().length) {
+      <div class="barra-filtros">
+
+        <mat-form-field appearance="outline" class="filtro-campo filtro-busqueda">
+          <mat-label>Buscar profesional</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [value]="filtroBusqueda()"
+                 (input)="onBusqueda($event)"
+                 placeholder="Nombre o título…">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filtro-campo filtro-estado">
+          <mat-label>Estado</mat-label>
+          <mat-select [value]="filtroEstado()"
+                      (selectionChange)="filtroEstado.set($event.value)">
+            <mat-option value="">Todos</mat-option>
+            <mat-option value="mejor">Mejor calificado</mat-option>
+            <mat-option value="normal">Normal</mat-option>
+            <mat-option value="bajo">Baja calificación</mat-option>
+            <mat-option value="sinResenas">Sin reseñas</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+          <button mat-stroked-button class="btn-limpiar" (click)="limpiarFiltros()">
+            <mat-icon>filter_alt_off</mat-icon>
+            Limpiar
+          </button>
+
+      </div>
+    }
+
+    <!-- CARGA -->
+    @if (loading()) {
+      <div class="estado-carga">
+        <mat-spinner diameter="34"></mat-spinner>
+        <p>Cargando reporte...</p>
+      </div>
+    }
+
+    <!-- ERROR -->
+    @if (!loading() && error()) {
+      <mat-card class="tarjeta-error">
+        <mat-card-content>
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ error() }}</span>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- REPORTE -->
+    @if (!loading() && !error()) {
+      <mat-card class="tarjeta-reporte">
+        <mat-card-content>
+
+          @if (!datos().length) {
+            <div class="sin-datos">
+              <mat-icon>inbox</mat-icon>
+              <span>Aún no hay calificaciones registradas para mostrar.</span>
+            </div>
+          } @else if (!datosFiltrados().length) {
+            <div class="sin-datos">
+              <mat-icon>search_off</mat-icon>
+              <span>Ningún profesional coincide con los filtros aplicados.</span>
+            </div>
+          } @else {
+            <table mat-table [dataSource]="datosFiltrados()" class="tabla-reporte">
+
+              <!-- Profesional -->
+              <ng-container matColumnDef="profesional">
+                <th mat-header-cell *matHeaderCellDef>Profesional</th>
+                <td mat-cell *matCellDef="let fila">
+                  <strong>{{ fila.profesional }}</strong>
+                  <div class="subtexto-titulo">{{ fila.tituloProfesional || 'No especificado' }}</div>
+                </td>
+              </ng-container>
+
+              <!-- Promedio -->
+              <ng-container matColumnDef="promedioCalificacion">
+                <th mat-header-cell *matHeaderCellDef class="col-centrada">Promedio</th>
+                <td mat-cell *matCellDef="let fila" class="col-centrada">
+                  @if (fila.cantidadResenas === 0) {
+                    <span class="badge-sin-resenas">Sin reseñas</span>
+                  } @else {
+                    <span class="badge-estrella" [class]="getClaseBadge(fila)">
+                      <mat-icon class="icono-estrella">star</mat-icon>
+                      {{ fila.promedioCalificacion | number:'1.1-1' }}
+                    </span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Cantidad reseñas -->
+              <ng-container matColumnDef="cantidadResenas">
+                <th mat-header-cell *matHeaderCellDef class="col-centrada">Reseñas</th>
+                <td mat-cell *matCellDef="let fila" class="col-centrada">
+                  <span class="badge-count">{{ fila.cantidadResenas }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Destacado -->
+              <ng-container matColumnDef="destacado">
+                <th mat-header-cell *matHeaderCellDef class="col-centrada">Estado</th>
+                <td mat-cell *matCellDef="let fila" class="col-centrada">
+                  @if (fila.cantidadResenas === 0) {
+                    <span class="badge-estado badge-neutral">
+                      <mat-icon>remove_circle_outline</mat-icon>Sin datos
+                    </span>
+                  } @else if (esMejorCalificado(fila)) {
+                    <span class="badge-estado badge-mejor">
+                      <mat-icon>emoji_events</mat-icon>Mejor calificado
+                    </span>
+                  } @else if (esBajaCalificacion(fila)) {
+                    <span class="badge-estado badge-bajo">
+                      <mat-icon>warning_amber</mat-icon>Baja calificación
+                    </span>
+                  } @else {
+                    <span class="badge-estado badge-ok">
+                      <mat-icon>check_circle_outline</mat-icon>Normal
+                    </span>
+                  }
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                  [class.fila-destacada]="esMejorCalificado(row)"
+                  [class.fila-baja]="esBajaCalificacion(row)"></tr>
+            </table>
+
+            <!-- PIE -->
+            <div class="pie-tabla">
+              <div class="leyenda">
+                <span class="leyenda-item"><span class="dot dot-mejor"></span>Mejor calificado</span>
+                <span class="leyenda-item"><span class="dot dot-bajo"></span>Baja calificación (&lt; {{ UMBRAL_BAJO }}★)</span>
+                <span class="leyenda-item"><span class="dot dot-neutral"></span>Sin reseñas</span>
+              </div>
+              <div class="total-reporte">
+                Total de reseñas: <strong>{{ totalResenas() }}</strong>
+              </div>
+            </div>
+          }
+
+        </mat-card-content>
+      </mat-card>
+    }
+
+  </div>
+</div>

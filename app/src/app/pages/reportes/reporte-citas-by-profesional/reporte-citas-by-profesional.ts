@@ -5,11 +5,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { ReporteService } from '../../../core/services/reporte.service';
-import { PdfReporteService } from '../../../core/services/pdf-reporte.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
-import { CitasPorProfesional } from '../../../core/models/reporte.model';
+import { ReporteCitasPorProfesional } from '../../../core/models/reporte.model';
 import { Role } from '../../../core/models/role.model';
+import { PdfCitasByProfesionalService } from '../../../core/services/pdf-citasByProfesional.service';
 
 @Component({
   selector: 'app-reporte-citas-by-profesional',
@@ -25,10 +25,10 @@ import { Role } from '../../../core/models/role.model';
 })
 export class ReporteCitasByProfesional {
   private readonly reporteService = inject(ReporteService);
-  private readonly pdfReporteService = inject(PdfReporteService);
+  private readonly pdfcitasByProfesionalService = inject(PdfCitasByProfesionalService);
   private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
-  datos = signal<CitasPorProfesional[]>([]);
+  datos = signal<ReporteCitasPorProfesional[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
 displayedColumns = [
@@ -74,7 +74,7 @@ displayedColumns = [
       ? `${usuario.nombre ?? ''} ${usuario.apellidos ?? ''}`.trim()
       : 'Usuario del sistema';
 
-    this.pdfReporteService.exportarCitasPorProfesional(this.datos(), generadoPor);
+    this.pdfcitasByProfesionalService.exportarCitasPorProfesional(this.datos(), generadoPor);
 
     this.notificationService.success(
       'El PDF del reporte se generó correctamente.',

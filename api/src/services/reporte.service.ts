@@ -2,7 +2,6 @@ import { prisma } from "../config/prisma";
 import { AppError } from "../utils/app-error";
 import { AuthTokenPayload } from "../middlewares/auth.middleware";
 
-// Los nombres de los estados deben coincidir con tu Enum de Prisma
 export const ReporteService = {
     /**
      * Reporte: cantidad de citas COMPLETADAS agrupadas por profesional.
@@ -121,5 +120,96 @@ export const ReporteService = {
                 porcentajeFinalizacion,
             },
         ];
+    },
+
+    async citasPorEstado() {
+        const [data] = await Promise.all([
+            prisma.cita.findMany({
+                select: {
+                    id: true,
+                    fechaCitaSolicitada: true,
+                    estado: true,
+                    montoCalculado: true,
+                    cliente: {
+                        select: {
+                            nombre: true,
+                            apellidos: true,
+                        },
+                    },
+                    profesional: {
+                        select: {
+                            usuario: {
+                                select: {
+                                    nombre: true,
+                                    apellidos: true,
+                                },
+                            },
+                        },
+                    },
+                    servicio: {
+                        select: {
+                            nombre: true,
+                            categoria: {
+                                select: {
+                                    nombre: true,
+                                },
+                            },
+                        },
+                    },
+                },
+                orderBy: { fechaCreacion: "desc" }
+            })
+        ])
+        return {
+            data
+        };
+    },
+
+    async calificaciones() {
+        const profesionales = await prisma.perfilProfesional.findMany({
+            select: {
+                id: true,
+                tituloProfesional: true,
+                usuario: {
+                    select: {
+                        nombre: true,
+                        apellidos: true,
+                    },
+                },
+            },
+        });
+
+        // Promedio y conteo de reseñas agrupadas por profesional
+        const resenas = await prisma.resena.groupBy({
+            by: ["profesionalId"],
+            _avg: { puntuacion: true },
+            _count: { _all: true },
+        });
+
+        const resenasPorProfesional = new Map(
+            resenas.map((r) => [
+                r.profesionalId,
+                {
+                    promedio: r._avg.puntuacion ?? 0,
+                    cantidad: r._count._all,
+                },
+            ])
+        );
+
+        const data = profesionales.map((profesional) => {
+            const stats = resenasPorProfesional.get(profesional.id);
+
+            return {
+                profesionalId: profesional.id,
+                profesional: `${profesional.usuario.nombre} ${profesional.usuario.apellidos}`,
+                tituloProfesional: profesional.tituloProfesional,
+                promedioCalificacion: stats
+                    ? Math.round(stats.promedio * 10) / 10  // redondea a 1 decimal
+                    : 0,
+                cantidadResenas: stats?.cantidad ?? 0,
+            };
+        });
+
+        return { data };
     },
 };

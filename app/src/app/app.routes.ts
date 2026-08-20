@@ -28,6 +28,8 @@ import { Perfil } from './pages/usuarios/usuarios-perfil/usuarios-perfil';
 import { Registro } from './pages/usuarios/registro/registro';
 import { ReporteCitasByProfesional } from './pages/reportes/reporte-citas-by-profesional/reporte-citas-by-profesional';
 import { AgendaVisual } from './pages/agenda/agenda-visual/agenda-visual';
+import { ReporteCitasByEstado } from './pages/reportes/reporte-citas-by-estado/reporte-citas-by-estado';
+import { ReporteCalificaciones } from './pages/reportes/reporte-calificaciones/reporte-calificaciones';
     
 export const routes: Routes = [
     {
@@ -174,8 +176,22 @@ export const routes: Routes = [
                 data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
             },
             {
+                path: 'reportes/citas',
+                component: ReporteCitasByEstado,
+                title: 'Reportes y Estadísticas de Citas',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
+            },
+            {
                 path: 'reportes/citasProfesional',
                 component: ReporteCitasByProfesional,
+                title: 'Reportes y Estadísticas',
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
+            },
+            {
+                path: 'reportes/calificaciones',
+                component: ReporteCalificaciones,
                 title: 'Reportes y Estadísticas',
                 canActivate: [authGuard, roleGuard],
                 data: { roles: [Role.ADMIN, Role.PROFESIONAL] }

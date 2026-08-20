@@ -25,4 +25,20 @@ export class ReporteController {
             next(error);
         }
     };
+
+    citasPorEstado = async (request: Request, response: Response, next: NextFunction) => {
+        const resultado = await ReporteService.citasPorEstado();
+        return response.status(StatusCodes.OK).json({
+            success: true,
+            data: resultado.data,
+        });
+    };
+
+    calificaciones = async (request: Request, response: Response, next: NextFunction) => {
+        const resultado = await ReporteService.calificaciones();
+        return response.status(StatusCodes.OK).json({
+            success: true,
+            data: resultado.data,
+        });
+    };
 }

@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-import { CitasPorProfesional } from '../models/reporte.model';
+import { ReporteCitasPorProfesional } from '../models/reporte.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class PdfReporteService {
+export class PdfCitasByProfesionalService {
   private readonly margen = 40;
 
   /**
@@ -15,7 +15,7 @@ export class PdfReporteService {
    * profesional, a partir de datos reales obtenidos del API.
    */
   exportarCitasPorProfesional(
-    datos: CitasPorProfesional[],
+    datos: ReporteCitasPorProfesional[],
     generadoPor: string
   ): void {
     const doc = new jsPDF({ unit: 'pt', format: 'letter' });

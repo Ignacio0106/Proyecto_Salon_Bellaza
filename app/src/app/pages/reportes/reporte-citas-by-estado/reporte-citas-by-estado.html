@@ -1,0 +1,241 @@
+<div class="reportes-container">
+  <div class="custom-card">
+
+    <!-- HEADER -->
+    <div class="card-header">
+      <div class="header-left">
+        <div class="header-icon">
+          <mat-icon>bar_chart</mat-icon>
+        </div>
+        <div class="header-text">
+          <h2>Reporte de Citas por Estado</h2>
+          <p>Totales, porcentajes y distribución de citas según su estado actual.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="barra-filtros" [formGroup]="filterForm">
+
+      <mat-form-field appearance="outline" class="filtro-campo filtro-fecha">
+        <mat-label>Desde</mat-label>
+        <mat-icon matPrefix>calendar_today</mat-icon>
+        <input matInput type="date" formControlName="fechaInicio" [max]="hoy">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filtro-campo filtro-fecha">
+        <mat-label>Hasta</mat-label>
+        <mat-icon matPrefix>calendar_today</mat-icon>
+        <input matInput type="date" formControlName="fechaFin" [max]="hoy">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filtro-campo filtro-select">
+        <mat-label>Profesional</mat-label>
+        <mat-select formControlName="profesionalNombre">
+          <mat-option value="">Todos</mat-option>
+          @for (p of profesionales; track p) {
+            <mat-option [value]="p">{{ p }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filtro-campo filtro-select">
+        <mat-label>Categoría</mat-label>
+        <mat-select formControlName="categoriaNombre">
+          <mat-option value="">Todas</mat-option>
+          @for (c of categorias; track c) {
+            <mat-option [value]="c">{{ c }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button class="btn-limpiar" (click)="limpiarFiltros()">
+        <mat-icon>filter_alt_off</mat-icon>
+        Limpiar
+      </button>
+    </div>
+
+    <!-- ALERTA FECHAS -->
+    @if (errorMessage) {
+      <div class="alerta-fecha">
+        <mat-icon>error_outline</mat-icon>
+        {{ errorMessage }}
+      </div>
+    }
+
+    <!-- CARGA -->
+    @if (loading) {
+      <div class="estado-carga">
+        <mat-spinner diameter="34"></mat-spinner>
+        <p>Cargando reporte...</p>
+      </div>
+    }
+
+    @if (!loading) {
+
+      <!-- TARJETAS DE RESUMEN -->
+      <div class="resumen-grid">
+
+        <div class="resumen-card resumen-total">
+          <span class="resumen-label">Total general</span>
+          <span class="resumen-valor">{{ totalGeneral }}</span>
+          <span class="resumen-porcentaje">₡{{ montoTotal | number:'1.0-0' }}</span>
+        </div>
+
+        <div class="resumen-card resumen-pendiente">
+          <span class="resumen-label">Pendiente</span>
+          <span class="resumen-valor">{{ totalesPorEstado.PENDIENTE }}</span>
+          <span class="resumen-porcentaje">{{ porcentajesPorEstado.PENDIENTE }}%</span>
+        </div>
+
+        <div class="resumen-card resumen-aceptada">
+          <span class="resumen-label">Aceptada</span>
+          <span class="resumen-valor">{{ totalesPorEstado.ACEPTADA }}</span>
+          <span class="resumen-porcentaje">{{ porcentajesPorEstado.ACEPTADA }}%</span>
+        </div>
+
+        <div class="resumen-card resumen-completada">
+          <span class="resumen-label">Completada</span>
+          <span class="resumen-valor">{{ totalesPorEstado.COMPLETADA }}</span>
+          <span class="resumen-porcentaje">{{ porcentajesPorEstado.COMPLETADA }}%</span>
+        </div>
+
+        <div class="resumen-card resumen-cancelada">
+          <span class="resumen-label">Cancelada</span>
+          <span class="resumen-valor">{{ totalesPorEstado.CANCELADA }}</span>
+          <span class="resumen-porcentaje">{{ porcentajesPorEstado.CANCELADA }}%</span>
+        </div>
+
+        <div class="resumen-card resumen-rechazada">
+          <span class="resumen-label">Rechazada</span>
+          <span class="resumen-valor">{{ totalesPorEstado.RECHAZADA }}</span>
+          <span class="resumen-porcentaje">{{ porcentajesPorEstado.RECHAZADA }}%</span>
+        </div>
+
+      </div>
+
+      <!-- GRÁFICOS -->
+      @if (totalGeneral > 0) {
+        <div class="graficos-grid">
+
+          <mat-card class="grafico-card">
+            <mat-card-content>
+              <p class="grafico-titulo">Distribución por Estado</p>
+              <apx-chart
+                [series]="donutChartOptions.series"
+                [chart]="donutChartOptions.chart"
+                [labels]="donutChartOptions.labels"
+                [colors]="donutChartOptions.colors"
+                [legend]="donutChartOptions.legend"
+                [dataLabels]="donutChartOptions.dataLabels"
+                [stroke]="donutChartOptions.stroke"
+                [tooltip]="donutChartOptions.tooltip"
+                [responsive]="donutChartOptions.responsive">
+              </apx-chart>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="grafico-card">
+            <mat-card-content>
+              <p class="grafico-titulo">Top 5 Profesionales</p>
+              <apx-chart
+                [series]="barChartOptions.series"
+                [chart]="barChartOptions.chart"
+                [xaxis]="barChartOptions.xaxis"
+                [yaxis]="barChartOptions.yaxis"
+                [colors]="barChartOptions.colors"
+                [plotOptions]="barChartOptions.plotOptions"
+                [dataLabels]="barChartOptions.dataLabels"
+                [grid]="barChartOptions.grid"
+                [tooltip]="barChartOptions.tooltip">
+              </apx-chart>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+      }
+
+      <!-- TABLA DETALLE -->
+      <mat-card class="tarjeta-reporte">
+        <mat-card-content>
+
+          @if (citasOriginales.length === 0) {
+            <div class="sin-datos">
+              <mat-icon>inbox</mat-icon>
+              <span>Aún no hay citas registradas para mostrar.</span>
+            </div>
+          } @else if (citasFiltradas.length === 0) {
+            <div class="sin-datos">
+              <mat-icon>search_off</mat-icon>
+              <span>Ninguna cita coincide con los filtros aplicados.</span>
+            </div>
+          } @else {
+            <table mat-table [dataSource]="citasFiltradas" class="tabla-reporte">
+
+              <!-- Fecha -->
+              <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                <td mat-cell *matCellDef="let fila">
+                  {{ fila.fechaCitaSolicitada | date:'dd/MM/yyyy' }}
+                </td>
+              </ng-container>
+
+              <!-- Cliente -->
+              <ng-container matColumnDef="cliente">
+                <th mat-header-cell *matHeaderCellDef>Cliente</th>
+                <td mat-cell *matCellDef="let fila">
+                  {{ fila.cliente?.nombre }} {{ fila.cliente?.apellidos }}
+                </td>
+              </ng-container>
+
+              <!-- Profesional -->
+              <ng-container matColumnDef="profesional">
+                <th mat-header-cell *matHeaderCellDef>Profesional</th>
+                <td mat-cell *matCellDef="let fila">
+                  {{ fila.profesional?.usuario?.nombre }} {{ fila.profesional?.usuario?.apellidos }}
+                </td>
+              </ng-container>
+
+              <!-- Servicio -->
+              <ng-container matColumnDef="servicio">
+                <th mat-header-cell *matHeaderCellDef>Servicio</th>
+                <td mat-cell *matCellDef="let fila">
+                  <strong>{{ fila.servicio?.nombre }}</strong>
+                  <div class="subtexto-titulo">{{ fila.servicio?.categoria?.nombre }}</div>
+                </td>
+              </ng-container>
+
+              <!-- Monto -->
+              <ng-container matColumnDef="monto">
+                <th mat-header-cell *matHeaderCellDef class="col-centrada">Monto</th>
+                <td mat-cell *matCellDef="let fila" class="col-centrada">
+                  ₡{{ fila.montoCalculado | number:'1.0-0' }}
+                </td>
+              </ng-container>
+
+              <!-- Estado -->
+              <ng-container matColumnDef="estado">
+                <th mat-header-cell *matHeaderCellDef class="col-centrada">Estado</th>
+                <td mat-cell *matCellDef="let fila" class="col-centrada">
+                  <span class="badge-estado" [ngClass]="fila.estado.toLowerCase()">
+                    {{ fila.estado | titlecase }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+
+            <div class="total-reporte">
+              Citas mostradas: <strong>{{ citasFiltradas.length }}</strong>
+            </div>
+          }
+
+        </mat-card-content>
+      </mat-card>
+
+    }
+
+  </div>
+</div>
