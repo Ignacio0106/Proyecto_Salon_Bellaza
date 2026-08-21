@@ -6,11 +6,6 @@
     @if (loading()) {
         <p>Cargando datos del formulario...</p>
     } @else {
-        @if (error()) {
-            <p class="error-message">
-                {{ error() }}
-            </p>
-        }
         <app-profesional-form
             [saving]="saving()"
             (guardar)="guardar($event)"

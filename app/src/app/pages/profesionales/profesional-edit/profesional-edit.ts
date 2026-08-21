@@ -4,6 +4,7 @@ import { ProfesionalService } from '../../../core/services/profesional.service';
 import { Profesional, ProfesionalCreateDto, ProfesionalUpdateDto } from '../../../core/models/profesional.model';
 import { forkJoin } from 'rxjs';
 import { ProfesionalForm } from "../../../shared/components/profesional-form/profesional-form";
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-profesional-edit',
@@ -16,6 +17,7 @@ export class ProfesionalEdit {
     private readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
     private readonly profesionalService = inject(ProfesionalService)
+    private readonly notificationService = inject(NotificationService)
 
     profesional = signal<Profesional | null>(null)
 
@@ -51,16 +53,17 @@ export class ProfesionalEdit {
     guardar(data: ProfesionalCreateDto | ProfesionalUpdateDto) {
         if (!this.id) return
         this.saving.set(true)
-        this.error.set(null)
-        console.log("Data: ", data)
         this.profesionalService
             .editar(this.id, data as ProfesionalUpdateDto)
             .subscribe({
                 next: () => {
                     this.router.navigate(['/profesionales'])
                 },
-                error: () => {
-                    this.error.set('No se pudo actualizar el profesional')
+                error: (err) => {
+                    this.notificationService.warning(
+                        err.error?.message || 'No se pudo actualizar el profesional',
+                        'Datos no válidos'
+                    )
                 },
                 complete: () => {
                     this.saving.set(false)

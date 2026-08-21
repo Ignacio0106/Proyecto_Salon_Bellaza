@@ -3,6 +3,7 @@ import { ProfesionalForm } from "../../../shared/components/profesional-form/pro
 import { Router } from "@angular/router"
 import { ProfesionalService } from "../../../core/services/profesional.service"
 import { ProfesionalCreateDto, ProfesionalUpdateDto } from "../../../core/models/profesional.model"
+import { NotificationService } from "../../../core/services/notification.service"
 
 @Component({
   selector: 'app-profesional-create',
@@ -13,22 +14,23 @@ import { ProfesionalCreateDto, ProfesionalUpdateDto } from "../../../core/models
 export class ProfesionalCreate {
   private readonly router = inject(Router)
   private readonly profesionalService = inject(ProfesionalService)
+  private readonly notificationService = inject(NotificationService)
 
   loading = signal(false)
   saving = signal(false)
-  error = signal<string | null>(null)
 
   guardar(data: ProfesionalCreateDto | ProfesionalUpdateDto) {
     this.saving.set(true)
-    this.error.set(null)
-        console.log("Data: ", data)
 
     this.profesionalService.crear(data as ProfesionalCreateDto).subscribe({
       next: () => {
         this.router.navigate(['/profesionales'])
       },
       error: (err) => {
-        this.error.set(err.error?.message || 'No se pudo registrar el perfil profesional')
+        this.notificationService.warning(
+          err.error?.message || 'No se pudo registrar el perfil profesional',
+          'Datos no válidos'
+        )
         this.saving.set(false)
       },
       complete: () => {

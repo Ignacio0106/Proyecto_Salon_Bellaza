@@ -93,6 +93,14 @@
   font-size: 0.9rem;
 }
 
+.error-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #b3261e;
+  font-weight: 500;
+}
+
 ::ng-deep .disponible-check .mdc-checkbox__background {
   border-color: #b1aaa1 !important; /* Primary 70 */
 }

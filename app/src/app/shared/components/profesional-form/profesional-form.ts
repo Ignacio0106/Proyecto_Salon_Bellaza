@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Especialidad } from "../../../core/models/especialidad.model";
 import { EspecialidadService } from "../../../core/services/especialidad.service";
+import { ProfesionalService } from "../../../core/services/profesional.service";
 
 @Component({
   selector: 'app-profesional-form',
@@ -37,6 +38,7 @@ import { EspecialidadService } from "../../../core/services/especialidad.service
 export class ProfesionalForm {
   private readonly imageService = inject(ImageService)
   private readonly especialidadService = inject(EspecialidadService)
+  private readonly profesionalService = inject(ProfesionalService)
 
   profesional = input<Profesional | null>(null)
   saving = input<boolean>(false)
@@ -49,6 +51,8 @@ export class ProfesionalForm {
   selectedImageFile = signal<File | null>(null)
   especialidades = signal<Especialidad[]>([])
   especialidadIds = signal<number[]>([])
+  correoDuplicado = signal(false)
+  verificandoCorreo = signal(false)
 
   profesionalModel = signal<ProfesionalFormModel>({
     nombre: '',
@@ -131,10 +135,17 @@ export class ProfesionalForm {
 
   isEdit = computed(() => this.profesional() !== null)
 
-  isSubmitting = computed(() => this.saving() || this.uploadingImage())
+  isSubmitting = computed(() => this.saving() || this.uploadingImage() || this.verificandoCorreo())
 
   constructor() {
     this.cargarEspecialidades()
+
+    effect(() => {
+      this.profesionalModel().correo
+      if (this.correoDuplicado()) {
+        this.correoDuplicado.set(false)
+      }
+    })
 
     effect(() => {
       const prof = this.profesional()
@@ -214,6 +225,38 @@ export class ProfesionalForm {
     this.marcarCamposComoTocados()
     if (this.formularioInvalido()) return
 
+    this.verificarCorreoDisponible()
+  }
+
+  private verificarCorreoDisponible() {
+    const correo = this.profesionalModel().correo.trim().toLowerCase()
+    const correoOriginal = this.profesional()?.correo?.trim().toLowerCase()
+
+    this.correoDuplicado.set(false)
+
+    if (this.isEdit() && correo === correoOriginal) {
+      this.continuarGuardado()
+      return
+    }
+
+    this.verificandoCorreo.set(true)
+    this.profesionalService.validarCorreo(correo).subscribe({
+      next: (response) => {
+        this.verificandoCorreo.set(false)
+        if (response.data?.existe) {
+          this.correoDuplicado.set(true)
+          return
+        }
+        this.continuarGuardado()
+      },
+      error: () => {
+        this.verificandoCorreo.set(false)
+        this.continuarGuardado()
+      },
+    })
+  }
+
+  private continuarGuardado() {
     const file = this.selectedImageFile()
     if (file) {
       this.subirImagenYGuardar(file)

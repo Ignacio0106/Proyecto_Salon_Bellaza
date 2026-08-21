@@ -26,6 +26,13 @@ export class ProfesionalService {
             `${this.apiUrl}/${id}`
         );
     }
+
+    validarCorreo(correo: string) {
+        return this.http.get<ApiResponse<{ existe: boolean }>>(
+            `${this.apiUrl}/validar-correo`,
+            { params: { correo } }
+        );
+    }
   getImageUrl(imageName: string): string {
     return `${environment.imageUrl}/${imageName}`;
   }

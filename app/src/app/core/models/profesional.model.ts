@@ -20,6 +20,20 @@ export interface Profesional {
         nombre: string;
         descripcion: string;
     }[];
+
+    // Calificación promedio calculada a partir de reseñas reales
+    // (null cuando el profesional aún no tiene reseñas)
+    calificacionPromedio?: number | null;
+    cantidadResenas?: number;
+    resenas?: ProfesionalResena[];
+}
+
+// Reseña mostrada en el perfil público del profesional
+export interface ProfesionalResena {
+    cliente: string;
+    puntuacion: number;
+    comentario: string;
+    fechaResena: string;
 }
 
 export interface ProfesionalFormModel {

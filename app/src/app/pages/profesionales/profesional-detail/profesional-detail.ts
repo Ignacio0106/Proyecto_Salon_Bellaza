@@ -49,7 +49,8 @@ export class ProfesionalDetail {
       .join('');
   });
 
-
+  // Escala fija de estrellas para pintar la calificación
+  readonly estrellas = [1, 2, 3, 4, 5];
 
   ngOnInit() {
     const id = Number(
@@ -68,7 +69,6 @@ export class ProfesionalDetail {
 
     this.profesionalService.obtenerPorId(id).subscribe({
         next: (response) => {
-          console.log("Como llega",response);
           this.profesional.set(response.data ?? null);
           this.loading.set(false);
         },

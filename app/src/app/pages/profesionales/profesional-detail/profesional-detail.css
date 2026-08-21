@@ -268,3 +268,73 @@
   font-style: italic;
   margin: 0;
 }
+/* --- Calificación promedio del profesional --- */
+.hero-calificacion {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.estrellas,
+.resena-estrellas {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.estrella {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #d1d5db;
+}
+
+.estrella.filled {
+  color: #f59e0b;
+}
+
+.calificacion-texto {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* --- Reseñas en el perfil público --- */
+.resenas-lista {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.resena-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  background: #f9fafb;
+}
+
+.resena-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.resena-cliente {
+  color: #111827;
+}
+
+.resena-comentario {
+  margin: 0.5rem 0 0.35rem;
+  color: #374151;
+  line-height: 1.55;
+}
+
+.resena-fecha {
+  color: #6b7280;
+  font-size: 0.78rem;
+}

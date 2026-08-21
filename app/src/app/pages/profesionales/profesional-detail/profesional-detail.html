@@ -72,6 +72,22 @@
                         }
                     </div>
 
+                    @if (profesional.cantidadResenas) {
+                        <div class="hero-calificacion" [attr.aria-label]="'Calificación promedio: ' + profesional.calificacionPromedio + ' de 5'">
+                            <div class="estrellas">
+                                @for (valor of estrellas; track valor) {
+                                    <mat-icon class="estrella" [class.filled]="valor <= (profesional.calificacionPromedio ?? 0)">
+                                        {{ valor <= (profesional.calificacionPromedio ?? 0) ? 'star' : 'star_border' }}
+                                    </mat-icon>
+                                }
+                            </div>
+                            <span class="calificacion-texto">
+                                {{ profesional.calificacionPromedio }} · {{ profesional.cantidadResenas }}
+                                {{ profesional.cantidadResenas === 1 ? 'reseña' : 'reseñas' }}
+                            </span>
+                        </div>
+                    }
+
                 </div>
 
             </div>
@@ -167,6 +183,44 @@
             <h3 class="section-title">Descripción</h3>
 
             <p class="descripcion-text">{{profesional.descripcion}}</p>
+
+        </mat-card-content>
+
+    </mat-card>
+
+
+    <mat-card class="detail-card mt-4">
+
+        <mat-card-content>
+
+            <h3 class="section-title">Reseñas de clientes</h3>
+
+            @if (profesional.resenas?.length) {
+
+                <ul class="resenas-lista">
+                    @for (resena of profesional.resenas; track resena.fechaResena) {
+                        <li class="resena-item">
+                            <div class="resena-cabecera">
+                                <strong class="resena-cliente">{{ resena.cliente }}</strong>
+                                <span class="resena-estrellas" [attr.aria-label]="'Puntuación: ' + resena.puntuacion + ' de 5'">
+                                    @for (valor of estrellas; track valor) {
+                                        <mat-icon class="estrella" [class.filled]="valor <= resena.puntuacion">
+                                            {{ valor <= resena.puntuacion ? 'star' : 'star_border' }}
+                                        </mat-icon>
+                                    }
+                                </span>
+                            </div>
+                            <p class="resena-comentario">{{ resena.comentario }}</p>
+                            <small class="resena-fecha">{{ resena.fechaResena | date: "d 'de' MMMM, yyyy" }}</small>
+                        </li>
+                    }
+                </ul>
+
+            } @else {
+
+                <p class="muted">Este profesional aún no tiene reseñas.</p>
+
+            }
 
         </mat-card-content>
 
