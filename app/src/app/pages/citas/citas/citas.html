@@ -1,14 +1,7 @@
 <div class="page-container citas-page">
   <div class="page-header">
     <div>
-      <h1 class="page-title">{{ esCliente() ? 'Mis Citas' : 'Mis Citas' }}</h1>
-      <p class="page-subtitle">
-        @if (esCliente()) {
-          Historial cronológico de tus citas, de la más reciente a la más antigua.
-        } @else {
-          Solo se muestran las citas del usuario activo.
-        }
-      </p>
+      <h1 class="page-title">Mis Citas</h1>
     </div>
 
     @if (esCliente()) {
@@ -64,7 +57,7 @@
                         </div>
                         <div>
                           <mat-icon>schedule</mat-icon>
-                          <span>{{ cita.hora }}</span>
+                          <span>{{ cita.hora | date: 'HH:mm' }}</span>
                         </div>
                       </div>
 
@@ -141,13 +134,59 @@
                   </div>
                   <div>
                     <mat-icon>schedule</mat-icon>
-                    <span>{{ cita.hora }}</span>
+                    <span>{{ cita.hora | date: 'HH:mm' }}</span>
                   </div>
                 </div>
 
-                <a mat-stroked-button color="primary" [routerLink]="['/citas', cita.id]">
-                  Ver detalle
-                </a>
+                <div class="cita-acciones">
+                  <a mat-stroked-button color="primary" [routerLink]="['/citas', cita.id]">
+                    Ver detalle
+                  </a>
+
+                  @if (puedeAceptar(cita)) {
+                    <button
+                      mat-flat-button
+                      color="primary"
+                      [disabled]="procesandoId() !== null"
+                      (click)="aceptar(cita)">
+                      <mat-icon>check_circle</mat-icon>
+                      Aceptar
+                    </button>
+                  }
+
+                  @if (puedeRechazar(cita)) {
+                    <button
+                      mat-stroked-button
+                      color="warn"
+                      [disabled]="procesandoId() !== null"
+                      (click)="abrirRechazar(cita)">
+                      <mat-icon>block</mat-icon>
+                      Rechazar
+                    </button>
+                  }
+
+                  @if (puedeCompletar(cita)) {
+                    <button
+                      mat-flat-button
+                      color="accent"
+                      [disabled]="procesandoId() !== null"
+                      (click)="completar(cita)">
+                      <mat-icon>task_alt</mat-icon>
+                      Completar
+                    </button>
+                  }
+
+                  @if (puedeCancelar(cita)) {
+                    <button
+                      mat-stroked-button
+                      color="warn"
+                      [disabled]="procesandoId() !== null"
+                      (click)="abrirCancelar(cita)">
+                      <mat-icon>close</mat-icon>
+                      Cancelar
+                    </button>
+                  }
+                </div>
               </mat-card-content>
             </mat-card>
           }

@@ -94,6 +94,13 @@ export class CitaReserva {
     comentarioNecesidad: '',
   };
 
+  // Fecha mínima seleccionable en el calendario: el día de hoy
+  readonly hoy: Date = (() => {
+    const fecha = new Date();
+    fecha.setHours(0, 0, 0, 0);
+    return fecha;
+  })();
+
   serviciosFiltrados(): Servicio[] {
     const profesionalId = this.form.profesionalId;
 
@@ -186,6 +193,15 @@ export class CitaReserva {
     const duracion = Number(this.servicioDetalle()?.duracionEstimada ?? 0);
     if (!duracion) {
       this.error.set('Selecciona un servicio válido');
+      return;
+    }
+
+    // Regla de negocio: no se permiten citas en fechas pasadas a hoy
+    const fechaSeleccionada = new Date(value.fechaCitaSolicitada);
+    fechaSeleccionada.setHours(0, 0, 0, 0);
+
+    if (fechaSeleccionada < this.hoy) {
+      this.error.set('No se puede agendar la cita en una fecha pasada a hoy');
       return;
     }
 

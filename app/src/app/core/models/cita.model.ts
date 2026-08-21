@@ -70,6 +70,16 @@ export interface CitaDetalle {
     } | null;
     // Motivo con el que se canceló la cita (si fue cancelada)
     motivoCancelacion?: string | null;
+    // Historial de cambios de estado de la cita
+    historial?: CitaHistorialEstado[];
+}
+
+export interface CitaHistorialEstado {
+    estadoAnterior: EstadoCita | string | null;
+    estadoNuevo: EstadoCita | string;
+    fechaCambio: string;
+    comentario?: string | null;
+    realizadoPor: string;
 }
 
 export interface CitaCreateDto {
@@ -86,4 +96,8 @@ export interface CitaCreateDto {
 
 export interface CitaUpdateDto {
     estado?: EstadoCita;
+    // Motivo obligatorio cuando el nuevo estado es RECHAZADA o CANCELADA
+    motivo?: string;
+    // Comentario opcional del profesional al aceptar la cita
+    comentario?: string;
 }

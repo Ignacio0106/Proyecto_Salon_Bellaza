@@ -11,10 +11,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CitaService } from '../../../core/services/cita.service';
 import { NotificationService } from '../../../core/services/notification.service';
 
+// Acción que realiza el diálogo: cancelar la cita o rechazarla
+// (ambas exigen un motivo obligatorio)
+export type AccionCita = 'CANCELAR' | 'RECHAZAR';
+
 export interface CancelarCitaDialogData {
   citaId: number;
   // Texto informativo que cambia según el estado (Pendiente vs Aceptada)
   descripcionEstado: string;
+  // Acción a realizar; por defecto es CANCELAR
+  accion?: AccionCita;
 }
 
 @Component({
@@ -47,6 +53,22 @@ export class CancelarCitaDialog {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: CancelarCitaDialogData) {}
 
+  get esRechazo(): boolean {
+    return (this.data.accion ?? 'CANCELAR') === 'RECHAZAR';
+  }
+
+  get titulo(): string {
+    return this.esRechazo ? 'Rechazar cita' : 'Cancelar cita';
+  }
+
+  get etiquetaMotivo(): string {
+    return this.esRechazo ? 'Motivo del rechazo' : 'Motivo de la cancelación';
+  }
+
+  get textoBoton(): string {
+    return this.esRechazo ? 'Confirmar rechazo' : 'Confirmar cancelación';
+  }
+
   confirmar(): void {
     if (this.motivo.invalid) {
       this.motivo.markAsTouched();
@@ -55,15 +77,30 @@ export class CancelarCitaDialog {
 
     this.guardando.set(true);
 
-    this.citaService.cancelar(this.data.citaId, this.motivo.value.trim()).subscribe({
+    const llamada = this.esRechazo
+      ? this.citaService.editar(this.data.citaId, {
+          estado: 'RECHAZADA',
+          motivo: this.motivo.value.trim(),
+        })
+      : this.citaService.cancelar(this.data.citaId, this.motivo.value.trim());
+
+    llamada.subscribe({
       next: () => {
         this.guardando.set(false);
-        this.notificationService.success('La cita se canceló correctamente.');
+        this.notificationService.success(
+          this.esRechazo
+            ? 'La cita se rechazó correctamente.'
+            : 'La cita se canceló correctamente.'
+        );
         this.dialogRef.close(true);
       },
       error: (err) => {
         this.guardando.set(false);
-        const mensaje = err?.error?.message ?? 'No se pudo cancelar la cita.';
+        const mensaje =
+          err?.error?.message ??
+          (this.esRechazo
+            ? 'No se pudo rechazar la cita.'
+            : 'No se pudo cancelar la cita.');
         this.notificationService.error(mensaje);
       },
     });

@@ -1,18 +1,18 @@
 <h2 mat-dialog-title>
-  <mat-icon>event_busy</mat-icon>
-  Cancelar cita
+  <mat-icon>{{ esRechazo ? 'block' : 'event_busy' }}</mat-icon>
+  {{ titulo }}
 </h2>
 
 <mat-dialog-content class="contenido">
   <p class="texto-info">{{ data.descripcionEstado }}</p>
 
   <mat-form-field appearance="outline" class="campo-motivo">
-    <mat-label>Motivo de la cancelación</mat-label>
+    <mat-label>{{ etiquetaMotivo }}</mat-label>
     <textarea
       matInput
       rows="3"
       [formControl]="motivo"
-      placeholder="Cuéntanos por qué cancelas esta cita"
+      [placeholder]="esRechazo ? 'Indique por qué rechaza esta cita' : 'Cuéntanos por qué cancelas esta cita'"
       maxlength="300">
     </textarea>
     @if (motivo.touched && motivo.hasError('required')) {
@@ -35,8 +35,8 @@
     @if (guardando()) {
       <mat-spinner diameter="18"></mat-spinner>
     } @else {
-      <mat-icon>close</mat-icon>
+      <mat-icon>{{ esRechazo ? 'block' : 'close' }}</mat-icon>
     }
-    Confirmar cancelación
+    {{ textoBoton }}
   </button>
 </mat-dialog-actions>

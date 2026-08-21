@@ -68,7 +68,7 @@
             <div>
               <strong>Fecha y hora</strong>
               <p>{{ cita.fecha | date:'dd/MM/yyyy' }}</p>
-              <small>{{ cita.horaInicio }} - {{ cita.horaFinalizacion }}</small>
+              <small>{{ cita.horaInicio | date:'HH:mm' }} - {{ cita.horaFinalizacion | date:'HH:mm' }}</small>
             </div>
           </div>
 
@@ -123,8 +123,36 @@
 
         @if (cita.motivoCancelacion) {
           <div class="text-section cancel-reason">
-            <h3>Motivo de cancelación</h3>
+            <h3>{{ cita.estado === 'RECHAZADA' ? 'Motivo del rechazo' : 'Motivo de la cancelación' }}</h3>
             <p>{{ cita.motivoCancelacion }}</p>
+          </div>
+        }
+
+        @if (cita.historial && cita.historial.length > 0) {
+          <div class="text-section historial-section">
+            <h3>Historial de estados</h3>
+            <ul class="historial-timeline">
+              @for (evento of cita.historial; track $index) {
+                <li class="historial-item">
+                  <span class="historial-dot" [attr.data-estado]="evento.estadoNuevo"></span>
+                  <div class="historial-contenido">
+                    <p class="historial-transicion">
+                      @if (evento.estadoAnterior) {
+                        {{ estadoTexto(evento.estadoAnterior) }}
+                        <mat-icon>arrow_forward</mat-icon>
+                      }
+                      <strong>{{ estadoTexto(evento.estadoNuevo) }}</strong>
+                    </p>
+                    <small class="historial-meta">
+                      {{ evento.fechaCambio | date: "dd/MM/yyyy, HH:mm" }} · Registrado por {{ evento.realizadoPor }}
+                    </small>
+                    @if (evento.comentario) {
+                      <p class="historial-comentario">{{ evento.comentario }}</p>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
           </div>
         }
       </mat-card-content>
