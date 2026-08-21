@@ -58,6 +58,21 @@ export const updateEstadoCitaSchema = z.object({
         ["PENDIENTE", "ACEPTADA", "RECHAZADA", "COMPLETADA", "CANCELADA"],
         { message: "El estado indicado no es válido" }
     ),
+    // Motivo obligatorio cuando el nuevo estado es RECHAZADA o CANCELADA
+    // (la exigencia se valida en el servicio según el estado destino)
+    motivo: z
+        .string()
+        .trim()
+        .min(5, "El motivo debe tener al menos 5 caracteres")
+        .max(300, "El motivo no puede superar 300 caracteres")
+        .optional(),
+    // Comentario opcional del profesional al aceptar la cita
+    comentario: z
+        .string()
+        .trim()
+        .min(1, "El comentario no puede estar vacío")
+        .max(300, "El comentario no puede superar 300 caracteres")
+        .optional(),
 });
 
 // Schema para la cancelación de una cita desde "Mis Citas" del Cliente.

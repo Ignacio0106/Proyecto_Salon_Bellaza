@@ -22,6 +22,7 @@ export class CitaRoutes {
                 ) 
          router.put(
             '/:id',
+            authenticateToken,
             validateRequest(updateEstadoCitaSchema),
             asyncHandler(controller.editar)
         )

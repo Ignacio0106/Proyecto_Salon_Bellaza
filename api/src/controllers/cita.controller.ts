@@ -58,8 +58,10 @@ export class CitaController {
             StatusCodes.CREATED 
         ); 
     } 
-    // Actualiza el estado de la cita (usado por la Agenda Visual)
-    editar = async (request: Request, response: Response, next: NextFunction) => {
+    // Actualiza el estado de la cita (usado por la Agenda Visual).
+    // Si el nuevo estado es RECHAZADA o CANCELADA se exige motivo y se
+    // notifica al cliente y al profesional.
+    editar = async (request: AuthRequest, response: Response, next: NextFunction) => {
         const rawId = Array.isArray(request.params.id) ? request.params.id[0] : request.params.id;
         const id = parseInt(rawId ?? '', 10);
 
@@ -67,7 +69,18 @@ export class CitaController {
             return response.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "ID inválido" });
         }
 
-        const cita = await CitaService.editarEstado(id, request.body.estado);
+        const usuario = request.user;
+        if (!usuario) {
+            return response.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: "Usuario no autenticado" });
+        }
+
+        const cita = await CitaService.editarEstado(
+            id,
+            request.body.estado,
+            { id: usuario.id, rol: usuario.rol as 'ADMINISTRADOR' | 'PROFESIONAL' | 'CLIENTE' },
+            request.body.motivo,
+            request.body.comentario
+        );
 
         return sendSuccess(
             response,
