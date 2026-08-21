@@ -25,6 +25,7 @@ import { Role } from './core/models/role.model';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 import { Perfil } from './pages/usuarios/usuarios-perfil/usuarios-perfil';
+import { EditarPerfil } from './pages/usuarios/editar-perfil/editar-perfil';
 import { Registro } from './pages/usuarios/registro/registro';
 import { ReporteCitasByProfesional } from './pages/reportes/reporte-citas-by-profesional/reporte-citas-by-profesional';
 import { AgendaVisual } from './pages/agenda/agenda-visual/agenda-visual';
@@ -153,15 +154,21 @@ export const routes: Routes = [
                 title: 'Mi perfil',
                 canActivate: [authGuard]
             },
-            //Admin y Profesional pueden acceder
+            {
+                path: 'perfil/editar',
+                component: EditarPerfil,
+                title: 'Editar perfil',
+                canActivate: [authGuard]
+            },
+            //Admin solo puede acceder
             {
                 path: 'gestion-citas',
                 component: CitasList,
                 title: 'Control de Citas',
                 canActivate: [authGuard, roleGuard],
-                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
+                data: { roles: [Role.ADMIN] }
             },
-                 {
+            {
                 path: 'agenda-visual',
                 component: AgendaVisual,
                 title: 'Agenda Visual',
@@ -169,21 +176,14 @@ export const routes: Routes = [
                 data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
             },
             {
-                path: 'resenas',
-                component: ResenasList,
-                title: 'Gestión de Reseñas',
-                canActivate: [authGuard, roleGuard],
-                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
-            },
-            {
-                path: 'reportes/citas',
+                path: 'reportes/citasPorEstado',
                 component: ReporteCitasByEstado,
                 title: 'Reportes y Estadísticas de Citas',
                 canActivate: [authGuard, roleGuard],
                 data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
             },
             {
-                path: 'reportes/citasProfesional',
+                path: 'reportes/citasPorProfesional',
                 component: ReporteCitasByProfesional,
                 title: 'Reportes y Estadísticas',
                 canActivate: [authGuard, roleGuard],

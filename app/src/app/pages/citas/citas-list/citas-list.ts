@@ -16,6 +16,7 @@ import { RouterLink } from '@angular/router';
 import { CitaService } from '../../../core/services/cita.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { EstadoCita, ESTADO_CITA_LABEL } from '../../../core/models/estado-cita.model';
 
 @Component({
   selector: 'app-citas-list',
@@ -54,23 +55,32 @@ export class CitasList {
 
   displayedColumns = ['cliente', 'profesional', 'servicio', 'fechaHora', 'estado', 'acciones'];
 
+  // Catálogo fijo de estados con etiqueta legible para el filtro
+  readonly estadosCatalogo = (
+    Object.entries(ESTADO_CITA_LABEL) as Array<[EstadoCita, string]>
+  ).map(([valor, etiqueta]) => ({ valor, etiqueta }));
+
+  // Etiqueta en español de un estado cualquiera
+  estadoTexto(estado: string): string {
+    return (ESTADO_CITA_LABEL as Record<string, string>)[estado] ?? estado;
+  }
+
+  // Iniciales de un nombre completo para los avatares del listado
+  iniciales(nombreCompleto: string): string {
+    return nombreCompleto
+      .split(' ')
+      .filter((parte) => parte.length > 0)
+      .slice(0, 2)
+      .map((parte) => parte.charAt(0).toUpperCase())
+      .join('');
+  }
+
   // Extrae la lista de profesionales únicos que tienen citas asignadas
   profesionalesDisponibles = computed<string[]>(() => {
     const map = new Set<string>();
     this.citas().forEach((cita) => {
       if (cita.profesional) {
         map.add(cita.profesional);
-      }
-    });
-    return Array.from(map.values());
-  });
-
-  // Extrae de forma dinámica los estados de las citas existentes (ej: PENDIENTE, COMPLETADA, CANCELADA)
-  estadosDisponibles = computed<string[]>(() => {
-    const map = new Set<string>();
-    this.citas().forEach((cita) => {
-      if (cita.estado) {
-        map.add(cita.estado);
       }
     });
     return Array.from(map.values());
@@ -113,6 +123,18 @@ export class CitasList {
     });
   });
 
+  // Cantidad de resultados luego de aplicar los filtros
+  totalFiltradas = computed(() => this.citasFiltradas().length);
+
+  // Indica si hay al menos un filtro aplicado
+  hayFiltrosActivos = computed(
+    () =>
+      this.estadoFiltro() !== '' ||
+      this.profesionalFiltro() !== '' ||
+      this.fechaInicio() !== null ||
+      this.fechaFin() !== null
+  );
+
   ngOnInit(): void {
     this.loadCitas();
   }
@@ -124,10 +146,9 @@ export class CitasList {
       next: (res) => {
         this.citas.set(res.data ?? []);
         this.loading.set(false);
-        console.log('Citas cargadas:', res.data);
       },
       error: () => {
-        this.error.set('Error al cargar el listado de citas.');
+        this.error.set('No se pudo cargar el listado de citas. Verifique su conexión e intente nuevamente.');
         this.loading.set(false);
       }
     });

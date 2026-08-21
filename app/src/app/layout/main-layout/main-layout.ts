@@ -44,7 +44,7 @@ export class MainLayout {
       label: 'Control de Citas',
       path: '/gestion-citas',
       icon: 'calendar_month',
-      roles: [Role.ADMIN, Role.PROFESIONAL],
+      roles: [Role.ADMIN],
     },
     {
       label: 'Agenda Visual',
@@ -52,24 +52,18 @@ export class MainLayout {
       icon: 'event_available',
       roles: [Role.ADMIN, Role.PROFESIONAL],
     },
-    {
-      label: 'Reseñas',
-      path: '/resenas',
-      icon: 'rate_review',
-      roles: [Role.ADMIN, Role.PROFESIONAL],
-    },
   ]);
 
   reportsMenu = signal<MenuItem[]>([
     {
       label: 'Reportes de Citas por Estado',
-      path: '/reportes/citas',
+      path: '/reportes/citasPorEstado',
       icon: 'event',
       roles: [Role.ADMIN, Role.PROFESIONAL],
     },
     {
       label: 'Reportes Citas por Profesional',
-      path: '/reportes/citasProfesional',
+      path: '/reportes/citasPorProfesional',
       icon: 'person_search',
       roles: [Role.ADMIN, Role.PROFESIONAL],
     },
