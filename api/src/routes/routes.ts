@@ -8,6 +8,7 @@ import { EspecialidadesRoutes } from './especialidades.routes';
 import { CitaRoutes } from './cita.routes';
 import { ImageRoutes } from './image.routes';
 import { ReporteRoutes } from './reporte.routes';
+import { NotificacionRoutes } from './notificacion.routes';
 
 
 export class AppRoutes { 
@@ -23,6 +24,7 @@ export class AppRoutes {
         router.use('/cita', CitaRoutes.routes) 
         router.use('/images', ImageRoutes.routes)
         router.use('/reporte', ReporteRoutes.routes)
+        router.use('/notificacion', NotificacionRoutes.routes)
         
         return router; 
         
