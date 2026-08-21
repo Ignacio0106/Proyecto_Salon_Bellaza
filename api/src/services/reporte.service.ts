@@ -166,6 +166,10 @@ export const ReporteService = {
     },
 
     async calificaciones() {
+        // Umbral de baja calificación definido y documentado para el reporte:
+        // un servicio con promedio menor a 3.0 se considera mal calificado.
+        const UMBRAL_BAJO = 3.0;
+
         const profesionales = await prisma.perfilProfesional.findMany({
             select: {
                 id: true,
@@ -196,8 +200,79 @@ export const ReporteService = {
             ])
         );
 
+        // Promedio por servicio de cada profesional (el servicio se obtiene
+        // a través de la cita que fue reseñada). Sirve para determinar el
+        // mejor servicio calificado y los servicios con baja calificación.
+        const resenasConServicio = await prisma.resena.findMany({
+            select: {
+                profesionalId: true,
+                puntuacion: true,
+                cita: {
+                    select: {
+                        servicio: { select: { id: true, nombre: true } },
+                    },
+                },
+            },
+        });
+
+        const serviciosPorProfesional = new Map<
+            number,
+            Map<number, { nombre: string; suma: number; cantidad: number }>
+        >();
+
+        for (const resena of resenasConServicio) {
+            const servicio = resena.cita.servicio;
+            if (!servicio) {
+                continue;
+            }
+
+            let servicios = serviciosPorProfesional.get(resena.profesionalId);
+            if (!servicios) {
+                servicios = new Map();
+                serviciosPorProfesional.set(resena.profesionalId, servicios);
+            }
+
+            const acumulado =
+                servicios.get(servicio.id) ??
+                { nombre: servicio.nombre, suma: 0, cantidad: 0 };
+            acumulado.suma += resena.puntuacion;
+            acumulado.cantidad += 1;
+            servicios.set(servicio.id, acumulado);
+        }
+
         const data = profesionales.map((profesional) => {
             const stats = resenasPorProfesional.get(profesional.id);
+
+            // Mejor servicio: mayor promedio; en caso de empate gana el de
+            // más reseñas y luego el orden alfabético (criterio documentado).
+            let mejorServicio: string | null = null;
+            let mejorServicioPromedio: number | null = null;
+            const serviciosBajaCalificacion: string[] = [];
+
+            const servicios = serviciosPorProfesional.get(profesional.id);
+            if (servicios && servicios.size > 0) {
+                const calculados = Array.from(servicios.values()).map((s) => ({
+                    nombre: s.nombre,
+                    promedio: Math.round((s.suma / s.cantidad) * 10) / 10,
+                    cantidad: s.cantidad,
+                }));
+
+                calculados.sort(
+                    (a, b) =>
+                        b.promedio - a.promedio ||
+                        b.cantidad - a.cantidad ||
+                        a.nombre.localeCompare(b.nombre)
+                );
+
+                mejorServicio = calculados[0].nombre;
+                mejorServicioPromedio = calculados[0].promedio;
+
+                serviciosBajaCalificacion.push(
+                    ...calculados
+                        .filter((s) => s.promedio < UMBRAL_BAJO)
+                        .map((s) => s.nombre)
+                );
+            }
 
             return {
                 profesionalId: profesional.id,
@@ -207,6 +282,9 @@ export const ReporteService = {
                     ? Math.round(stats.promedio * 10) / 10  // redondea a 1 decimal
                     : 0,
                 cantidadResenas: stats?.cantidad ?? 0,
+                mejorServicio,
+                mejorServicioPromedio,
+                serviciosBajaCalificacion,
             };
         });
 
