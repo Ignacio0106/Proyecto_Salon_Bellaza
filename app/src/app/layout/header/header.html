@@ -40,15 +40,6 @@
 
     <span class="spacer"></span>
 
-    <!-- Reservas / Citas pendientes -->
-    @if (rol() === null || rol() === 'CLIENTE') {
-      <a mat-icon-button class="icon-action" routerLink="/reserva" matTooltip="Citas pendientes" aria-label="Abrir reservas">
-        <mat-icon [matBadge]="CitasCount()" [matBadgeHidden]="CitasCount() === 0" matBadgeColor="accent">
-          calendar_month
-        </mat-icon>
-      </a>
-    }
-
     <!-- ESTADO 1: Cargando sesión -->
     @if (!sesionInicializada() || cargandoSesion()) {
       <button mat-button type="button" disabled class="session-loading">
@@ -59,6 +50,22 @@
 
     <!-- ESTADO 2: Usuario autenticado -->
     @else if (usuario(); as user) {
+      <!-- Campana de notificaciones -->
+      <button
+        type="button"
+        mat-icon-button
+        class="notif-bell"
+        [matMenuTriggerFor]="notificacionesMenu"
+        (menuOpened)="cargarNotificaciones()"
+        aria-label="Ver notificaciones">
+        <mat-icon
+          [matBadge]="notificacionesNoLeidas() > 9 ? '9+' : notificacionesNoLeidas()"
+          [matBadgeHidden]="notificacionesNoLeidas() === 0"
+          matBadgeColor="warn">
+          notifications
+        </mat-icon>
+      </button>
+
       <button type="button" class="user-menu-trigger" [matMenuTriggerFor]="userMenu" aria-label="Abrir menú de usuario">
         <span class="user-avatar">
           {{ iniciales() }}
@@ -122,6 +129,42 @@
       <span>{{ item.label }}</span>
     </a>
   }
+</mat-menu>
+
+<!-- Menú desplegable: Notificaciones -->
+<mat-menu #notificacionesMenu="matMenu" class="menu-notificaciones" xPosition="before">
+  <div class="notif-header">
+    <strong>Notificaciones</strong>
+    @if (notificacionesNoLeidas() > 0) {
+      <button class="notif-marcar-todas" type="button" (click)="marcarTodasNotificacionesLeidas()">
+        Marcar todas como leídas
+      </button>
+    }
+  </div>
+
+  <div class="notif-lista">
+    @for (n of notificaciones(); track n.id) {
+      <button
+        mat-menu-item
+        class="notif-item"
+        [class.notif-no-leida]="!n.leida"
+        (click)="abrirNotificacion(n)">
+        <mat-icon>{{ n.leida ? 'notifications_none' : 'notifications_active' }}</mat-icon>
+        <span class="notif-contenido">
+          <span class="notif-titulo">{{ n.titulo }}</span>
+          <span class="notif-mensaje">{{ n.mensaje }}</span>
+          <small class="notif-fecha">{{ n.fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}</small>
+        </span>
+        @if (n.citaId) {
+          <mat-icon class="notif-ir">chevron_right</mat-icon>
+        }
+      </button>
+    } @empty {
+      <button mat-menu-item disabled>
+        <span>Sin notificaciones</span>
+      </button>
+    }
+  </div>
 </mat-menu>
 
 <!-- Menú desplegable del Usuario Logueado -->

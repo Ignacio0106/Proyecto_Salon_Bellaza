@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, output } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,6 +9,8 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
+import { NotificacionService } from '../../core/services/notificacion.service';
+import { Notificacion } from '../../core/models/notificacion.model';
 import { Role } from '../../core/models/role.model';
 
 export interface MenuItem {
@@ -23,6 +26,7 @@ export interface MenuItem {
   imports: [
     RouterLink,
     RouterLinkActive,
+    CommonModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
@@ -36,6 +40,8 @@ export interface MenuItem {
 })
 export class Header {
   private readonly authService = inject(AuthService);
+  private readonly notificacionSvc = inject(NotificacionService);
+  private readonly router = inject(Router);
 
   // Menús recibidos desde la aplicación
 publicMenu = input<MenuItem[]>([]);
@@ -54,6 +60,10 @@ publicMenu = input<MenuItem[]>([]);
   readonly sesionInicializada = this.authService.sesionInicializada;
   readonly rol = this.authService.rol;
   readonly esAdmin = this.authService.esAdmin;
+
+  // Notificaciones (campana del header)
+  readonly notificaciones = this.notificacionSvc.notificaciones;
+  readonly notificacionesNoLeidas = this.notificacionSvc.noLeidas;
 
   // Formato estético del rol
   readonly nombreRol = computed(() => {
@@ -114,5 +124,25 @@ readonly publicMenuVisible = computed(() =>
   cerrarSesion(): void {
     this.authService.logout();
     this.logoutUser.emit();
+  }
+
+  cargarNotificaciones(): void {
+    this.notificacionSvc.cargar();
+  }
+
+  // Abre una notificación: la marca como leída y navega al detalle
+  // de la cita asociada (si tiene)
+  abrirNotificacion(notificacion: Notificacion): void {
+    if (!notificacion.leida) {
+      this.notificacionSvc.marcarLeida(notificacion.id);
+    }
+
+    if (notificacion.citaId) {
+      this.router.navigate(['/citas', notificacion.citaId]);
+    }
+  }
+
+  marcarTodasNotificacionesLeidas(): void {
+    this.notificacionSvc.marcarTodasLeidas();
   }
 }
