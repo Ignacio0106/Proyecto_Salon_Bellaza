@@ -22,6 +22,15 @@ export interface Usuario {
     updatedAt: string;
 }
 
+export interface UsuarioFormModel {
+    correo: string;
+    telefono: string;
+    nombre: string;
+    apellidos: string;
+    password: string;
+    rol: Role;
+}
+
 export interface UsuarioCreateDto {
     correo: string;
     telefono: string;

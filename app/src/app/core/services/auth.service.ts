@@ -27,6 +27,7 @@ import {
     LoginResult,
     RegisterRequest,
     Usuario,
+    UsuarioUpdateDto,
 } from '../models/usuario.model'
 import { Role } from '../models/role.model'
 
@@ -132,6 +133,34 @@ export class AuthService {
                         )
                     }
                     return usuario
+                })
+            )
+    }
+    /**
+     * Actualiza únicamente el propio perfil del usuario
+     * autenticado (nombre, apellidos, correo, teléfono y,
+     * opcionalmente, la contraseña).
+     */
+    actualizarPerfil(
+        datos: UsuarioUpdateDto
+    ): Observable<Usuario> {
+        return this.http
+            .put<ApiResponse<Usuario>>(
+                `${this.apiUrl}/perfil`,
+                datos
+            )
+            .pipe(
+                map((response) => {
+                    const usuario = response.data
+                    if (!usuario) {
+                        throw new Error(
+                            'El API no devolvió el perfil actualizado'
+                        )
+                    }
+                    return usuario
+                }),
+                tap((usuario) => {
+                    this._usuario.set(usuario)
                 })
             )
     }

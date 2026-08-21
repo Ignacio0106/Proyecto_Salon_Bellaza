@@ -1,0 +1,105 @@
+<mat-card class="form-card">
+  <mat-card-content>
+
+    <form class="form" (submit)="$event.preventDefault(); submit()">
+
+      <div class="name-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput autocomplete="given-name" [formField]="usuarioForm.nombre" />
+          @if (usuarioForm.nombre().touched() && usuarioForm.nombre().invalid()) {
+            <mat-error>{{ usuarioForm.nombre().errors()[0].message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Apellidos</mat-label>
+          <mat-icon matPrefix>badge</mat-icon>
+          <input matInput autocomplete="family-name" [formField]="usuarioForm.apellidos" />
+          @if (usuarioForm.apellidos().touched() && usuarioForm.apellidos().invalid()) {
+            <mat-error>{{ usuarioForm.apellidos().errors()[0].message }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+        <mat-icon matPrefix>mail</mat-icon>
+        <input matInput type="email" autocomplete="email" placeholder="correo@ejemplo.com" [formField]="usuarioForm.correo" />
+        @if (usuarioForm.correo().touched() && usuarioForm.correo().invalid()) {
+          <mat-error>{{ usuarioForm.correo().errors()[0].message }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfono</mat-label>
+        <mat-icon matPrefix>call</mat-icon>
+        <input matInput type="tel" inputmode="numeric" autocomplete="tel" placeholder="88888888" [formField]="usuarioForm.telefono" />
+        @if (usuarioForm.telefono().touched() && usuarioForm.telefono().invalid()) {
+          <mat-error>{{ usuarioForm.telefono().errors()[0].message }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <mat-icon matPrefix>password</mat-icon>
+        <input matInput [type]="ocultarPassword() ? 'password' : 'text'"
+          autocomplete="new-password"
+          [formField]="usuarioForm.password" />
+        <button mat-icon-button matSuffix type="button" (click)="ocultarPassword.update(v => !v)"
+          aria-label="Mostrar u ocultar contraseña">
+          <mat-icon>{{ ocultarPassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        @if (!isEdit()) {
+          <mat-hint>Mínimo 6 caracteres.</mat-hint>
+        } @else {
+          <mat-hint>Déjela en blanco para conservar la actual.</mat-hint>
+        }
+        @if (usuarioForm.password().touched() && passwordInvalido()) {
+          <mat-error>{{ passwordErrorMessage() }}</mat-error>
+        }
+      </mat-form-field>
+
+      @if (mostrarRol()) {
+        <mat-form-field appearance="outline">
+          <mat-label>Rol</mat-label>
+          <mat-icon matPrefix>admin_panel_settings</mat-icon>
+          <mat-select [formField]="usuarioForm.rol">
+            <mat-option [value]="RolEnum.CLIENTE">Cliente</mat-option>
+            <mat-option [value]="RolEnum.PROFESIONAL">Profesional</mat-option>
+            <mat-option [value]="RolEnum.ADMIN">Administrador</mat-option>
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <div class="form-actions">
+        @if (mostrarCancelar()) {
+          <button mat-stroked-button type="button" class="btn-cancelar" (click)="cancelar.emit()">
+            <mat-icon>close</mat-icon>
+            Cancelar
+          </button>
+        }
+
+        <button mat-flat-button type="submit"
+          class="btn-submit"
+          [color]="isEdit() ? 'accent' : 'primary'"
+          [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            <span class="button-content">
+              <mat-spinner diameter="18"></mat-spinner>
+              <span>Guardando...</span>
+            </span>
+          } @else {
+            <span class="button-content">
+              <mat-icon>{{ isEdit() ? 'edit' : 'person_add' }}</mat-icon>
+              <span>{{ isEdit() ? 'Guardar cambios' : 'Registrarme' }}</span>
+            </span>
+          }
+        </button>
+      </div>
+
+    </form>
+
+  </mat-card-content>
+</mat-card>

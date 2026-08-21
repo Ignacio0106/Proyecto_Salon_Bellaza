@@ -1,0 +1,43 @@
+<div class="edit-profile-page">
+  @if (exito()) {
+    <div class="server-success" role="status" aria-live="polite">
+      <mat-icon>check_circle</mat-icon>
+      <div>
+        <strong>¡Perfil actualizado correctamente!</strong>
+        <span>Redirigiendo a tu perfil...</span>
+      </div>
+    </div>
+  } @else {
+    @if (error()) {
+      <div class="server-error" role="alert">
+        <mat-icon>error</mat-icon><span>{{ error() }}</span>
+      </div>
+    }
+
+    @if (usuarioParaFormulario(); as usuario) {
+      <mat-card class="edit-card" appearance="outlined">
+        <mat-card-header>
+          <div mat-card-avatar class="edit-avatar">
+            <mat-icon>edit</mat-icon>
+          </div>
+          <mat-card-title>Editar perfil</mat-card-title>
+          <mat-card-subtitle>Actualice su información personal</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <app-usuario-form
+            [usuario]="usuario"
+            [saving]="saving()"
+            (guardar)="guardar($event)"
+            (cancelar)="cancelar()"
+          />
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <div class="state-box">
+        <mat-spinner diameter="45"></mat-spinner>
+        <p>Cargando información...</p>
+      </div>
+    }
+  }
+</div>

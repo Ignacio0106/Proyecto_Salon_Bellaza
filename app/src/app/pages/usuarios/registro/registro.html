@@ -18,108 +18,22 @@
           </div>
         </div>
       } @else {
-        <form (submit)="$event.preventDefault(); submit()" class="auth-form">
-
-          <div class="name-row">
-            <mat-form-field appearance="outline">
-              <mat-label>Nombre</mat-label>
-              <mat-icon matPrefix>person</mat-icon>
-              <input matInput autocomplete="given-name" [formField]="registroForm.nombre" />
-              @if (registroForm.nombre().touched() && registroForm.nombre().invalid()) {
-                <mat-error>{{ registroForm.nombre().errors()[0].message }}</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Apellidos</mat-label>
-              <mat-icon matPrefix>badge</mat-icon>
-              <input matInput autocomplete="family-name" [formField]="registroForm.apellidos" />
-              @if (registroForm.apellidos().touched() && registroForm.apellidos().invalid()) {
-                <mat-error>{{ registroForm.apellidos().errors()[0].message }}</mat-error>
-              }
-            </mat-form-field>
+        @if (errorServidor()) {
+          <div class="server-error" role="alert">
+            <mat-icon>error</mat-icon><span>{{ errorServidor() }}</span>
           </div>
+        }
 
-          <mat-form-field appearance="outline">
-            <mat-label>Correo electrónico</mat-label>
-            <mat-icon matPrefix>mail</mat-icon>
-            <input matInput type="email" autocomplete="email" placeholder="correo@ejemplo.com"
-              [formField]="registroForm.correo" />
-            @if (registroForm.correo().touched() && registroForm.correo().invalid()) {
-              <mat-error>{{ registroForm.correo().errors()[0].message }}</mat-error>
-            }
-          </mat-form-field>
+        <app-usuario-form
+          [saving]="enviando()"
+          (guardar)="registrar($event)"
+          (cancelar)="cancelar()"
+        />
 
-          <mat-form-field appearance="outline">
-            <mat-label>Teléfono</mat-label>
-            <mat-icon matPrefix>call</mat-icon>
-            <input matInput type="tel" inputmode="numeric" autocomplete="tel" placeholder="88888888"
-              [formField]="registroForm.telefono" />
-            @if (registroForm.telefono().touched() && registroForm.telefono().invalid()) {
-              <mat-error>{{ registroForm.telefono().errors()[0].message }}</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Contraseña</mat-label>
-            <mat-icon matPrefix>password</mat-icon>
-            <input matInput [type]="ocultarPassword() ? 'password' : 'text'" autocomplete="new-password"
-              [formField]="registroForm.contrasena" />
-            <button mat-icon-button matSuffix type="button" (click)="ocultarPassword.update(v => !v)"
-              aria-label="Mostrar u ocultar contraseña">
-              <mat-icon>{{ ocultarPassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
-            </button>
-            <mat-hint>Mínimo 6 caracteres.</mat-hint>
-            @if (registroForm.contrasena().touched() && registroForm.contrasena().invalid()) {
-              <mat-error>{{ registroForm.contrasena().errors()[0].message }}</mat-error>
-            }
-          </mat-form-field>
-
-          @if (model().contrasena.length > 0) {
-            <div class="password-strength" [attr.data-level]="fuerzaLabel().clase" aria-hidden="true">
-              <div class="strength-bars">
-                @for (segmento of [1, 2, 3, 4, 5]; track segmento) {
-                  <span class="strength-bar" [class.filled]="segmento <= fuerzaPassword()"></span>
-                }
-              </div>
-              <span class="strength-text">
-                Fortaleza: {{ fuerzaLabel().texto }}
-              </span>
-            </div>
-          }
-
-          <mat-form-field appearance="outline">
-            <mat-label>Confirmar contraseña</mat-label>
-            <mat-icon matPrefix>verified_user</mat-icon>
-            <input matInput [type]="ocultarPassword() ? 'password' : 'text'" autocomplete="new-password"
-              [value]="confirmacion()"
-              (input)="confirmacion.set($any($event.target).value)"
-              (blur)="confirmacionTocada.set(true)" />
-            @if (confirmacionInvalida()) {
-              <mat-error>Las contraseñas no coinciden.</mat-error>
-            }
-          </mat-form-field>
-
-          @if (errorServidor()) {
-            <div class="server-error" role="alert">
-              <mat-icon>error</mat-icon><span>{{ errorServidor() }}</span>
-            </div>
-          }
-
-          <button mat-flat-button class="submit-button" type="submit"
-            [disabled]="enviando() || registroForm().invalid() || !coincidenPasswords()">
-            @if (enviando()) {
-              <ng-container><mat-spinner diameter="20" /><span>Creando cuenta...</span></ng-container>
-            } @else {
-              <ng-container><mat-icon>person_add</mat-icon><span>Registrarme</span></ng-container>
-            }
-          </button>
-
-          <p class="auth-switch">
-            ¿Ya tiene cuenta?
-            <a routerLink="/login">Inicie sesión</a>
-          </p>
-        </form>
+        <p class="auth-switch">
+          ¿Ya tiene cuenta?
+          <a routerLink="/login">Inicie sesión</a>
+        </p>
       }
     </mat-card-content>
   </mat-card>

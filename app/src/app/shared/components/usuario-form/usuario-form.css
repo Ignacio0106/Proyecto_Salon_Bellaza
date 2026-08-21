@@ -1,0 +1,45 @@
+.form-card {
+  border-radius: 24px;
+  padding: 12px;
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-cancelar {
+  border-radius: 14px;
+}
+
+.btn-submit {
+  min-height: 48px;
+  border-radius: 14px;
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .name-row {
+    grid-template-columns: 1fr;
+  }
+}

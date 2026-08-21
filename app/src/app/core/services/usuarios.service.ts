@@ -22,4 +22,8 @@ export class UsuariosService {
 cambiarEstado(id: number) {
     return this.http.put<ApiResponse<Usuario>>(`${this.apiUrl}/estado/${id}`, {});
   }
+
+cambiarRol(id: number, rol: string) {
+    return this.http.put<ApiResponse<Usuario>>(`${this.apiUrl}/rol/${id}`, { rol });
+  }
 }

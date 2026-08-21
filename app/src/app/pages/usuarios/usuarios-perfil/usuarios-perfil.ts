@@ -1,13 +1,15 @@
 import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [MatCardModule, MatIconModule, MatDividerModule],
+  imports: [RouterLink, MatCardModule, MatIconModule, MatDividerModule, MatButtonModule],
   templateUrl: './usuarios-perfil.html',
   styleUrl: './usuarios-perfil.css',
 })

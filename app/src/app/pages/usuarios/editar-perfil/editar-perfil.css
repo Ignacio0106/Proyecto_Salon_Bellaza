@@ -1,0 +1,64 @@
+.edit-profile-page {
+  width: min(640px, calc(100% - 2rem));
+  margin: 2.5rem auto;
+}
+
+.edit-card {
+  border-radius: 24px;
+  padding: 12px;
+}
+
+.edit-avatar {
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.state-box {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  padding: 3rem 1rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.server-error {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  color: var(--mat-sys-error);
+  background: var(--mat-sys-error-container);
+  margin-bottom: 1rem;
+}
+
+.server-success {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 12px;
+  color: #1b5e20;
+  background: #e8f5e9;
+}
+
+.server-success mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.server-success strong,
+.server-success span {
+  display: block;
+}
+
+.server-success span {
+  font-size: 0.9rem;
+  margin-top: 2px;
+}

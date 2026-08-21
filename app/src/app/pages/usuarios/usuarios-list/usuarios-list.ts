@@ -42,6 +42,8 @@ export class UsuariosList {
 
   displayedColumns = ['nombre', 'correo', 'rol', 'estado', 'acciones'];
 
+  readonly rolesDisponibles: Role[] = [Role.ADMIN, Role.PROFESIONAL, Role.CLIENTE];
+
   roles = computed<Role[]>(() => {
     const map = new Set<Role>();
     this.usuarios().forEach((usuario) => {
@@ -73,7 +75,6 @@ export class UsuariosList {
       next: (res) => {
         this.usuarios.set(res.data);
         this.loading.set(false);
-        console.log('Usuarios cargados:', res.data);
       },
       error: () => { this.error.set('Error al cargar usuarios.'); this.loading.set(false); }
     });
@@ -102,6 +103,28 @@ export class UsuariosList {
       },
       error: (err) => {
         console.error('Error al cambiar el estado del usuario', err);
+      }
+    });
+  }
+
+  cambiarRol(usuario: Usuario, nuevoRol: Role): void {
+    if (nuevoRol === usuario.rol) return;
+
+    this.usuarioService.cambiarRol(usuario.id, nuevoRol).subscribe({
+      next: (res) => {
+        this.usuarios.update((listaActual) =>
+          listaActual.map((u) =>
+            u.id === usuario.id ? { ...u, rol: res.data.rol } : u
+          )
+        );
+        this.notificationService.success(
+          `El usuario ${usuario.nombre} ${usuario.apellidos} ahora es ${res.data.rol.toLowerCase()}.`,
+          'Rol Actualizado'
+        );
+      },
+      error: () => {
+        this.notificationService.error('No se pudo cambiar el rol del usuario.');
+        this.usuarios.update((listaActual) => [...listaActual]);
       }
     });
   }
