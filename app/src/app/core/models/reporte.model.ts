@@ -13,6 +13,11 @@ export interface ReporteDeCalificaciones {
   tituloProfesional: string;
   promedioCalificacion: number;
   cantidadResenas: number;
+  // Mejor servicio calificado del profesional (null si no tiene reseñas)
+  mejorServicio?: string | null;
+  mejorServicioPromedio?: number | null;
+  // Servicios con promedio menor al umbral de baja calificación
+  serviciosBajaCalificacion?: string[];
 }
 
 //Reportes de citas por estado

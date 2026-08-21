@@ -496,3 +496,26 @@ tr.mat-mdc-row.fila-baja:hover {
     margin-left: 0;
   }
 }
+/* --- Mejor servicio calificado --- */
+.mejor-servicio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #4338ca;
+}
+
+.mejor-servicio mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.mejor-servicio small {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.sin-datos {
+  color: #9ca3af;
+}

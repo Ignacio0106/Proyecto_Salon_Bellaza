@@ -51,7 +51,7 @@ export class ReporteCalificaciones {
   filtroBusqueda = signal('');
   filtroEstado   = signal<EstadoFiltro>('');
 
-  displayedColumns = ['profesional', 'promedioCalificacion', 'cantidadResenas', 'destacado'];
+  displayedColumns = ['profesional', 'promedioCalificacion', 'cantidadResenas', 'mejorServicio', 'destacado'];
 
   // ── Computed ──────────────────────────────────────────────────────────────
 

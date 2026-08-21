@@ -121,6 +121,24 @@
                 </td>
               </ng-container>
 
+              <!-- Mejor servicio calificado -->
+              <ng-container matColumnDef="mejorServicio">
+                <th mat-header-cell *matHeaderCellDef>Mejor servicio</th>
+                <td mat-cell *matCellDef="let fila">
+                  @if (fila.mejorServicio) {
+                    <span class="mejor-servicio">
+                      <mat-icon>workspace_premium</mat-icon>
+                      {{ fila.mejorServicio }}
+                      @if (fila.mejorServicioPromedio !== null && fila.mejorServicioPromedio !== undefined) {
+                        <small>({{ fila.mejorServicioPromedio | number:'1.1-1' }}★)</small>
+                      }
+                    </span>
+                  } @else {
+                    <span class="sin-datos">—</span>
+                  }
+                </td>
+              </ng-container>
+
               <!-- Destacado -->
               <ng-container matColumnDef="destacado">
                 <th mat-header-cell *matHeaderCellDef class="col-centrada">Estado</th>
