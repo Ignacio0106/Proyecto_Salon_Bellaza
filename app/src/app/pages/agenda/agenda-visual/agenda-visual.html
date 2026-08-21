@@ -20,7 +20,7 @@
           @for (item of leyendaEstados; track item.estado) {
             <span class="leyenda-item">
               <span class="leyenda-punto" [style.background-color]="item.color"></span>
-              {{ item.estado }}
+              {{ item.etiqueta }}
             </span>
           }
         </div>
@@ -33,8 +33,8 @@
             <mat-label>Estado</mat-label>
             <mat-select [ngModel]="estadoFiltro()" (ngModelChange)="estadoFiltro.set($event); aplicarFiltros()">
               <mat-option value="">Todos los estados</mat-option>
-              @for (est of estadosDisponibles; track est) {
-                <mat-option [value]="est">{{ est }}</mat-option>
+              @for (est of estadosDisponibles; track est.valor) {
+                <mat-option [value]="est.valor">{{ est.etiqueta }}</mat-option>
               }
             </mat-select>
           </mat-form-field>

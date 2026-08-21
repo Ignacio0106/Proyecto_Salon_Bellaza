@@ -68,17 +68,61 @@
         <span><strong>Comentario del profesional:</strong> {{ c.comentarioProfesional }}</span>
       </div>
     }
-
     @if (data.puedeGestionar) {
       <div class="acciones-gestion">
-        <mat-form-field appearance="outline" class="select-estado">
-          <mat-label>Cambiar estado</mat-label>
-          <mat-select [ngModel]="estadoSeleccionado()" (ngModelChange)="estadoSeleccionado.set($event)">
-            @for (est of estados; track est) {
-              <mat-option [value]="est">{{ est }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        @if (estadosDisponibles().length > 0) {
+          <mat-form-field appearance="outline" class="select-estado">
+            <mat-label>Cambiar estado</mat-label>
+            <mat-select [ngModel]="estadoSeleccionado()" (ngModelChange)="estadoSeleccionado.set($event)">
+              @for (est of estadosDisponibles(); track est) {
+                <mat-option [value]="est">{{ est }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          @if (estadoSeleccionado() === 'ACEPTADA') {
+            <mat-form-field appearance="outline" class="campo-motivo">
+              <mat-label>Comentario para el cliente (opcional)</mat-label>
+              <textarea
+                matInput
+                rows="2"
+                [formControl]="comentario"
+                placeholder="Ej: Confirmado, lo espero 10 minutos antes (máximo 300 caracteres)"></textarea>
+              <mat-icon matPrefix>chat</mat-icon>
+              @if (comentario.touched && comentario.invalid) {
+                <mat-error>El comentario no puede superar 300 caracteres</mat-error>
+              }
+            </mat-form-field>
+          }
+
+          @if (requiereMotivo(estadoSeleccionado())) {
+            <mat-form-field appearance="outline" class="campo-motivo">
+              <mat-label>{{ estadoSeleccionado() === 'CANCELADA' ? 'Motivo de la cancelación' : 'Motivo del rechazo' }}</mat-label>
+              <textarea
+                matInput
+                rows="3"
+                [formControl]="motivo"
+                placeholder="Explique brevemente el motivo (mínimo 5 caracteres)"></textarea>
+              <mat-icon matPrefix>notes</mat-icon>
+              @if (motivo.touched && motivo.invalid) {
+                <mat-error>
+                  @if (motivo.hasError('required')) {
+                    El motivo es obligatorio
+                  } @else if (motivo.hasError('minlength')) {
+                    El motivo debe tener al menos 5 caracteres
+                  } @else {
+                    El motivo no puede superar 300 caracteres
+                  }
+                </mat-error>
+              }
+            </mat-form-field>
+          }
+        } @else {
+          <p class="sin-transiciones">
+            <mat-icon>lock</mat-icon>
+            Esta cita ya no puede cambiar de estado.
+          </p>
+        }
       </div>
     }
   }
@@ -91,7 +135,7 @@
     <button
       mat-flat-button
       color="primary"
-      [disabled]="guardando()"
+      [disabled]="guardando() || !estadoSeleccionado()"
       (click)="guardarEstado()">
       @if (guardando()) {
         <mat-spinner diameter="18"></mat-spinner>

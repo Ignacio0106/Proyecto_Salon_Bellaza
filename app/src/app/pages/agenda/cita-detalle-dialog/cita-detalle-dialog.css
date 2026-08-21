@@ -72,6 +72,20 @@ h2[mat-dialog-title] {
   width: 100%;
 }
 
+.campo-motivo {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.sin-transiciones {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  color: #777;
+  font-size: 0.85rem;
+}
+
 .badge-estado {
   padding: 6px 12px;
   border-radius: 12px;

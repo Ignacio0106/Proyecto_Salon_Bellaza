@@ -25,6 +25,7 @@ import { CitaService } from '../../../core/services/cita.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CitaListado } from '../../../core/models/cita.model';
 import { Role } from '../../../core/models/role.model';
+import { EstadoCita, ESTADO_CITA_LABEL } from '../../../core/models/estado-cita.model';
 import {
   CitaDetalleDialog,
   CitaDetalleDialogData,
@@ -84,10 +85,15 @@ export class AgendaVisual {
     return Array.from(set.values()).sort();
   });
 
-readonly estadosDisponibles: string[] = ['PENDIENTE', 'ACEPTADA', 'RECHAZADA', 'COMPLETADA', 'CANCELADA'];
+  // Catálogo de estados con etiqueta legible para el filtro
+  readonly estadosDisponibles = (
+    Object.entries(ESTADO_CITA_LABEL) as Array<[EstadoCita, string]>
+  ).map(([valor, etiqueta]) => ({ valor, etiqueta }));
 
   readonly leyendaEstados = Object.entries(COLORES_ESTADO).map(([estado, color]) => ({
     estado,
+    etiqueta:
+      (ESTADO_CITA_LABEL as Record<string, string>)[estado] ?? estado,
     color: color.bg,
   }));
 
