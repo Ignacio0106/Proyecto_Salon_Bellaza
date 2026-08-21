@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import { AppRoutes } from "./routes/routes";
+import { ErrorMiddleware } from "./middlewares/error.middleware";
 import path from "node:path";
 
 const app = express();
@@ -27,12 +28,12 @@ app.get("/", (req, res) => {
             });
 });
 //---- Definir rutas ----
-app.use(AppRoutes.routes) 
-// Handle errors middleware
-
+app.use(AppRoutes.routes)
 //Acceso a las imágenes
-app.use("/images",express.static( 
-path.join(path.resolve(),"assets/uploads"))) 
+app.use("/images",express.static(
+    path.join(path.resolve(),"assets/uploads")))
+// Handle errors middleware (siempre al final)
+app.use(ErrorMiddleware.handleError)
 
 app.listen(port, () => {
     console.log(`http://localhost:${port}`);

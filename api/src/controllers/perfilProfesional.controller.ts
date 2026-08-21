@@ -80,7 +80,26 @@ cambiarDisponibilidad = async (request: AuthRequest, response: Response, next: N
     }
   };
 
-    crear = async (request: AuthRequest, response: Response, next: NextFunction) => { 
+  validarCorreo = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+      const correo = String(request.query.correo ?? "").trim();
+      if (!correo) {
+        return response.status(StatusCodes.BAD_REQUEST).json({
+          success: false,
+          message: "El correo es obligatorio",
+        });
+      }
+      const existe = await PerfilProfesionalService.existeCorreo(correo);
+      return response.status(StatusCodes.OK).json({
+        success: true,
+        data: { existe },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  crear = async (request: AuthRequest, response: Response, next: NextFunction) => { 
         const usuario = request.user;
         if (!usuario) {
             return response.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: "Token no proporcionado" });

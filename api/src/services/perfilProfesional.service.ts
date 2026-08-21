@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma";
+import bcrypt from "bcryptjs";
 import { CreateProfesionalDto, UpdateProfesionalDto } from "../dtos/perfilprofesional.dto";
 import { AppError } from "../utils/app-error";
 
@@ -72,6 +73,30 @@ export const PerfilProfesionalService = {
         if (!perfil) {
             return null;
         }
+
+        // Promedio y cantidad de reseñas reales del profesional,
+        // junto con las últimas reseñas registradas por clientes
+        const [aggregate, ultimasResenas] = await Promise.all([
+            prisma.resena.aggregate({
+                where: { profesionalId: id },
+                _avg: { puntuacion: true },
+                _count: { _all: true },
+            }),
+            prisma.resena.findMany({
+                where: { profesionalId: id },
+                orderBy: { fechaResena: "desc" },
+                take: 5,
+                select: {
+                    puntuacion: true,
+                    comentario: true,
+                    fechaResena: true,
+                    cliente: {
+                        select: { nombre: true, apellidos: true },
+                    },
+                },
+            }),
+        ]);
+
         return {
             id: perfil.id,
             usuarioId: perfil.usuarioId,
@@ -93,6 +118,19 @@ export const PerfilProfesionalService = {
                 id: e.especialidad.id,
                 nombre: e.especialidad.nombre,
                 descripcion: e.especialidad.descripcion,
+            })),
+
+            // Calificación promedio (null si aún no tiene reseñas)
+            calificacionPromedio:
+                aggregate._avg.puntuacion !== null
+                    ? Math.round(aggregate._avg.puntuacion * 10) / 10
+                    : null,
+            cantidadResenas: aggregate._count._all,
+            resenas: ultimasResenas.map((r) => ({
+                cliente: `${r.cliente.nombre} ${r.cliente.apellidos}`,
+                puntuacion: r.puntuacion,
+                comentario: r.comentario,
+                fechaResena: r.fechaResena,
             })),
         };
     },
@@ -127,28 +165,36 @@ export const PerfilProfesionalService = {
     }
     ,
 
-    async validateCorreo(correo: string) {
-        const usuario = await prisma.usuario.findUnique({
+    async validateCorreo(correo: string, excludeUsuarioId?: number) {
+        const usuario = await prisma.usuario.findFirst({
             where: { correo },
         });
 
-        if (usuario) {
-            throw AppError.badRequest(
+        if (usuario && usuario.id !== excludeUsuarioId) {
+            throw AppError.conflict(
                 "Ya existe un usuario con ese correo"
             );
         }
     },
 
-    async validateTelefono(telefono: string) {
+    async validateTelefono(telefono: string, excludeUsuarioId?: number) {
         const usuario = await prisma.usuario.findFirst({
             where: { telefono },
         });
 
-        if (usuario) {
-            throw AppError.badRequest(
+        if (usuario && usuario.id !== excludeUsuarioId) {
+            throw AppError.conflict(
                 "Ya existe un usuario con ese teléfono"
             );
         }
+    },
+
+    async existeCorreo(correo: string) {
+        const usuario = await prisma.usuario.findUnique({
+            where: { correo },
+            select: { id: true },
+        });
+        return usuario !== null;
     },
     async validateEspecialidades(
         especialidadIds: number[]
@@ -175,14 +221,17 @@ export const PerfilProfesionalService = {
     },
     async crear(data: CreateProfesionalDto) {
         await this.validateEspecialidades(data.especialidadIds);
+        await this.validateCorreo(data.correo);
+        await this.validateTelefono(data.telefono);
 
+        const hashedPassword = await bcrypt.hash("123456", 10);
         const usuario = await prisma.usuario.create({
             data: {
                 nombre: data.nombre,
                 apellidos: data.apellidos,
                 correo: data.correo,
                 telefono: data.telefono,
-                contrasena: "123456",
+                contrasena: hashedPassword,
                 rol: "PROFESIONAL",
             },
         });
@@ -233,6 +282,14 @@ export const PerfilProfesionalService = {
 
         if (data.especialidadIds !== undefined) {
             await this.validateEspecialidades(data.especialidadIds);
+        }
+
+        if (data.correo !== undefined && data.correo !== perfil.usuario.correo) {
+            await this.validateCorreo(data.correo, perfil.usuarioId);
+        }
+
+        if (data.telefono !== undefined && data.telefono !== perfil.usuario.telefono) {
+            await this.validateTelefono(data.telefono, perfil.usuarioId);
         }
 
         await prisma.usuario.update({

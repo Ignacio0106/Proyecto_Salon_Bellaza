@@ -12,6 +12,7 @@ export class PerfilProfesionalRoutes {
         const controller = new PerfilProfesionalController() 
         //Rutas 
         //locahost:3000/usuario/ 
+        router.get('/validar-correo', asyncHandler(controller.validarCorreo))
         router.get('/', asyncHandler(controller.listar)) 
         router.get('/:id', asyncHandler(controller.obtenerPorId)) 
         router.put('/estado/:id', authenticateToken, controller.cambiarDisponibilidad);
