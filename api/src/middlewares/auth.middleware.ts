@@ -7,6 +7,23 @@ export interface AuthTokenPayload extends JwtPayload {
     rol: string
 }
 export interface AuthRequest extends Request { user?: AuthTokenPayload }
+export function authorizeRole(...rolesPermitidos: string[]) {
+    return (request: AuthRequest, response: Response, next: NextFunction) => {
+        const usuario = request.user
+        if (!usuario) {
+            return response
+                .status(StatusCodes.UNAUTHORIZED)
+                .json({ success: false, message: "Token no proporcionado" })
+        }
+        if (!rolesPermitidos.includes(usuario.rol)) {
+            return response
+                .status(StatusCodes.FORBIDDEN)
+                .json({ success: false, message: "No tiene permisos para realizar esta acción" })
+        }
+        next()
+    }
+}
+
 export function authenticateToken(request: AuthRequest, response: Response, next: NextFunction) {
     const authorizationHeader = request.headers.authorization
     if (!authorizationHeader) {

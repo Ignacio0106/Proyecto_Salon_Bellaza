@@ -63,6 +63,31 @@ cambiarEstado = async (request: Request, response: Response, next: NextFunction)
         }
     };
 
+cambiarRol = async (request: AuthRequest, response: Response, next: NextFunction) => {
+        try {
+            const rawId = Array.isArray(request.params.id) ? request.params.id[0] : request.params.id;
+            const id = parseInt(rawId ?? '', 10);
+
+            if (isNaN(id)) {
+                return response.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "ID inválido" });
+            }
+
+            const usuarioActualizado = await UsuarioService.cambiarRol(id, request.body.rol);
+
+            return sendSuccess(
+                response,
+                usuarioActualizado,
+                "Rol actualizado correctamente"
+            );
+        } catch (error: any) {
+            if (error.message === "Usuario no encontrado") {
+                return response.status(StatusCodes.NOT_FOUND).json({ success: false, message: error.message });
+            }
+            console.error(error);
+            next(error);
+        }
+    };
+
         registrar = async (
         request: Request,
         response: Response,
@@ -126,6 +151,25 @@ cambiarEstado = async (request: Request, response: Response, next: NextFunction)
             response,
             usuario,
             "Perfil obtenido correctamente"
+        );
+    };
+
+    actualizarPerfil = async (request: AuthRequest, response: Response, next: NextFunction) => {
+        const usuarioId = request.user?.id;
+
+        if (!usuarioId) {
+            return response.status(StatusCodes.UNAUTHORIZED).json({
+                success: false,
+                message: "Usuario no autenticado",
+            });
+        }
+
+        const usuario = await UsuarioService.actualizarPerfil(usuarioId, request.body);
+
+        return sendSuccess(
+            response,
+            usuario,
+            "Perfil actualizado correctamente"
         );
     };
 }

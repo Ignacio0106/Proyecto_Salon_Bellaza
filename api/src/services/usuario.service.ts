@@ -57,6 +57,29 @@ async alternarEstado(id: number) {
             }
         });
     },
+    async cambiarRol(id: number, rol: Rol) {
+        const usuario = await prisma.usuario.findUnique({
+            where: { id },
+            select: { id: true }
+        });
+        if (!usuario) {
+            throw AppError.notFound("Usuario no encontrado");
+        }
+
+        return await prisma.usuario.update({
+            where: { id },
+            data: { rol },
+            select: {
+                id: true,
+                nombre: true,
+                apellidos: true,
+                correo: true,
+                rol: true,
+                estado: true
+            }
+        });
+    },
+
     async registrar(data: {
     correo: string;
     telefono: string;
@@ -127,6 +150,59 @@ async alternarEstado(id: number) {
     }
     const { contrasena, perfilProfesional, ...usuarioSinPassword } = usuario;
 
+    return {
+        ...usuarioSinPassword,
+        perfilProfesionalId: perfilProfesional?.id ?? null,
+    };
+},
+    async actualizarPerfil(usuarioId: number, data: {
+    correo: string;
+    nombre: string;
+    apellidos: string;
+    telefono?: string;
+    contrasena?: string;
+}) {
+    const usuario = await prisma.usuario.findUnique({
+        where: { id: usuarioId }
+    });
+    if (!usuario) {
+        throw AppError.notFound("El usuario no existe");
+    }
+
+    const correoEnUso = await prisma.usuario.findFirst({
+        where: {
+            correo: data.correo,
+            NOT: { id: usuarioId },
+        },
+        select: { id: true },
+    });
+    if (correoEnUso) {
+        throw AppError.conflict("El correo ya está registrado");
+    }
+
+    const datosActualizar: any = {
+        correo: data.correo,
+        nombre: data.nombre,
+        apellidos: data.apellidos,
+        telefono: data.telefono,
+    };
+    if (data.contrasena) {
+        datosActualizar.contrasena = await bcrypt.hash(data.contrasena, 10);
+    }
+
+    const usuarioActualizado = await prisma.usuario.update({
+        where: { id: usuarioId },
+        data: datosActualizar,
+        include: {
+            perfilProfesional: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    });
+
+    const { contrasena, perfilProfesional, ...usuarioSinPassword } = usuarioActualizado;
     return {
         ...usuarioSinPassword,
         perfilProfesionalId: perfilProfesional?.id ?? null,
