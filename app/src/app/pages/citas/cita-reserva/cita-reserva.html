@@ -104,17 +104,16 @@
   }
 </mat-form-field>
 
-						<mat-form-field appearance="outline">
-							<mat-label>Modalidad</mat-label>
-							<mat-select name="modalidad" [(ngModel)]="form.modalidad" required>
-								<mat-option value="VIRTUAL">Virtual</mat-option>
-								<mat-option value="PRESENCIAL">Presencial</mat-option>
-								<mat-option value="MIXTA">Mixta</mat-option>
-							</mat-select>
-							@if (citaForm.submitted && !form.modalidad) {
-								<mat-error>La modalidad es obligatoria</mat-error>
-							}
-						</mat-form-field>
+<mat-form-field appearance="outline" class="w-full">
+  <mat-label>Modalidad</mat-label>
+  <input
+    matInput
+    name="modalidad"
+    [value]="form.modalidad | titlecase"
+    readonly
+    placeholder="Se asigna según el servicio seleccionado"
+  />
+</mat-form-field>
 					</div>
 
 					<mat-form-field appearance="outline" class="full-width">

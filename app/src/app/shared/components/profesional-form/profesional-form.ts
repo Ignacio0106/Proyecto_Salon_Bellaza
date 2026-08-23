@@ -181,7 +181,7 @@ export class ProfesionalForm {
   private cargarEspecialidades() {
     this.especialidadService.listar().subscribe({
       next: (response) => {
-        this.especialidades.set(response.data ?? [])
+        this.especialidades.set((response.data ?? []).filter((especialidad) => especialidad.estado === 'ACTIVO'))
       },
       error: () => {
         alert('No se pudieron cargar las especialidades')

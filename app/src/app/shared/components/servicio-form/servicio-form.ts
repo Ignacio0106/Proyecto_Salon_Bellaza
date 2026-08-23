@@ -189,10 +189,10 @@ export class ServicioForm {
       especialidades: this.especialidadService.listar(),
     }).subscribe({
       next: (response) => {
-        this.categorias.set(response.categorias.data ?? [])
+        this.categorias.set((response.categorias.data ?? []).filter((categoria) => categoria.estado === 'ACTIVO'))
         const profesionales = response.profesionales.data ?? []
         this.profesionales.set(profesionales)
-        this.especialidades.set(response.especialidades.data ?? [])
+        this.especialidades.set((response.especialidades.data ?? []).filter((especialidad) => especialidad.estado === 'ACTIVO'))
         this.preseleccionarProfesionalPropio(profesionales)
         this.loading.set(false)
       },

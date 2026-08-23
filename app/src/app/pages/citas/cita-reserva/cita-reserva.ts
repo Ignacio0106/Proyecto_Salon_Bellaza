@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -52,6 +52,7 @@ interface CitaFormValue {
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    TitleCasePipe,
 ],
   templateUrl: './cita-reserva.html',
   styleUrl: './cita-reserva.css',
@@ -138,8 +139,8 @@ export class CitaReserva {
       servicios: this.serviciosService.listar(),
     }).subscribe({
       next: (response) => {
-        this.profesionales.set(response.profesionales.data ?? []);
-        this.servicios.set(response.servicios.data ?? []);
+        this.profesionales.set((response.profesionales.data ?? []).filter((profesional) => profesional.disponible === true));
+        this.servicios.set((response.servicios.data ?? []).filter((servicio) => servicio.estado === 'ACTIVO'));
         this.loading.set(false);
       },
       error: () => {
@@ -153,6 +154,7 @@ export class CitaReserva {
     this.form.profesionalId = profesionalId;
     this.form.servicioId = null;
     this.servicioDetalle.set(null);
+    this.form.modalidad = '';
   }
 
   onServicioChange(servicioId: number | null): void {
