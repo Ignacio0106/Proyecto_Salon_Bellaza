@@ -12,147 +12,140 @@
 	</header>
 
 	@if (loading()) {
-		<mat-card class="state-card">
-			<mat-card-content>
-				<mat-spinner diameter="40"></mat-spinner>
-				<p>Cargando datos del formulario...</p>
-			</mat-card-content>
-		</mat-card>
+	<mat-card class="state-card">
+		<mat-card-content>
+			<mat-spinner diameter="40"></mat-spinner>
+			<p>Cargando datos del formulario...</p>
+		</mat-card-content>
+	</mat-card>
 	} @else {
-		@if (error()) {
-			<div class="error-box">{{ error() }}</div>
-		}
+	@if (error()) {
+	<div class="error-box">{{ error() }}</div>
+	}
 
-		<mat-card class="form-card">
-			<mat-card-content>
-				<form #citaForm="ngForm" (ngSubmit)="guardar(citaForm.valid === true)" class="cita-form">
-					<div class="form-grid">
-						<mat-form-field appearance="outline">
-							<mat-label>Cliente</mat-label>
-							<input matInput [value]="clienteActual()" readonly />
-							@if (citaForm.submitted && !form.clienteId) {
-								<mat-error>El cliente es obligatorio</mat-error>
-							}
-						</mat-form-field>
-
-						<mat-form-field appearance="outline">
-							<mat-label>Profesional</mat-label>
-							<mat-select
-								name="profesionalId"
-								[ngModel]="form.profesionalId"
-								(ngModelChange)="onProfesionalChange($event)"
-								required>
-								<mat-option [value]="null">Selecciona un profesional</mat-option>
-								@for (profesional of profesionales(); track profesional.id) {
-									<mat-option [value]="profesional.id">{{ profesional.nombre }} {{ profesional.apellidos }}</mat-option>
-								}
-							</mat-select>
-							@if (citaForm.submitted && !form.profesionalId) {
-								<mat-error>El profesional es obligatorio</mat-error>
-							}
-						</mat-form-field>
-
-						<mat-form-field appearance="outline">
-							<mat-label>Servicio</mat-label>
-							<mat-select
-								name="servicioId"
-								[ngModel]="form.servicioId"
-								(ngModelChange)="onServicioChange($event)"
-								[disabled]="!form.profesionalId"
-								required>
-								<mat-option [value]="null">Selecciona un servicio</mat-option>
-								@for (servicio of serviciosFiltrados(); track servicio.id) {
-									<mat-option [value]="servicio.id">{{ servicio.nombre }} - ₡{{ servicio.precio }}</mat-option>
-								}
-							</mat-select>
-							@if (citaForm.submitted && !form.servicioId) {
-								<mat-error>El servicio es obligatorio</mat-error>
-							}
-						</mat-form-field>
-
-						<mat-form-field appearance="outline">
-  <mat-label>Fecha</mat-label>
-  <input
-    matInput
-    [matDatepicker]="picker"
-    [min]="hoy"
-    name="fechaCitaSolicitada"
-    [(ngModel)]="form.fechaCitaSolicitada"
-    required />
-
-  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-datepicker #picker></mat-datepicker>
-
-  @if (citaForm.submitted && !form.fechaCitaSolicitada) {
-    <mat-error>La fecha es obligatoria</mat-error>
-  }
-</mat-form-field>
-
-<mat-form-field appearance="outline">
-  <mat-label>Hora</mat-label>
-  <input
-    matInput
-    type="time"
-    name="horaInicio"
-    [(ngModel)]="form.horaInicio"
-    required />
-
-  <mat-icon matSuffix>schedule</mat-icon>
-
-  @if (citaForm.submitted && !form.horaInicio) {
-    <mat-error>La hora es obligatoria</mat-error>
-  }
-</mat-form-field>
-
-<mat-form-field appearance="outline" class="w-full">
-  <mat-label>Modalidad</mat-label>
-  <input
-    matInput
-    name="modalidad"
-    [value]="form.modalidad | titlecase"
-    readonly
-    placeholder="Se asigna según el servicio seleccionado"
-  />
-</mat-form-field>
-					</div>
-
-					<mat-form-field appearance="outline" class="full-width">
-						<mat-label>Descripción / comentario</mat-label>
-						<textarea matInput rows="4" name="comentarioNecesidad" [(ngModel)]="form.comentarioNecesidad" required minlength="5"></textarea>
-						@if (citaForm.submitted && !form.comentarioNecesidad.trim()) {
-							<mat-error>La descripción es obligatoria</mat-error>
+	<mat-card class="form-card">
+		<mat-card-content>
+			<form #citaForm="ngForm" (ngSubmit)="guardar(citaForm.valid === true)" class="cita-form">
+				<div class="form-grid">
+					<mat-form-field appearance="outline">
+						<mat-label>Cliente</mat-label>
+						<input matInput [value]="clienteActual()" readonly />
+						@if (citaForm.submitted && !form.clienteId) {
+						<mat-error>El cliente es obligatorio</mat-error>
 						}
 					</mat-form-field>
 
-					<div class="summary-grid">
-						<div class="summary-item">
-							<span>Hora final estimada</span>
-							<strong>{{ horaFinalizacion() || '—' }}</strong>
-						</div>
-						<div class="summary-item">
-							<span>Monto calculado</span>
-							<strong>₡{{ montoCalculado() }}</strong>
-						</div>
-					</div>
-
-					<div class="actions">
-						<button mat-stroked-button type="button" (click)="cancelar()">Cancelar</button>
-						<button mat-raised-button color="primary" type="submit" [disabled]="submitting()">
-							@if (submitting()) {
-								<span class="button-content">
-									<mat-spinner diameter="18"></mat-spinner>
-									<span>Guardando...</span>
-								</span>
-							} @else {
-								<span class="button-content">
-									<mat-icon>event_available</mat-icon>
-									<span>Registrar cita</span>
-								</span>
+					<mat-form-field appearance="outline">
+						<mat-label>Profesional</mat-label>
+						<mat-select name="profesionalId" [ngModel]="form.profesionalId"
+							(ngModelChange)="onProfesionalChange($event)" required>
+							<mat-option [value]="null">Selecciona un profesional</mat-option>
+							@for (profesional of profesionales(); track profesional.id) {
+							<mat-option [value]="profesional.id">{{ profesional.nombre }} {{ profesional.apellidos
+								}}</mat-option>
 							}
-						</button>
+						</mat-select>
+						@if (citaForm.submitted && !form.profesionalId) {
+						<mat-error>El profesional es obligatorio</mat-error>
+						}
+					</mat-form-field>
+
+					<mat-form-field appearance="outline">
+						<mat-label>Servicio</mat-label>
+						<mat-select name="servicioId" [ngModel]="form.servicioId"
+							(ngModelChange)="onServicioChange($event)" [disabled]="!form.profesionalId" required>
+							<mat-option [value]="null">Selecciona un servicio</mat-option>
+							@for (servicio of serviciosFiltrados(); track servicio.id) {
+							<mat-option [value]="servicio.id">{{ servicio.nombre }} - ₡{{ servicio.precio
+								}}</mat-option>
+							}
+						</mat-select>
+						@if (citaForm.submitted && !form.servicioId) {
+						<mat-error>El servicio es obligatorio</mat-error>
+						}
+					</mat-form-field>
+					<div class="form-grid">
+						<mat-form-field appearance="outline" class="w-full">
+							<mat-label>Modalidad</mat-label>
+							<input matInput name="modalidad" [value]="form.modalidad | titlecase" readonly
+								placeholder="Se asigna según el servicio seleccionado" />
+						</mat-form-field>
+						<mat-form-field appearance="outline">
+							<mat-label>Precio</mat-label>
+							<input matInput name="precio" [value]="montoCalculado()" readonly placeholder="0" />
+						</mat-form-field>
 					</div>
-				</form>
-			</mat-card-content>
-		</mat-card>
+					<mat-form-field appearance="outline">
+						<mat-label>Fecha</mat-label>
+						<input matInput [matDatepicker]="picker" [min]="hoy" name="fechaCitaSolicitada"
+							[(ngModel)]="form.fechaCitaSolicitada" required />
+
+						<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+						<mat-datepicker #picker></mat-datepicker>
+
+						@if (citaForm.submitted && !form.fechaCitaSolicitada) {
+						<mat-error>La fecha es obligatoria</mat-error>
+						}
+						@if (form.fechaCitaSolicitada && esFechaMenorAHoy()) {
+						<mat-error>La fecha no puede ser menor al día de hoy</mat-error>
+						}
+					</mat-form-field>
+
+					<mat-form-field appearance="outline">
+						<mat-label>Hora</mat-label>
+						<input matInput type="time" name="horaInicio" [(ngModel)]="form.horaInicio" required />
+
+						<mat-icon matSuffix>schedule</mat-icon>
+
+						@if (citaForm.submitted && !form.horaInicio) {
+						<mat-error>La hora es obligatoria</mat-error>
+						}
+
+						@if (form.horaInicio && esHoraMenorAHoy()) {
+						<mat-error>Para citas de hoy, debe elegir una hora posterior a la actual</mat-error>
+						}
+						
+					</mat-form-field>
+				</div>
+
+				<mat-form-field appearance="outline" class="full-width">
+					<mat-label>Descripción / comentario</mat-label>
+					<textarea matInput rows="4" name="comentarioNecesidad" [(ngModel)]="form.comentarioNecesidad"
+						required minlength="5"></textarea>
+					@if (citaForm.submitted && !form.comentarioNecesidad.trim()) {
+					<mat-error>La descripción es obligatoria</mat-error>
+					}
+				</mat-form-field>
+
+				<div class="summary-grid">
+					<div class="summary-item">
+						<span>Hora final estimada</span>
+						<strong>{{ horaFinalizacion() || '—' }}</strong>
+					</div>
+					<div class="summary-item">
+						<span>Monto calculado</span>
+						<strong>₡{{ montoCalculado() }}</strong>
+					</div>
+				</div>
+
+				<div class="actions">
+					<button mat-stroked-button type="button" (click)="cancelar()">Cancelar</button>
+					<button mat-raised-button color="primary" type="submit" [disabled]="submitting()">
+						@if (submitting()) {
+						<span class="button-content">
+							<mat-spinner diameter="18"></mat-spinner>
+							<span>Guardando...</span>
+						</span>
+						} @else {
+						<span class="button-content">
+							<mat-icon>event_available</mat-icon>
+							<span>Registrar cita</span>
+						</span>
+						}
+					</button>
+				</div>
+			</form>
+		</mat-card-content>
+	</mat-card>
 	}
 </section>

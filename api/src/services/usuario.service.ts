@@ -18,7 +18,7 @@ export const UsuarioService = {
         });
 
         return usuarios.map((usuario) => ({
-            id: usuario.id, 
+            id: usuario.id,
             nombreCompleto: `${usuario.nombre} ${usuario.apellidos}`,
             correo: usuario.correo,
             rol: usuario.rol,
@@ -32,7 +32,7 @@ export const UsuarioService = {
         });
     },
 
-async alternarEstado(id: number) {
+    async alternarEstado(id: number) {
         const usuarioActual = await prisma.usuario.findUnique({
             where: { id },
             select: { estado: true }
@@ -81,32 +81,32 @@ async alternarEstado(id: number) {
     },
 
     async registrar(data: {
-    correo: string;
-    telefono: string;
-    contrasena: string;
-    nombre: string;
-    apellidos: string;
-}) {
-    const usuarioExists = await prisma.usuario.findUnique({
-        where: { correo: data.correo }
-    });
-    if (usuarioExists) {
-        throw AppError.conflict("El correo ya está registrado");
-    }
-    const hashedPassword = await bcrypt.hash(data.contrasena, 10);
-    const usuario = await prisma.usuario.create({
-        data: {
-            correo: data.correo,
-            contrasena: hashedPassword,
-            nombre: data.nombre,
-            apellidos: data.apellidos,
-            rol: Rol.CLIENTE, 
-            telefono: data.telefono,
-        },
-    });
-    const { contrasena, ...usuarioWithoutPassword } = usuario;
-    return usuarioWithoutPassword;
-},
+        correo: string;
+        telefono: string;
+        contrasena: string;
+        nombre: string;
+        apellidos: string;
+    }) {
+        const usuarioExists = await prisma.usuario.findUnique({
+            where: { correo: data.correo }
+        });
+        if (usuarioExists) {
+            throw AppError.conflict("El correo ya está registrado");
+        }
+        const hashedPassword = await bcrypt.hash(data.contrasena, 10);
+        const usuario = await prisma.usuario.create({
+            data: {
+                correo: data.correo,
+                contrasena: hashedPassword,
+                nombre: data.nombre,
+                apellidos: data.apellidos,
+                rol: Rol.CLIENTE,
+                telefono: data.telefono,
+            },
+        });
+        const { contrasena, ...usuarioWithoutPassword } = usuario;
+        return usuarioWithoutPassword;
+    },
 
     async login(data: { correo: string; contrasena: string }) {
         const usuario = await prisma.usuario.findUnique({
@@ -119,6 +119,9 @@ async alternarEstado(id: number) {
 
         if (!isPasswordValid) {
             throw new Error("Correo o contraseña incorrectos");
+        }
+        if (usuario.estado !== 'ACTIVO') {
+            throw AppError.unauthorized("Tu usuario está inactivo. Contacta al administrador");
         }
         const payload = {
             id: usuario.id,
@@ -135,77 +138,80 @@ async alternarEstado(id: number) {
         };
     },
     async perfil(usuarioId: number) {
-    const usuario = await prisma.usuario.findUnique({
-        where: { id: usuarioId },
-        include: {
-            perfilProfesional: {
-                select: {
-                    id: true,
+        const usuario = await prisma.usuario.findUnique({
+            where: { id: usuarioId },
+            include: {
+                perfilProfesional: {
+                    select: {
+                        id: true,
+                    },
                 },
             },
-        },
-    });
-    if (!usuario) {
-        throw new Error("El usuario no existe");
-    }
-    const { contrasena, perfilProfesional, ...usuarioSinPassword } = usuario;
+        });
+        if (!usuario) {
+            throw new Error("El usuario no existe");
+        }
+        if (usuario.estado !== 'ACTIVO') {
+            throw AppError.unauthorized("Tu usuario está inactivo. Contacta al administrador");
+        }
+        const { contrasena, perfilProfesional, ...usuarioSinPassword } = usuario;
 
-    return {
-        ...usuarioSinPassword,
-        perfilProfesionalId: perfilProfesional?.id ?? null,
-    };
-},
+        return {
+            ...usuarioSinPassword,
+            perfilProfesionalId: perfilProfesional?.id ?? null,
+        };
+    },
     async actualizarPerfil(usuarioId: number, data: {
-    correo: string;
-    nombre: string;
-    apellidos: string;
-    telefono?: string;
-    contrasena?: string;
-}) {
-    const usuario = await prisma.usuario.findUnique({
-        where: { id: usuarioId }
-    });
-    if (!usuario) {
-        throw AppError.notFound("El usuario no existe");
-    }
+        correo: string;
+        nombre: string;
+        apellidos: string;
+        telefono?: string;
+        contrasena?: string;
+    }) {
+        const usuario = await prisma.usuario.findUnique({
+            where: { id: usuarioId }
+        });
+        if (!usuario) {
+            throw AppError.notFound("El usuario no existe");
+        }
 
-    const correoEnUso = await prisma.usuario.findFirst({
-        where: {
+        const correoEnUso = await prisma.usuario.findFirst({
+            where: {
+                correo: data.correo,
+                NOT: { id: usuarioId },
+            },
+            select: { id: true },
+        });
+        if (correoEnUso) {
+            throw AppError.conflict("El correo ya está registrado");
+        }
+
+        const datosActualizar: any = {
             correo: data.correo,
-            NOT: { id: usuarioId },
-        },
-        select: { id: true },
-    });
-    if (correoEnUso) {
-        throw AppError.conflict("El correo ya está registrado");
-    }
+            nombre: data.nombre,
+            apellidos: data.apellidos,
+            telefono: data.telefono,
+        };
+        if (data.contrasena) {
+            datosActualizar.contrasena = await bcrypt.hash(data.contrasena, 10);
+        }
 
-    const datosActualizar: any = {
-        correo: data.correo,
-        nombre: data.nombre,
-        apellidos: data.apellidos,
-        telefono: data.telefono,
-    };
-    if (data.contrasena) {
-        datosActualizar.contrasena = await bcrypt.hash(data.contrasena, 10);
-    }
-
-    const usuarioActualizado = await prisma.usuario.update({
-        where: { id: usuarioId },
-        data: datosActualizar,
-        include: {
-            perfilProfesional: {
-                select: {
-                    id: true,
+        const usuarioActualizado = await prisma.usuario.update({
+            where: { id: usuarioId },
+            data: datosActualizar,
+            include: {
+                perfilProfesional: {
+                    select: {
+                        id: true,
+                    },
                 },
             },
-        },
-    });
+        });
 
-    const { contrasena, perfilProfesional, ...usuarioSinPassword } = usuarioActualizado;
-    return {
-        ...usuarioSinPassword,
-        perfilProfesionalId: perfilProfesional?.id ?? null,
-    };
-},
+        const { contrasena, perfilProfesional, ...usuarioSinPassword } = usuarioActualizado;
+        return {
+            ...usuarioSinPassword,
+            perfilProfesionalId: perfilProfesional?.id ?? null,
+        };
+    },
 };

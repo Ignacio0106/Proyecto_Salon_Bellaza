@@ -53,10 +53,11 @@ interface CitaFormValue {
     MatDatepickerModule,
     MatNativeDateModule,
     TitleCasePipe,
-],
+  ],
   templateUrl: './cita-reserva.html',
   styleUrl: './cita-reserva.css',
 })
+
 export class CitaReserva {
   private readonly citaService = inject(CitaService);
   private readonly profesionalService = inject(ProfesionalService);
@@ -160,11 +161,11 @@ export class CitaReserva {
   onServicioChange(servicioId: number | null): void {
     this.form.servicioId = servicioId;
 
-  if (!servicioId) {
-    this.servicioDetalle.set(null);
-    this.form.modalidad = '';
-    return;
-  }
+    if (!servicioId) {
+      this.servicioDetalle.set(null);
+      this.form.modalidad = '';
+      return;
+    }
     this.serviciosService.obtenerPorId(servicioId).subscribe({
       next: (response) => {
 
@@ -172,7 +173,7 @@ export class CitaReserva {
 
         this.servicioDetalle.set(detalle);
 
-      this.form.modalidad = (detalle?.modalidad as Modalidad) ?? '';
+        this.form.modalidad = (detalle?.modalidad as Modalidad) ?? '';
       },
       error: () => {
         this.notificationService.error('No se pudo cargar el servicio seleccionado', 'Error');
@@ -191,21 +192,25 @@ export class CitaReserva {
       this.error.set('Completa todos los campos obligatorios');
       return;
     }
-
     const duracion = Number(this.servicioDetalle()?.duracionEstimada ?? 0);
     if (!duracion) {
       this.error.set('Selecciona un servicio válido');
       return;
     }
 
-    // Regla de negocio: no se permiten citas en fechas pasadas a hoy
     const fechaSeleccionada = new Date(value.fechaCitaSolicitada);
     fechaSeleccionada.setHours(0, 0, 0, 0);
 
     if (fechaSeleccionada < this.hoy) {
-      this.error.set('No se puede agendar la cita en una fecha pasada a hoy');
       return;
     }
+
+    if (this.esHoraMenorAHoy()) {
+      this.notificationService.error('La hora seleccionada no puede ser menor al día de hoy.', 'Fecha inválida');
+      return;
+    }
+
+    
 
     const payload: CitaCreateDto = {
       clienteId: value.clienteId,
@@ -235,6 +240,25 @@ export class CitaReserva {
         this.submitting.set(false);
       },
     });
+  }
+
+  esFechaMenorAHoy(): boolean {
+    if (!this.form.fechaCitaSolicitada) return false;
+    const fecha = new Date(this.form.fechaCitaSolicitada);
+    fecha.setHours(0, 0, 0, 0);
+    return fecha < this.hoy;
+  }
+
+  esHoraMenorAHoy(): boolean {
+    if (!this.form.horaInicio) return false;
+    if (!this.form.fechaCitaSolicitada) return false;
+    const fechaSeleccionada = new Date(this.form.fechaCitaSolicitada);
+    fechaSeleccionada.setHours(0, 0, 0, 0);
+    if (fechaSeleccionada > this.hoy) return false;
+    const [horas, minutos] = this.form.horaInicio.split(':').map(Number);
+    const fecha = new Date();
+    fecha.setHours(horas, minutos, 0, 0);
+    return fecha < new Date();
   }
 
   cancelar(): void {

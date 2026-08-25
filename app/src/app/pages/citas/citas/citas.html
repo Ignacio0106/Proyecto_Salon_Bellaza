@@ -5,201 +5,204 @@
     </div>
 
     @if (esCliente()) {
-      <a mat-stroked-button routerLink="/citas/cita-reserva">
-        <mat-icon>add</mat-icon>
-        Nueva cita
-      </a>
+    <a mat-stroked-button routerLink="/citas/cita-reserva">
+      <mat-icon>add</mat-icon>
+      Nueva cita
+    </a>
     }
   </div>
+  <div class="filtros-bar">
+    <mat-form-field appearance="outline" class="filtro-item">
+      <mat-label>Estado</mat-label>
+      <mat-select [value]="estadoFiltro()" (selectionChange)="onEstadoChange($event.value)">
+        <mat-option value="">Todos los estados</mat-option>
+        @for (est of opcionesEstados; track est) {
+        <mat-option [value]="est">{{ estadoLabel[est] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
 
+    <mat-form-field appearance="outline" class="filtro-item">
+      <mat-label>Rango de fechas</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input matStartDate placeholder="Desde" [value]="fechaDesde()" (dateChange)="onFechaDesdeChange($event.value)">
+        <input matEndDate placeholder="Hasta" [value]="fechaHasta()" (dateChange)="onFechaHastaChange($event.value)">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+    <button mat-stroked-button color="warn" class="btn-limpiar" (click)="limpiarFiltros()">
+      <mat-icon>filter_alt_off</mat-icon>
+      Limpiar filtros
+    </button>
+
+  </div>
   @if (loading()) {
-    <div class="state-box">
-      <mat-spinner diameter="42"></mat-spinner>
-      <p>Cargando citas...</p>
-    </div>
+  <div class="state-box">
+    <mat-spinner diameter="42"></mat-spinner>
+    <p>Cargando citas...</p>
+  </div>
   }
 
   @if (error()) {
-    <div class="alert-error">
-      {{ error() }}
-    </div>
+  <div class="alert-error">
+    {{ error() }}
+  </div>
   }
 
   @if (!loading() && !error()) {
 
-    <!-- Historial cronológico del Cliente -->
-    @if (esCliente()) {
-      @if (historialAgrupado().length) {
-        <div class="historial">
-          @for (grupo of historialAgrupado(); track grupo.fecha) {
-            <div class="grupo-fecha">
-              <h2 class="fecha-titulo">{{ grupo.fecha | date: "EEEE d 'de' MMMM, yyyy" }}</h2>
+  <!-- Historial cronológico del Cliente -->
+  @if (esCliente()) {
+  @if (historialAgrupado().length) {
+  <div class="historial">
+    @for (grupo of historialAgrupado(); track grupo.fecha) {
+    <div class="grupo-fecha">
+      <h2 class="fecha-titulo">{{ grupo.fecha | date: "EEEE d 'de' MMMM, yyyy" }}</h2>
 
-              <div class="linea-tiempo">
-                @for (cita of grupo.citas; track cita.id) {
-                  <mat-card class="cita-card" [attr.data-estado]="cita.estado">
-                    <mat-card-content>
-                      <div class="cita-top">
-                        <div>
-                          <span class="cita-label">Profesional</span>
-                          <h3>{{ cita.profesional }}</h3>
-                        </div>
+      <div class="linea-tiempo">
+        @for (cita of grupo.citas; track cita.id) {
+        <mat-card class="cita-card" [attr.data-estado]="cita.estado">
+          <mat-card-content>
+            <div class="cita-top">
+              <div>
+                <span class="cita-label">Profesional</span>
+                <h3>{{ cita.profesional }}</h3>
+              </div>
 
-                        <span class="badge-estado" [attr.data-estado]="cita.estado">
-                          {{ estadoTexto(cita.estado) }}
-                        </span>
-                      </div>
+              <span class="badge-estado" [attr.data-estado]="cita.estado">
+                {{ estadoTexto(cita.estado) }}
+              </span>
+            </div>
 
-                      <div class="cita-meta">
-                        <div>
-                          <mat-icon>spa</mat-icon>
-                          <span>{{ cita.servicio }}</span>
-                        </div>
-                        <div>
-                          <mat-icon>schedule</mat-icon>
-                          <span>{{ cita.hora | date: 'HH:mm' }}</span>
-                        </div>
-                      </div>
-
-                      @if (yaResenada(cita)) {
-                        <div class="chip-resenada">
-                          <mat-icon>star</mat-icon>
-                          Ya calificaste esta cita
-                        </div>
-                      }
-
-                      <div class="cita-acciones">
-                        <a mat-stroked-button [routerLink]="['/citas', cita.id]">
-                          Ver detalle
-                        </a>
-
-                        @if (puedeCancelar(cita)) {
-                          <button mat-stroked-button color="warn" (click)="abrirCancelar(cita)">
-                            <mat-icon>close</mat-icon>
-                            Cancelar
-                          </button>
-                        }
-
-                        @if (puedeResenar(cita)) {
-                          <button mat-flat-button color="primary" (click)="abrirResena(cita)">
-                            <mat-icon>star_rate</mat-icon>
-                            Dejar reseña
-                          </button>
-                        }
-                      </div>
-                    </mat-card-content>
-                  </mat-card>
-                }
+            <div class="cita-meta">
+              <div>
+                <mat-icon>spa</mat-icon>
+                <span>{{ cita.servicio }}</span>
+              </div>
+              <div>
+                <mat-icon>schedule</mat-icon>
+                <span>{{ cita.fecha | date: 'dd/MM/yyyy' }} {{ cita.hora | date: 'HH:mm' }}</span>
               </div>
             </div>
-          }
-        </div>
-      } @else {
-        <mat-card class="empty-results">
-          <mat-card-content>
-            <mat-icon>event_busy</mat-icon>
-            <h2>Aún no tienes citas</h2>
-            <p>Cuando reserves una cita, aparecerá aquí tu historial cronológico.</p>
+
+            @if (yaResenada(cita)) {
+            <div class="chip-resenada">
+              <mat-icon>star</mat-icon>
+              Ya calificaste esta cita
+            </div>
+            }
+
+            <div class="cita-acciones">
+              <a mat-stroked-button [routerLink]="['/citas', cita.id]">
+                Ver detalle
+              </a>
+
+              @if (puedeCancelar(cita)) {
+              <button mat-stroked-button color="warn" (click)="abrirCancelar(cita)">
+                <mat-icon>close</mat-icon>
+                Cancelar
+              </button>
+              }
+
+              @if (puedeResenar(cita)) {
+              <button mat-flat-button color="primary" (click)="abrirResena(cita)">
+                <mat-icon>star_rate</mat-icon>
+                Dejar reseña
+              </button>
+              }
+            </div>
           </mat-card-content>
         </mat-card>
-      }
+        }
+      </div>
+    </div>
     }
+  </div>
+  } @else {
+  <mat-card class="empty-results">
+    <mat-card-content>
+      <mat-icon>event_busy</mat-icon>
+      <h2>Aún no tienes citas</h2>
+      <p>Cuando reserves una cita, aparecerá aquí tu historial cronológico.</p>
+    </mat-card-content>
+  </mat-card>
+  }
+  }
 
-    <!-- Vista simple para el Profesional (su vista principal es la Agenda Visual) -->
-    @if (esProfesional()) {
-      @if (citasVisibles().length) {
-        <div class="citas-grid">
-          @for (cita of citasVisibles(); track cita.id) {
-            <mat-card class="cita-card">
-              <mat-card-content>
-                <div class="cita-top">
-                  <div>
-                    <span class="cita-label">Cliente</span>
-                    <h3>{{ cita.cliente }}</h3>
-                  </div>
+  <!-- Vista simple para el Profesional (su vista principal es la Agenda Visual) -->
+  @if (esProfesional()) {
+  @if (citasVisibles().length) {
+  <div class="citas-grid">
+    @for (cita of citasVisibles(); track cita.id) {
+    <mat-card class="cita-card">
+      <mat-card-content>
+        <div class="cita-top">
+          <div>
+            <span class="cita-label">Cliente</span>
+            <h3>{{ cita.cliente }}</h3>
+          </div>
 
-                  <span class="badge-estado" [attr.data-estado]="cita.estado">
-                    {{ estadoTexto(cita.estado) }}
-                  </span>
-                </div>
+          <span class="badge-estado" [attr.data-estado]="cita.estado">
+            {{ estadoTexto(cita.estado) }}
+          </span>
+        </div>
 
-                <div class="cita-meta">
-                  <div>
-                    <mat-icon>spa</mat-icon>
-                    <span>{{ cita.servicio }}</span>
-                  </div>
-                  <div>
-                    <mat-icon>event</mat-icon>
-                    <span>{{ cita.fecha | date: 'dd/MM/yyyy' }}</span>
-                  </div>
-                  <div>
-                    <mat-icon>schedule</mat-icon>
-                    <span>{{ cita.hora | date: 'HH:mm' }}</span>
-                  </div>
-                </div>
+        <div class="cita-meta">
+          <div>
+            <mat-icon>spa</mat-icon>
+            <span>{{ cita.servicio }}</span>
+          </div>
+          <div>
+            <mat-icon>event</mat-icon>
+            <span>{{ cita.fecha | date: 'dd/MM/yyyy' }}</span>
+          </div>
+          <div>
+            <mat-icon>schedule</mat-icon>
+            <span>{{ cita.hora | date: 'HH:mm' }}</span>
+          </div>
+        </div>
 
-                <div class="cita-acciones">
-                  <a mat-stroked-button color="primary" [routerLink]="['/citas', cita.id]">
-                    Ver detalle
-                  </a>
+        <div class="cita-acciones">
+          <a mat-stroked-button color="primary" [routerLink]="['/citas', cita.id]">
+            Ver detalle
+          </a>
 
-                  @if (puedeAceptar(cita)) {
-                    <button
-                      mat-flat-button
-                      color="primary"
-                      [disabled]="procesandoId() !== null"
-                      (click)="aceptar(cita)">
-                      <mat-icon>check_circle</mat-icon>
-                      Aceptar
-                    </button>
-                  }
+          @if (puedeAceptar(cita)) {
+          <button mat-flat-button color="primary" [disabled]="procesandoId() !== null" (click)="aceptar(cita)">
+            <mat-icon>check_circle</mat-icon>
+            Aceptar
+          </button>
+          }
 
-                  @if (puedeRechazar(cita)) {
-                    <button
-                      mat-stroked-button
-                      color="warn"
-                      [disabled]="procesandoId() !== null"
-                      (click)="abrirRechazar(cita)">
-                      <mat-icon>block</mat-icon>
-                      Rechazar
-                    </button>
-                  }
+          @if (puedeRechazar(cita)) {
+          <button mat-stroked-button color="warn" [disabled]="procesandoId() !== null" (click)="abrirRechazar(cita)">
+            <mat-icon>block</mat-icon>
+            Rechazar
+          </button>
+          }
 
-                  @if (puedeCompletar(cita)) {
-                    <button
-                      mat-flat-button
-                      color="accent"
-                      [disabled]="procesandoId() !== null"
-                      (click)="completar(cita)">
-                      <mat-icon>task_alt</mat-icon>
-                      Completar
-                    </button>
-                  }
-
-                  @if (puedeCancelar(cita)) {
-                    <button
-                      mat-stroked-button
-                      color="warn"
-                      [disabled]="procesandoId() !== null"
-                      (click)="abrirCancelar(cita)">
-                      <mat-icon>close</mat-icon>
-                      Cancelar
-                    </button>
-                  }
-                </div>
-              </mat-card-content>
-            </mat-card>
+          @if (puedeCompletar(cita)) {
+          <button mat-flat-button color="accent" [disabled]="procesandoId() !== null" (click)="completar(cita)">
+            <mat-icon>task_alt</mat-icon>
+            Completar
+          </button>
           }
         </div>
-      } @else {
-        <mat-card class="empty-results">
-          <mat-card-content>
-            <mat-icon>event_busy</mat-icon>
-            <h2>No hay citas para este usuario</h2>
-            <p>Usa la Agenda Visual para gestionar tus citas.</p>
-          </mat-card-content>
-        </mat-card>
-      }
+      </mat-card-content>
+    </mat-card>
     }
+  </div>
+  } @else {
+  <mat-card class="empty-results">
+    <mat-card-content>
+      <mat-icon>event_busy</mat-icon>
+      <h2>No hay citas para este usuario</h2>
+      <p>Usa la Agenda Visual para gestionar tus citas.</p>
+    </mat-card-content>
+  </mat-card>
+  }
+  }
   }
 </div>

@@ -163,6 +163,10 @@ export class ProfesionalesList {
   }
 
   toggleDisponibilidad(profesional: Profesional): void {
+    const accion = profesional.disponible ? 'hacerlo no disponible' : 'hacerlo disponible';
+    const confirmado = window.confirm(`¿Estás seguro de que deseas ${accion} el profesional "${profesional.nombre}"?`);
+    if (!confirmado) return;
+    
     this.profesionalService.cambiarDisponibilidad(profesional.id).subscribe({
       next: (res) => {
         const profesionalActualizado = res.data;

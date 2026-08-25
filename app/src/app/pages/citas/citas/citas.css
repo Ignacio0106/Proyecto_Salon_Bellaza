@@ -184,3 +184,19 @@
     grid-template-columns: 1fr;
   }
 }
+.filtros-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.filtro-item {
+  min-width: 220px;
+}
+
+.btn-limpiar {
+  height: 56px;
+  margin-bottom: 22px; /* Alineación vertical con la base de los mat-form-field */
+}

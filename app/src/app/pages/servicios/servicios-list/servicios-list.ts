@@ -184,6 +184,10 @@ estadosDisponibles = computed<string[]>(() => {
   }
 
   toggleEstado(servicio: Servicio): void {
+    const accion = servicio.estado === 'ACTIVO' ? 'desactivar' : 'activar';
+    const confirmado = window.confirm(`¿Estás seguro de que deseas ${accion} el servicio "${servicio.nombre}"?`);
+    if (!confirmado) return;
+
     this.serviciosService.cambiarEstado(servicio.id).subscribe({
       next: (res) => {
         const servicioActualizado = res.data;

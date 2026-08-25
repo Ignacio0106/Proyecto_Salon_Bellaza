@@ -55,7 +55,24 @@
           </button>
         </div>
       }
+      @if (esProfesional()) {
+        <div class="filtros-container">
+          <mat-form-field appearance="outline" class="filtro-select">
+            <mat-label>Estado</mat-label>
+            <mat-select [ngModel]="estadoFiltro()" (ngModelChange)="estadoFiltro.set($event); aplicarFiltros()">
+              <mat-option value="">Todos los estados</mat-option>
+              @for (est of estadosDisponibles; track est.valor) {
+                <mat-option [value]="est.valor">{{ est.etiqueta }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
 
+          <button mat-stroked-button class="secondary-button" (click)="limpiarFiltros()">
+            <mat-icon>filter_alt_off</mat-icon>
+            Limpiar filtros
+          </button>
+        </div>
+      }
       <!-- Manejo de errores -->
       @if (error()) {
         <div class="mensaje-error">

@@ -52,6 +52,12 @@
           <mat-icon>edit</mat-icon>
           Editar perfil
         </a>
+        @if (esProfesional() && perfilProfesionalId()) {
+          <a mat-stroked-button color="primary" [routerLink]="['/profesionales/edit', perfilProfesionalId()]">
+            <mat-icon>work</mat-icon>
+            Editar perfil profesional
+          </a>
+        }
       </div>
     </mat-card>
   } @else {

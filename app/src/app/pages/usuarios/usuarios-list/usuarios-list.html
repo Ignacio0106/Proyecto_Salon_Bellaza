@@ -76,7 +76,8 @@
                         <td mat-cell *matCellDef="let usuario">
                             <button mat-icon-button class="btn-toggle-estado"
                                 [class.btn-desactivar]="usuario.estado === 'ACTIVO'"
-                                [class.btn-activar]="usuario.estado === 'INACTIVO'" (click)="toggleEstado(usuario)">
+                                [class.btn-activar]="usuario.estado === 'INACTIVO'" (click)="toggleEstado(usuario)"
+                                [title]="usuario.estado === 'ACTIVO' ? 'Desactivar usuario' : 'Activar usuario'">
                                 <mat-icon>{{ usuario.estado === 'ACTIVO' ? 'toggle_on' : 'toggle_off' }}</mat-icon>
                             </button>
                         </td>

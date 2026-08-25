@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../../core/services/auth.service';
+import { Role } from '../../../core/models/role.model';
 
 @Component({
   selector: 'app-perfil',
@@ -47,5 +48,12 @@ export class Perfil {
       .slice(0, 2)
       .map((parte) => parte.charAt(0).toUpperCase())
       .join('');
+  });
+
+  readonly esProfesional = computed(() => this.rol() === Role.PROFESIONAL);
+
+  readonly perfilProfesionalId = computed(() => {
+    const user = this.usuario();
+    return user?.perfilProfesionalId ?? null;
   });
 }

@@ -22,6 +22,11 @@ import {
   CancelarCitaDialogData,
 } from '../cancelar-cita-dialog/cancelar-cita-dialog';
 import { ResenaDialog, ResenaDialogData } from '../resena-dialog/resena-dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 // Un grupo del historial cronológico: todas las citas de una misma fecha
 export interface GrupoHistorial {
@@ -41,6 +46,11 @@ export interface GrupoHistorial {
     MatProgressSpinnerModule,
     MatDialogModule,
     RouterLink,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   templateUrl: './citas.html',
   styleUrl: './citas.css',
@@ -52,6 +62,13 @@ export class Citas {
   private readonly notificationService = inject(NotificationService);
 
   readonly estadoLabel = ESTADO_CITA_LABEL;
+
+  estadoFiltro = signal<string>('');
+  fechaDesde = signal<Date | null>(null);
+  fechaHasta = signal<Date | null>(null);
+
+  // Lista de estados disponibles para la lista desplegable
+  readonly opcionesEstados = Object.keys(ESTADO_CITA_LABEL) as EstadoCita[];  
 
   citas = signal<CitaListado[]>([]);
   loading = signal(false);
@@ -83,21 +100,65 @@ export class Citas {
       return [];
     }
 
+let filtradas: CitaListado[] = [];
     if (this.esCliente()) {
-      return this.ordenarRecientesPrimero(
-        this.citas().filter((cita) => cita.clienteId === usuario.id)
-      );
+      filtradas = this.citas().filter((cita) => cita.clienteId === usuario.id);
+    } else if (this.esProfesional()) {
+      const idProfesional = usuario.perfilProfesionalId;
+      console.log('ID del profesional autenticado:', idProfesional);
+      filtradas = this.citas().filter((cita) => cita.profesionalId === idProfesional)
     }
 
-    if (this.esProfesional()) {
-      const nombreCompleto = `${usuario.nombre ?? ''} ${usuario.apellidos ?? ''}`.trim();
-      return this.ordenarRecientesPrimero(
-        this.citas().filter((cita) => cita.profesional === nombreCompleto)
-      );
+    const estadoSel = this.estadoFiltro();
+    if (estadoSel) {
+      filtradas = filtradas.filter((cita) => cita.estado === estadoSel);
     }
 
-    return [];
+    const desde = this.fechaDesde();
+    const hasta = this.fechaHasta();
+
+    if (desde || hasta) {
+      filtradas = filtradas.filter((cita) => {
+        // Se formatea o ajusta la fecha de la cita a medianoche local para comparaciones precisas
+        const fechaCita = new Date(cita.fecha);
+        fechaCita.setHours(0, 0, 0, 0);
+
+        if (desde) {
+          const fDesde = new Date(desde);
+          fDesde.setHours(0, 0, 0, 0);
+          if (fechaCita < fDesde) return false;
+        }
+
+        if (hasta) {
+          const fHasta = new Date(hasta);
+          fHasta.setHours(23, 59, 59, 999);
+          if (fechaCita > fHasta) return false;
+        }
+
+        return true;
   });
+    }
+    return this.ordenarRecientesPrimero(filtradas);
+  });
+
+  limpiarFiltros(): void {
+    this.estadoFiltro.set('');
+    this.fechaDesde.set(null);
+    this.fechaHasta.set(null);
+  }
+
+  // Modifica los handlers de los inputs si los llamas desde eventos directos en la plantilla:
+  onEstadoChange(estado: string): void {
+    this.estadoFiltro.set(estado);
+  }
+
+  onFechaDesdeChange(fecha: Date | null): void {
+    this.fechaDesde.set(fecha);
+  }
+
+  onFechaHastaChange(fecha: Date | null): void {
+    this.fechaHasta.set(fecha);
+  }
 
   // Historial cronológico agrupado por fecha. citasVisibles ya viene
   // ordenada de más nueva a más vieja, así que los grupos heredan ese orden

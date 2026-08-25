@@ -2,13 +2,14 @@ import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select'; // Para el filtro por rol
+import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Usuario } from '../../../core/models/usuario.model'; // Asegúrate de tener este modelo
+import { Usuario } from '../../../core/models/usuario.model';
 import { UsuariosService } from '../../../core/services/usuarios.service';
 import { MatCardContent, MatCard } from "@angular/material/card";
 import { MatIcon } from "@angular/material/icon";
+import { MatButtonModule } from '@angular/material/button';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Role } from '../../../core/models/role.model';
 
@@ -25,6 +26,7 @@ import { Role } from '../../../core/models/role.model';
     MatCardContent,
     MatCard,
     MatIcon,
+    MatButtonModule,
   ],
   templateUrl: './usuarios-list.html',
   styleUrl: './usuarios-list.css',
@@ -58,7 +60,7 @@ export class UsuariosList {
     const texto = this.search().trim().toLowerCase();
     const rol = this.rolFiltro();
     return this.usuarios().filter((u) => {
-      const coincideBusqueda = u.nombre?.toLowerCase().includes(texto) || u.apellidos?.toLowerCase().includes(texto) || u.correo?.toLowerCase().includes(texto);
+      const coincideBusqueda = u.nombreCompleto?.toLowerCase().includes(texto) || u.correo?.toLowerCase().includes(texto);
       const coincideRol = rol === '' || u.rol === rol;
       return coincideBusqueda && coincideRol;
     });
@@ -86,6 +88,11 @@ export class UsuariosList {
   }
 
   toggleEstado(usuario: Usuario): void {
+    console.log('Usuario a cambiar estado:', usuario);
+    const accion = usuario.estado === 'ACTIVO' ? 'desactivar' : 'activar';
+    const confirmado = window.confirm(`¿Estás seguro de que deseas ${accion} al usuario "${usuario.nombreCompleto}"?`);
+    if (!confirmado) return;
+
     this.usuarioService.cambiarEstado(usuario.id).subscribe({
       next: (res) => {
         const usuarioActualizado = res.data;
@@ -97,7 +104,7 @@ export class UsuariosList {
         );
         const accion = usuarioActualizado.estado === 'ACTIVO' ? 'activado' : 'desactivado';
         this.notificationService.success(
-          `El usuario ${usuario.nombre} ${usuario.apellidos} fue ${accion} con éxito.`,
+          `El usuario ${usuario.nombreCompleto} fue ${accion} con éxito.`,
           'Estado Actualizado'
         );
       },
@@ -118,7 +125,7 @@ export class UsuariosList {
           )
         );
         this.notificationService.success(
-          `El usuario ${usuario.nombre} ${usuario.apellidos} ahora es ${res.data.rol.toLowerCase()}.`,
+          `El usuario ${usuario.nombreCompleto} ahora es ${res.data.rol.toLowerCase()}.`,
           'Rol Actualizado'
         );
       },

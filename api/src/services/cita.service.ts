@@ -314,6 +314,35 @@ export const CitaService = {
             data.horaFinalizacion
         );
 
+                const citaTraslapada = await prisma.cita.findFirst({
+            where: {
+                profesionalId: data.profesionalId,
+                fechaCitaSolicitada: fechaBase,
+                estado: { in: ["PENDIENTE", "ACEPTADA"] },
+                AND: [
+                    { horaInicio: { lt: horaFinalizacion } },
+                    { horaFinalizacion: { gt: horaInicio } },
+                ],
+            },
+            select: {
+                id: true,
+                horaInicio: true,
+                horaFinalizacion: true,
+                servicio: { select: { nombre: true } },
+            },
+        });
+
+        if (citaTraslapada) {
+            const horaInicioExistente = new Date(citaTraslapada.horaInicio)
+                .toLocaleTimeString("es-CR", { hour: "2-digit", minute: "2-digit", hour12: false });
+            const horaFinExistente = new Date(citaTraslapada.horaFinalizacion)
+                .toLocaleTimeString("es-CR", { hour: "2-digit", minute: "2-digit", hour12: false });
+
+            throw AppError.conflict(
+                `El profesional ya tiene una cita de ${citaTraslapada.servicio.nombre} en ese horario (${horaInicioExistente} - ${horaFinExistente}). No se permiten traslapes de horario.`
+            );
+        }
+
         const citaCreada = await prisma.cita.create({
             data: {
                 clienteId: data.clienteId,
