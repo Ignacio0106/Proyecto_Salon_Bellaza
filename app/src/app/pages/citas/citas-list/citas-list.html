@@ -143,7 +143,7 @@
                 <div class="fecha-celda">
                   <span class="fecha-texto">
                     <mat-icon>calendar_today</mat-icon>
-                    {{ cita.fecha | date:'dd/MM/yyyy' }}
+                    {{ cita.fecha | date:'dd/MM/yyyy':'UTC' }}
                   </span>
                   <span class="hora-texto">
                     <mat-icon>schedule</mat-icon>

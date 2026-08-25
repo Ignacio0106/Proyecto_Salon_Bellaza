@@ -67,7 +67,7 @@
             <mat-icon>event</mat-icon>
             <div>
               <strong>Fecha y hora</strong>
-              <p>{{ cita.fecha | date:'dd/MM/yyyy' }}</p>
+              <p>{{ cita.fecha | date:'dd/MM/yyyy':'UTC' }}</p>
               <small>{{ cita.horaInicio | date:'HH:mm' }} - {{ cita.horaFinalizacion | date:'HH:mm' }}</small>
             </div>
           </div>

@@ -59,7 +59,7 @@
   <div class="historial">
     @for (grupo of historialAgrupado(); track grupo.fecha) {
     <div class="grupo-fecha">
-      <h2 class="fecha-titulo">{{ grupo.fecha | date: "EEEE d 'de' MMMM, yyyy" }}</h2>
+      <h2 class="fecha-titulo">{{ grupo.fecha | date: "EEEE d 'de' MMMM, yyyy":'UTC' }}</h2>
 
       <div class="linea-tiempo">
         @for (cita of grupo.citas; track cita.id) {
@@ -83,7 +83,7 @@
               </div>
               <div>
                 <mat-icon>schedule</mat-icon>
-                <span>{{ cita.fecha | date: 'dd/MM/yyyy' }} {{ cita.hora | date: 'HH:mm' }}</span>
+                <span>{{ cita.fecha | date: 'dd/MM/yyyy':'UTC' }} {{ cita.hora | date: 'HH:mm' }}</span>
               </div>
             </div>
 
@@ -156,7 +156,7 @@
           </div>
           <div>
             <mat-icon>event</mat-icon>
-            <span>{{ cita.fecha | date: 'dd/MM/yyyy' }}</span>
+            <span>{{ cita.fecha | date: 'dd/MM/yyyy':'UTC' }}</span>
           </div>
           <div>
             <mat-icon>schedule</mat-icon>

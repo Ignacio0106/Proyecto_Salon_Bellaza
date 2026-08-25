@@ -255,16 +255,12 @@ export const CitaService = {
         horaInicio: string,
         horaFinalizacion: string
     ) {
-        const fechaSolicitada = new Date(fecha);
-        if (Number.isNaN(fechaSolicitada.getTime())) {
+        const [anio, mes, dia] = fecha.split('-').map(Number);
+        if (Number.isNaN(anio) || Number.isNaN(mes) || Number.isNaN(dia)) {
             return null;
         }
 
-        const fechaBase = new Date(
-            fechaSolicitada.getFullYear(),
-            fechaSolicitada.getMonth(),
-            fechaSolicitada.getDate()
-        );
+        const fechaBase = new Date(anio, mes - 1, dia);
 
         const inicio = this.combinarFechaYHora(fechaBase, horaInicio);
         const fin = this.combinarFechaYHora(fechaBase, horaFinalizacion);
@@ -323,17 +319,13 @@ export const CitaService = {
         }
     },
     async crear(data: CreateCitaDto) {
- const fechaSolicitada = new Date(data.fechaCitaSolicitada);
+        const [anio, mes, dia] = data.fechaCitaSolicitada.split('-').map(Number);
 
-        if (Number.isNaN(fechaSolicitada.getTime())) {
+        if (Number.isNaN(anio) || Number.isNaN(mes) || Number.isNaN(dia)) {
             throw AppError.badRequest("La fecha de la cita no es válida");
         }
 
-        const fechaBase = new Date(
-            fechaSolicitada.getFullYear(),
-            fechaSolicitada.getMonth(),
-            fechaSolicitada.getDate()
-        );
+        const fechaBase = new Date(anio, mes - 1, dia);
 
         // Regla de negocio: no se permiten citas en fechas pasadas a hoy
         const hoy = new Date();

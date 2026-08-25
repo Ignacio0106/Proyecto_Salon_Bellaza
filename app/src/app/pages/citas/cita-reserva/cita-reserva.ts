@@ -30,7 +30,7 @@ interface CitaFormValue {
   clienteId: number | null;
   profesionalId: number | null;
   servicioId: number | null;
-  fechaCitaSolicitada: string;
+  fechaCitaSolicitada: Date | null;
   horaInicio: string;
   modalidad: Modalidad | '';
   comentarioNecesidad: string;
@@ -95,7 +95,7 @@ export class CitaReserva {
     clienteId: this.authService.usuario()?.id ?? null,
     profesionalId: null,
     servicioId: null,
-    fechaCitaSolicitada: '',
+    fechaCitaSolicitada: null,
     horaInicio: '',
     modalidad: '',
     comentarioNecesidad: '',
@@ -156,7 +156,7 @@ export class CitaReserva {
 
         return this.citaService.verificarDisponibilidad(
           profesionalId,
-          fechaCitaSolicitada,
+          this.formatearFecha(fechaCitaSolicitada),
           horaInicio,
           horaFinalizacion
         );
@@ -257,8 +257,10 @@ export class CitaReserva {
       return;
     }
 
-    const fechaSeleccionada = new Date(value.fechaCitaSolicitada);
-    fechaSeleccionada.setHours(0, 0, 0, 0);
+    if (!value.fechaCitaSolicitada) {
+      return;
+    }
+    const fechaSeleccionada = new Date(value.fechaCitaSolicitada.getFullYear(), value.fechaCitaSolicitada.getMonth(), value.fechaCitaSolicitada.getDate());
 
     if (fechaSeleccionada < this.hoy) {
       return;
@@ -280,7 +282,7 @@ export class CitaReserva {
       clienteId: value.clienteId,
       profesionalId: value.profesionalId,
       servicioId: value.servicioId,
-      fechaCitaSolicitada: value.fechaCitaSolicitada,
+      fechaCitaSolicitada: this.formatearFecha(value.fechaCitaSolicitada),
       horaInicio: value.horaInicio,
       horaFinalizacion: this.calcularHoraFinalizacion(value.horaInicio, duracion),
       modalidad: value.modalidad as Modalidad,
@@ -308,16 +310,14 @@ export class CitaReserva {
 
   esFechaMenorAHoy(): boolean {
     if (!this.form.fechaCitaSolicitada) return false;
-    const fecha = new Date(this.form.fechaCitaSolicitada);
-    fecha.setHours(0, 0, 0, 0);
+    const fecha = new Date(this.form.fechaCitaSolicitada.getFullYear(), this.form.fechaCitaSolicitada.getMonth(), this.form.fechaCitaSolicitada.getDate());
     return fecha < this.hoy;
   }
 
   esHoraMenorAHoy(): boolean {
     if (!this.form.horaInicio) return false;
     if (!this.form.fechaCitaSolicitada) return false;
-    const fechaSeleccionada = new Date(this.form.fechaCitaSolicitada);
-    fechaSeleccionada.setHours(0, 0, 0, 0);
+    const fechaSeleccionada = new Date(this.form.fechaCitaSolicitada.getFullYear(), this.form.fechaCitaSolicitada.getMonth(), this.form.fechaCitaSolicitada.getDate());
     if (fechaSeleccionada > this.hoy) return false;
     const [horas, minutos] = this.form.horaInicio.split(':').map(Number);
     const fecha = new Date();
@@ -345,5 +345,13 @@ export class CitaReserva {
     fecha.setHours(horas, minutos, 0, 0);
     fecha.setMinutes(fecha.getMinutes() + duracionMinutos);
     return fecha.toTimeString().slice(0, 5);
+  }
+
+  private formatearFecha(fecha: Date | null): string {
+    if (!fecha) return '';
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    return `${anio}-${mes}-${dia}`;
   }
 }
