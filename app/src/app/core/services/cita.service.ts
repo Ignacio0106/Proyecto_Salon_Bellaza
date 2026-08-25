@@ -44,5 +44,19 @@ export class CitaService {
       { motivo }
     );
   }
+
+  verificarDisponibilidad(profesionalId: number, fecha: string, horaInicio: string, horaFinalizacion: string) {
+    return this.http.get<ApiResponse<{ disponible: boolean; citaConflicto: any }>>(
+      `${this.apiUrl}/disponibilidad`,
+      {
+        params: {
+          profesionalId: profesionalId.toString(),
+          fecha,
+          horaInicio,
+          horaFinalizacion,
+        },
+      }
+    );
+  }
 }
 

@@ -13,6 +13,7 @@ export class CitaRoutes {
         //Rutas 
         //locahost:3000/cita/ 
         router.get('/', asyncHandler(controller.listar)) 
+        router.get('/disponibilidad', asyncHandler(controller.verificarDisponibilidad)) 
                 router.get('/:id', asyncHandler(controller.obtenerPorId)) 
                 router.post( 
                     "/", 

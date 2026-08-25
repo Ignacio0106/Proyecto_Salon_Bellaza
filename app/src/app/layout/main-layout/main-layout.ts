@@ -59,7 +59,7 @@ export class MainLayout {
       label: 'Reportes de Citas por Estado',
       path: '/reportes/citasPorEstado',
       icon: 'event',
-      roles: [Role.ADMIN, Role.PROFESIONAL],
+      roles: [Role.ADMIN],
     },
     {
       label: 'Reportes Citas por Profesional',
@@ -71,7 +71,7 @@ export class MainLayout {
       label: 'Reportes de Calificaciones',
       path: '/reportes/calificaciones',
       icon: 'star',
-      roles: [Role.ADMIN, Role.PROFESIONAL],
+      roles: [Role.ADMIN],
     },
   ]);
 }

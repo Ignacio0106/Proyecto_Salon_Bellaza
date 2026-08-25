@@ -117,6 +117,12 @@ export class UsuariosList {
   cambiarRol(usuario: Usuario, nuevoRol: Role): void {
     if (nuevoRol === usuario.rol) return;
 
+    const confirmado = window.confirm(`¿Estás seguro de cambiar el rol de "${usuario.nombreCompleto}" a ${nuevoRol}?`);
+    if (!confirmado) {
+      this.usuarios.update((listaActual) => [...listaActual]);
+      return;
+    }
+
     this.usuarioService.cambiarRol(usuario.id, nuevoRol).subscribe({
       next: (res) => {
         this.usuarios.update((listaActual) =>

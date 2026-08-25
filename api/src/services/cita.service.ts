@@ -249,6 +249,47 @@ export const CitaService = {
         }
     },
 
+    async verificarDisponibilidad(
+        profesionalId: number,
+        fecha: string,
+        horaInicio: string,
+        horaFinalizacion: string
+    ) {
+        const fechaSolicitada = new Date(fecha);
+        if (Number.isNaN(fechaSolicitada.getTime())) {
+            return null;
+        }
+
+        const fechaBase = new Date(
+            fechaSolicitada.getFullYear(),
+            fechaSolicitada.getMonth(),
+            fechaSolicitada.getDate()
+        );
+
+        const inicio = this.combinarFechaYHora(fechaBase, horaInicio);
+        const fin = this.combinarFechaYHora(fechaBase, horaFinalizacion);
+
+        const citaTraslapada = await prisma.cita.findFirst({
+            where: {
+                profesionalId,
+                fechaCitaSolicitada: fechaBase,
+                estado: { in: ["PENDIENTE", "ACEPTADA"] },
+                AND: [
+                    { horaInicio: { lt: fin } },
+                    { horaFinalizacion: { gt: inicio } },
+                ],
+            },
+            select: {
+                id: true,
+                horaInicio: true,
+                horaFinalizacion: true,
+                servicio: { select: { nombre: true } },
+            },
+        });
+
+        return citaTraslapada ?? null;
+    },
+
     async validateServicio(servicioId: number) {
         const servicio = await prisma.servicio.findUnique({
             where: { id: servicioId },

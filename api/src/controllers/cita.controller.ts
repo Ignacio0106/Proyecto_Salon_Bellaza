@@ -90,6 +90,34 @@ export class CitaController {
         );
     }
 
+    verificarDisponibilidad = async (request: Request, response: Response, next: NextFunction) => {
+        const { profesionalId, fecha, horaInicio, horaFinalizacion } = request.query;
+
+        const profId = parseInt(profesionalId as string, 10);
+        if (isNaN(profId)) {
+            return response.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "ID de profesional inválido" });
+        }
+
+        if (!fecha || !horaInicio || !horaFinalizacion) {
+            return response.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Faltan parámetros: fecha, horaInicio, horaFinalizacion" });
+        }
+
+        const cita = await CitaService.verificarDisponibilidad(
+            profId,
+            fecha as string,
+            horaInicio as string,
+            horaFinalizacion as string
+        );
+
+        return response.status(StatusCodes.OK).json({
+            success: true,
+            data: {
+                disponible: !cita,
+                citaConflicto: cita ?? null,
+            },
+        });
+    };
+
     // Cancela una cita (usado por "Mis Citas" del Cliente).
     // Requiere estar autenticado: se toma el id y rol del token, no del body.
     cancelar = async (request: AuthRequest, response: Response, next: NextFunction) => {

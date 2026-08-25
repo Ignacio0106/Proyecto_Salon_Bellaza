@@ -3,7 +3,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -73,7 +73,12 @@ export class CitaReserva {
   submitting = signal(false);
   error = signal<string | null>(null);
 
+  verificandoDisponibilidad = signal(false);
+  traslapeDetectado = signal<{ servicio: string; horaInicio: string; horaFinalizacion: string } | null>(null);
+
   servicioDetalle = signal<ServicioDetalle | null>(null);
+
+  private readonly verificarDisponibilidad$ = new Subject<void>();
 
   clienteActual = computed(() => {
     const usuario = this.authService.usuario();
@@ -129,6 +134,56 @@ export class CitaReserva {
 
   constructor() {
     this.cargarDatos();
+    this.configurarVerificacionDisponibilidad();
+  }
+
+  configurarVerificacionDisponibilidad(): void {
+    this.verificarDisponibilidad$.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap(() => {
+        const { profesionalId, fechaCitaSolicitada, horaInicio } = this.form;
+        const duracion = Number(this.servicioDetalle()?.duracionEstimada ?? 0);
+
+        if (!profesionalId || !fechaCitaSolicitada || !horaInicio || !duracion) {
+          this.traslapeDetectado.set(null);
+          this.verificandoDisponibilidad.set(false);
+          return [];
+        }
+
+        const horaFinalizacion = this.calcularHoraFinalizacion(horaInicio, duracion);
+        this.verificandoDisponibilidad.set(true);
+
+        return this.citaService.verificarDisponibilidad(
+          profesionalId,
+          fechaCitaSolicitada,
+          horaInicio,
+          horaFinalizacion
+        );
+      })
+    ).subscribe({
+      next: (response: any) => {
+        if (response && response.data) {
+          if (!response.data.disponible && response.data.citaConflicto) {
+            const conflicto = response.data.citaConflicto;
+            const horaInicioConflicto = new Date(conflicto.horaInicio).toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit', hour12: false });
+            const horaFinConflicto = new Date(conflicto.horaFinalizacion).toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit', hour12: false });
+            this.traslapeDetectado.set({
+              servicio: conflicto.servicio?.nombre ?? 'Cita existente',
+              horaInicio: horaInicioConflicto,
+              horaFinalizacion: horaFinConflicto,
+            });
+          } else {
+            this.traslapeDetectado.set(null);
+          }
+        }
+        this.verificandoDisponibilidad.set(false);
+      },
+      error: () => {
+        this.traslapeDetectado.set(null);
+        this.verificandoDisponibilidad.set(false);
+      },
+    });
   }
 
   cargarDatos(): void {
@@ -156,6 +211,8 @@ export class CitaReserva {
     this.form.servicioId = null;
     this.servicioDetalle.set(null);
     this.form.modalidad = '';
+    this.traslapeDetectado.set(null);
+    this.verificarDisponibilidad$.next();
   }
 
   onServicioChange(servicioId: number | null): void {
@@ -164,6 +221,7 @@ export class CitaReserva {
     if (!servicioId) {
       this.servicioDetalle.set(null);
       this.form.modalidad = '';
+      this.traslapeDetectado.set(null);
       return;
     }
     this.serviciosService.obtenerPorId(servicioId).subscribe({
@@ -174,6 +232,7 @@ export class CitaReserva {
         this.servicioDetalle.set(detalle);
 
         this.form.modalidad = (detalle?.modalidad as Modalidad) ?? '';
+        this.verificarDisponibilidad$.next();
       },
       error: () => {
         this.notificationService.error('No se pudo cargar el servicio seleccionado', 'Error');
@@ -207,6 +266,11 @@ export class CitaReserva {
 
     if (this.esHoraMenorAHoy()) {
       this.notificationService.error('La hora seleccionada no puede ser menor al día de hoy.', 'Fecha inválida');
+      return;
+    }
+
+    if (this.traslapeDetectado()) {
+      this.error.set('El horario seleccionado choca con una cita existente del profesional. Selecciona otro horario.');
       return;
     }
 
@@ -259,6 +323,16 @@ export class CitaReserva {
     const fecha = new Date();
     fecha.setHours(horas, minutos, 0, 0);
     return fecha < new Date();
+  }
+
+  onFechaChange(): void {
+    this.traslapeDetectado.set(null);
+    this.verificarDisponibilidad$.next();
+  }
+
+  onHoraChange(): void {
+    this.traslapeDetectado.set(null);
+    this.verificarDisponibilidad$.next();
   }
 
   cancelar(): void {

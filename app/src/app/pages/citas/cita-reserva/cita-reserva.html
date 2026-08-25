@@ -78,7 +78,7 @@
 					<mat-form-field appearance="outline">
 						<mat-label>Fecha</mat-label>
 						<input matInput [matDatepicker]="picker" [min]="hoy" name="fechaCitaSolicitada"
-							[(ngModel)]="form.fechaCitaSolicitada" required />
+							[(ngModel)]="form.fechaCitaSolicitada" (ngModelChange)="onFechaChange()" required />
 
 						<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
 						<mat-datepicker #picker></mat-datepicker>
@@ -93,7 +93,8 @@
 
 					<mat-form-field appearance="outline">
 						<mat-label>Hora</mat-label>
-						<input matInput type="time" name="horaInicio" [(ngModel)]="form.horaInicio" required />
+						<input matInput type="time" name="horaInicio" [(ngModel)]="form.horaInicio"
+							(ngModelChange)="onHoraChange()" required />
 
 						<mat-icon matSuffix>schedule</mat-icon>
 
@@ -107,6 +108,25 @@
 						
 					</mat-form-field>
 				</div>
+
+				@if (traslapeDetectado()) {
+				<div class="error-box traslape-warning">
+					<mat-icon>warning</mat-icon>
+					<div>
+						<strong>Horario no disponible</strong>
+						<p>El profesional ya tiene una cita de <em>{{ traslapeDetectado()!.servicio }}</em> en ese horario
+							({{ traslapeDetectado()!.horaInicio }} - {{ traslapeDetectado()!.horaFinalizacion }}). Selecciona
+							otro horario.</p>
+					</div>
+				</div>
+				}
+
+				@if (verificandoDisponibilidad()) {
+				<div class="disponibilidad-loading">
+					<mat-spinner diameter="16"></mat-spinner>
+					<span>Verificando disponibilidad...</span>
+				</div>
+				}
 
 				<mat-form-field appearance="outline" class="full-width">
 					<mat-label>Descripción / comentario</mat-label>
@@ -130,7 +150,8 @@
 
 				<div class="actions">
 					<button mat-stroked-button type="button" (click)="cancelar()">Cancelar</button>
-					<button mat-raised-button color="primary" type="submit" [disabled]="submitting()">
+					<button mat-raised-button color="primary" type="submit"
+						[disabled]="submitting() || !!traslapeDetectado() || verificandoDisponibilidad()">
 						@if (submitting()) {
 						<span class="button-content">
 							<mat-spinner diameter="18"></mat-spinner>

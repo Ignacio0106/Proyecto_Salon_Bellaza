@@ -7,6 +7,12 @@ export const PerfilProfesionalService = {
 
     async listar() {
         const perfiles = await prisma.perfilProfesional.findMany({
+            where: {
+                disponible: true,
+                usuario: {
+                    estado: 'ACTIVO'
+                }
+            },
             select: {
                 id: true,
                 usuario: {
@@ -23,8 +29,8 @@ export const PerfilProfesionalService = {
         });
         return perfiles.map(perfil => ({
             id: perfil.id,
-            nombre:
-                perfil.usuario.nombre + " " + perfil.usuario.apellidos,
+            nombre: perfil.usuario.nombre + " " + perfil.usuario.apellidos,
+            apellidos: perfil.usuario.apellidos,
             tituloProfesional: perfil.tituloProfesional,
             modalidad: perfil.modalidad,
             tarifaBase: perfil.tarifaBase,

@@ -151,6 +151,27 @@ td.mat-mdc-cell {
   border: 1px solid #e6e2e0; /* Neutral 90 */
 }
 
+.rol-select {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.rol-select ::ng-deep .mat-mdc-select-trigger {
+  height: 32px;
+}
+
+.rol-select ::ng-deep .mdc-text-field--outlined .mdc-notched-outline__leading,
+.rol-select ::ng-deep .mdc-text-field--outlined .mdc-notched-outline__trailing,
+.rol-select ::ng-deep .mdc-text-field--outlined .mdc-notched-outline__notch {
+  border-color: #e6e2e0;
+}
+
+.rol-select ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
+.rol-select ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing,
+.rol-select ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch {
+  border-color: #e6e2e0;
+}
+
 /* Badges Estilizados con punto indicador */
 .badge-estado {
   padding: 5px 12px 5px 10px;

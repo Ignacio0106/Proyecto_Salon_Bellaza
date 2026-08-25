@@ -49,14 +49,14 @@ export const routes: Routes = [
                 component: ServicioCreatePage,
                 title: 'Crear Servicio',
                 canActivate: [authGuard, roleGuard],
-                data: { roles: [Role.PROFESIONAL, Role.ADMIN] }
+                data: { roles: [Role.PROFESIONAL] }
             },
             {
                 path: 'servicios/edit/:id',
                 component: ServicioEditPage,
                 title: 'Editar Servicio',
                 canActivate: [authGuard, roleGuard],
-                data: { roles: [Role.PROFESIONAL, Role.ADMIN] }
+                data: { roles: [Role.PROFESIONAL] }
             },
             {
                 path: 'servicios/:id',
@@ -180,7 +180,7 @@ export const routes: Routes = [
                 component: ReporteCitasByEstado,
                 title: 'Reportes y Estadísticas de Citas',
                 canActivate: [authGuard, roleGuard],
-                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
+                data: { roles: [Role.ADMIN] }
             },
             {
                 path: 'reportes/citasPorProfesional',
@@ -194,7 +194,7 @@ export const routes: Routes = [
                 component: ReporteCalificaciones,
                 title: 'Reportes y Estadísticas',
                 canActivate: [authGuard, roleGuard],
-                data: { roles: [Role.ADMIN, Role.PROFESIONAL] }
+                data: { roles: [Role.ADMIN] }
             },
             {
                 path: 'sin-autorizacion',
