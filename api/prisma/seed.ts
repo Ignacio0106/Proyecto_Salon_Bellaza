@@ -121,7 +121,7 @@ async function main() {
             {
                 nombre: "Valeria",
                 apellidos: "Castro",
-                correo: "valeria@correo.com",
+                correo: "valeria@belleza.com",
                 contrasena: hashPassword,
                 telefono: "82828282",
                 rol: Rol.PROFESIONAL,
@@ -187,7 +187,7 @@ async function main() {
     // 3. Categorías (8 mínimo: Activas e Inactivas)
     await prisma.categoriaServicio.createMany({
         data: [
-            { nombre: "Cabello", descripcion: "Servicios de corte y peinado.", estado: EstadoGeneral.ACTIVO },
+            { nombre: "Cabello", descripcion: "Servicios de corte y peinado.", estado: EstadoGeneral.INACTIVO },
             { nombre: "Maquillaje", descripcion: "Maquillaje profesional.", estado: EstadoGeneral.ACTIVO },
             { nombre: "Uñas", descripcion: "Manicure y pedicure.", estado: EstadoGeneral.ACTIVO },
             { nombre: "Spa", descripcion: "Tratamientos relajantes.", estado: EstadoGeneral.ACTIVO },
@@ -201,7 +201,7 @@ async function main() {
     // 4. Especialidades (8 activas + 1 inactiva)
     await prisma.especialidad.createMany({
         data: [
-            { nombre: "Colorimetría", descripcion: "Tintes y cambios de color.", estado: EstadoGeneral.ACTIVO },
+            { nombre: "Colorimetría", descripcion: "Tintes y cambios de color.", estado: EstadoGeneral.INACTIVO },
             { nombre: "Peinados", descripcion: "Peinados para eventos.", estado: EstadoGeneral.ACTIVO },
             { nombre: "Maquillaje Social", descripcion: "Maquillaje para celebraciones.", estado: EstadoGeneral.ACTIVO },
             { nombre: "Nail Art", descripcion: "Diseños decorativos para uñas.", estado: EstadoGeneral.ACTIVO },
@@ -275,7 +275,7 @@ async function main() {
 
     const valeria = await prisma.perfilProfesional.create({
         data: {
-            usuarioId: userMap["valeria@correo.com"],
+            usuarioId: userMap["valeria@belleza.com"],
             tituloProfesional: "Especialista en Spa",
             descripcion: "Masajes relajantes y tratamientos corporales.",
             aniosExperiencia: 7,
@@ -412,7 +412,7 @@ async function main() {
             precio: 12000,
             duracionEstimada: 60,
             modalidad: Modalidad.PRESENCIAL,
-            estado: EstadoGeneral.ACTIVO,
+            estado: EstadoGeneral.INACTIVO
         },
     });
 
@@ -586,38 +586,54 @@ async function main() {
     //     - Aceptadas y pendientes: fechas futuras (aún se pueden gestionar).
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-
+ 
     const diasPasado = [-28, -25, -21, -18, -14, -11, -7, -4, -2];
     const diasFuturoAceptada = [1, 2, 3, 4, 6, 7, 9];
     const diasFuturoPendiente = [2, 4, 5, 8, 10, 12];
-
+ 
     // Horarios espaciados 3 horas para que ningún servicio (duración máxima
     // de 180 minutos) se traslape con otra cita del mismo profesional.
     const horariosDisponibles = [8, 11, 14, 17];
     const slotsOcupados = new Map<string, number>();
-
+ 
     const citasCreadas = [];
     // Contexto de cada cita para poder registrar su historial de estados
     const citasConContexto: Array<{
         cita: { id: number; estado: EstadoCita; clienteId: number };
         profesionalUsuarioId: number;
     }> = [];
-
+ 
     let indicePasado = 0;
     let indiceAceptada = 0;
     let indicePendiente = 0;
-
+ 
     const fechaPorOffset = (offset: number) => {
         const fecha = new Date(hoy);
         fecha.setDate(hoy.getDate() + offset);
         return fecha;
     };
-
+ 
+    // Reserva un slot de horario libre para un profesional en un día dado,
+    // desplazando el offset (hacia el pasado o el futuro según su signo)
+    // si ese profesional ya tiene los 4 horarios ocupados ese día.
+    const reservarSlot = (profesionalId: number, offsetInicial: number) => {
+        let offsetDia = offsetInicial;
+        let claveDia = `${profesionalId}|${fechaPorOffset(offsetDia).toDateString()}`;
+        let slotsUsados = slotsOcupados.get(claveDia) ?? 0;
+        while (slotsUsados >= horariosDisponibles.length) {
+            offsetDia += offsetDia < 0 ? -1 : 1;
+            claveDia = `${profesionalId}|${fechaPorOffset(offsetDia).toDateString()}`;
+            slotsUsados = slotsOcupados.get(claveDia) ?? 0;
+        }
+        slotsOcupados.set(claveDia, slotsUsados + 1);
+        return { offsetDia, hora: horariosDisponibles[slotsUsados] };
+    };
+ 
     for (let citaIndex = 0; citaIndex < 50; citaIndex++) {
         const par = paresProfesionalServicio[citaIndex % paresProfesionalServicio.length];
         const estado = estadosDistribucion[citaIndex % estadosDistribucion.length];
         const clienteId = clientesIds[(citaIndex * 3) % clientesIds.length]; // Variación de clientes
-
+ 
         // Offset de días respecto a hoy según el estado de la cita
         let offsetDia: number;
         if (estado === EstadoCita.ACEPTADA) {
@@ -627,30 +643,20 @@ async function main() {
         } else {
             offsetDia = diasPasado[indicePasado++ % diasPasado.length];
         }
-
-        // Si el profesional ya tiene 4 citas ese día, se busca el día
-        // siguiente (o anterior en el pasado) con espacio disponible.
-        let claveDia = `${par.profesional.id}|${fechaPorOffset(offsetDia).toDateString()}`;
-        let slotsUsados = slotsOcupados.get(claveDia) ?? 0;
-        while (slotsUsados >= horariosDisponibles.length) {
-            offsetDia += offsetDia < 0 ? -1 : 1;
-            claveDia = `${par.profesional.id}|${fechaPorOffset(offsetDia).toDateString()}`;
-            slotsUsados = slotsOcupados.get(claveDia) ?? 0;
-        }
-        slotsOcupados.set(claveDia, slotsUsados + 1);
-
-        const fechaCita = fechaPorOffset(offsetDia);
-
+ 
+        const { offsetDia: offsetAjustado, hora } = reservarSlot(par.profesional.id, offsetDia);
+        const fechaCita = fechaPorOffset(offsetAjustado);
+ 
         const horaInicio = new Date(fechaCita);
-        horaInicio.setHours(horariosDisponibles[slotsUsados], 0, 0, 0);
-
+        horaInicio.setHours(hora, 0, 0, 0);
+ 
         const horaFinalizacion = new Date(horaInicio);
         horaFinalizacion.setMinutes(horaInicio.getMinutes() + par.servicio.duracionEstimada);
-
+ 
         // La solicitud se registra 3 días antes de la fecha agendada
         const fechaCreacion = new Date(fechaCita);
         fechaCreacion.setDate(fechaCita.getDate() - 3);
-
+ 
         const cita = await prisma.cita.create({
             data: {
                 clienteId,
@@ -672,14 +678,126 @@ async function main() {
                 montoCalculado: par.servicio.precio,
             },
         });
-
+ 
         citasCreadas.push(cita);
         citasConContexto.push({
             cita: { id: cita.id, estado: cita.estado, clienteId: cita.clienteId },
             profesionalUsuarioId: par.profesional.usuarioId,
         });
     }
-
+ 
+    // 10b. Citas específicas de Ana: cubren TODOS los estados del enum y,
+    //      además, quedan armadas exactamente como se necesitan para una
+    //      demo en vivo del flujo de citas (aceptar, rechazar, completar,
+    //      reseñar y demostrar el bloqueo de completar antes de tiempo).
+    const anaId = userMap["ana@correo.com"];
+ 
+    const citasAnaEspec: Array<{
+        etiqueta: string;
+        estado: EstadoCita;
+        offsetDia: number;
+        comentarioNecesidad: string;
+        sinResenaPrevia?: boolean; // no debe recibir reseña automática del seed
+    }> = [
+        {
+            etiqueta: "pendiente-1-para-aceptar",
+            estado: EstadoCita.PENDIENTE,
+            offsetDia: 5,
+            comentarioNecesidad: "Pendiente #1: se aceptará en vivo durante la demo.",
+        },
+        {
+            etiqueta: "pendiente-2-para-rechazar",
+            estado: EstadoCita.PENDIENTE,
+            offsetDia: 6,
+            comentarioNecesidad: "Pendiente #2: se rechazará en vivo durante la demo.",
+        },
+        {
+            etiqueta: "aceptada-fecha-futura",
+            estado: EstadoCita.ACEPTADA,
+            offsetDia: 7,
+            comentarioNecesidad:
+                "Aceptada con fecha futura: para demostrar el bloqueo al intentar completarla antes de tiempo.",
+        },
+        {
+            etiqueta: "aceptada-fecha-pasada-para-completar",
+            estado: EstadoCita.ACEPTADA,
+            offsetDia: -3, // fecha pasada, a propósito
+            comentarioNecesidad: "Aceptada con fecha pasada: se completará en vivo durante la demo.",
+        },
+        {
+            etiqueta: "completada-sin-resena-para-resenar",
+            estado: EstadoCita.COMPLETADA,
+            offsetDia: -5,
+            comentarioNecesidad: "Completada sin reseña previa: se usará para crear la reseña en vivo.",
+            sinResenaPrevia: true,
+        },
+        {
+            etiqueta: "cancelada",
+            estado: EstadoCita.CANCELADA,
+            offsetDia: -10,
+            comentarioNecesidad: "Cita cancelada, cubre el estado CANCELADA en el historial de Ana.",
+        },
+        {
+            etiqueta: "rechazada",
+            estado: EstadoCita.RECHAZADA,
+            offsetDia: -15,
+            comentarioNecesidad: "Cita rechazada, cubre el estado RECHAZADA en el historial de Ana.",
+        },
+    ];
+ 
+    // Ids de citas de Ana que NO deben recibir reseña automática del seed,
+    // porque se usarán para crear la reseña en vivo durante la demo.
+    const idsCitasAnaSinResena = new Set<number>();
+ 
+    for (let i = 0; i < citasAnaEspec.length; i++) {
+        const espec = citasAnaEspec[i];
+        const par = paresProfesionalServicio[i % paresProfesionalServicio.length];
+ 
+        const { offsetDia: offsetAjustado, hora } = reservarSlot(par.profesional.id, espec.offsetDia);
+        const fechaCita = fechaPorOffset(offsetAjustado);
+ 
+        const horaInicio = new Date(fechaCita);
+        horaInicio.setHours(hora, 0, 0, 0);
+ 
+        const horaFinalizacion = new Date(horaInicio);
+        horaFinalizacion.setMinutes(horaInicio.getMinutes() + par.servicio.duracionEstimada);
+ 
+        const fechaCreacion = new Date(fechaCita);
+        fechaCreacion.setDate(fechaCita.getDate() - 3);
+ 
+        const cita = await prisma.cita.create({
+            data: {
+                clienteId: anaId,
+                profesionalId: par.profesional.id,
+                servicioId: par.servicio.id,
+                fechaCreacion,
+                fechaCitaSolicitada: fechaCita,
+                horaInicio,
+                horaFinalizacion,
+                modalidad: par.servicio.modalidad,
+                estado: espec.estado,
+                comentarioNecesidad: espec.comentarioNecesidad,
+                comentarioProfesional:
+                    espec.estado === EstadoCita.COMPLETADA
+                        ? "Servicio finalizado con éxito."
+                        : espec.estado === EstadoCita.ACEPTADA
+                          ? "Cita confirmada, lo esperamos."
+                          : null,
+                montoCalculado: par.servicio.precio,
+            },
+        });
+ 
+        citasCreadas.push(cita);
+        citasConContexto.push({
+            cita: { id: cita.id, estado: cita.estado, clienteId: cita.clienteId },
+            profesionalUsuarioId: par.profesional.usuarioId,
+        });
+ 
+        if (espec.sinResenaPrevia) {
+            idsCitasAnaSinResena.add(cita.id);
+        }
+    }
+ 
     // Historial de estados coherente para cada cita no pendiente.
     // Las rechazadas/canceladas registran su motivo, como exige la matriz
     // de transición de estados, y las completadas registran los dos pasos.
@@ -694,17 +812,17 @@ async function main() {
     ];
     const motivoCancelacionProfesional =
         "Se cancela por mantenimiento del local en esa jornada.";
-
+ 
     let rechazoIndex = 0;
     let cancelIndex = 0;
-
+ 
     for (const registro of citasConContexto) {
         const { cita, profesionalUsuarioId } = registro;
-
+ 
         if (cita.estado === EstadoCita.PENDIENTE) {
             continue;
         }
-
+ 
         if (cita.estado === EstadoCita.ACEPTADA) {
             await prisma.historialEstadoCita.create({
                 data: {
@@ -717,7 +835,7 @@ async function main() {
             });
             continue;
         }
-
+ 
         if (cita.estado === EstadoCita.COMPLETADA) {
             // La cita completada registra sus dos pasos:
             // PENDIENTE -> ACEPTADA -> COMPLETADA
@@ -741,7 +859,7 @@ async function main() {
             });
             continue;
         }
-
+ 
         if (cita.estado === EstadoCita.RECHAZADA) {
             await prisma.historialEstadoCita.create({
                 data: {
@@ -756,11 +874,11 @@ async function main() {
             rechazoIndex++;
             continue;
         }
-
+ 
         if (cita.estado === EstadoCita.CANCELADA) {
             // Se alternan cancelaciones del cliente y del profesional
             const cancelaCliente = cancelIndex % 2 === 0;
-
+ 
             await prisma.historialEstadoCita.create({
                 data: {
                     citaId: cita.id,
@@ -780,12 +898,14 @@ async function main() {
             cancelIndex++;
         }
     }
-
+ 
     // 11. Reseñas: TODAS las citas completadas reciben una reseña con
     //     calificaciones variadas, para que los promedios por profesional
     //     sean reales y los reportes muestren datos completos.
-    const citasCompletadas = citasCreadas.filter((c) => c.estado === EstadoCita.COMPLETADA);
-
+    const citasCompletadas = citasCreadas.filter(
+        (c) => c.estado === EstadoCita.COMPLETADA && !idsCitasAnaSinResena.has(c.id)
+    );
+ 
     const calificaciones = [
         { puntuacion: 5, comentario: "Excelente servicio, superó mis expectativas." },
         { puntuacion: 5, comentario: "Muy profesional y puntual." },
@@ -796,11 +916,11 @@ async function main() {
         { puntuacion: 1, comentario: "Pésima experiencia, no lo recomiendo." },
         { puntuacion: 5, comentario: "Increíble trabajo, definitivamente regresaré." },
     ];
-
+ 
     for (let i = 0; i < citasCompletadas.length; i++) {
         const cita = citasCompletadas[i];
         const resenaData = calificaciones[i % calificaciones.length];
-
+ 
         await prisma.resena.create({
             data: {
                 citaId: cita.id,
@@ -811,14 +931,14 @@ async function main() {
             },
         });
     }
-
+ 
     console.log(
         `Seed completado: ${citasCompletadas.length} citas completadas con su reseña.`
     );
-
-    console.log("Seed completado exitosamente cumpliendo con todas las cuotas de datos.");
+ 
+    console.log("Seed completado exitosamente cumpliendo con todas las cuotas de datos, incluida la clienta Ana con cita en cada estado y una ACEPTADA en fecha pasada.");
 }
-
+ 
 main()
     .catch((e) => {
         console.error("Error en el seed:", e);
@@ -827,3 +947,4 @@ main()
     .finally(async () => {
         await prisma.$disconnect();
     });
+ 
