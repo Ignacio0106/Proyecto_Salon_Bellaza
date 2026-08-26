@@ -74,7 +74,14 @@ estadosDisponibles = computed<string[]>(() => {
     this.serviciosService.listar()
       .subscribe({
         next: (response) => {
-          this.servicios.set(response.data);
+          let data = response.data;
+          if (!this.esAdmin()) {
+            const perfilId = this.perfilProfesionalId();
+            if (perfilId) {
+              data = data.filter(s => s.idProfesional === perfilId);
+            }
+          }
+          this.servicios.set(data);
           this.loading.set(false);
         },
 
