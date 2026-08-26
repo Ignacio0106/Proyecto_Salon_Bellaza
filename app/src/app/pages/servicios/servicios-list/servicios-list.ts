@@ -190,6 +190,13 @@ estadosDisponibles = computed<string[]>(() => {
     return servicio.idProfesional === this.perfilProfesionalId();
   }
 
+  puedeEditarServicio(servicio: Servicio): boolean {
+    if (this.authService.rol() !== Role.PROFESIONAL) {
+      return false;
+    }
+    return servicio.idProfesional === this.perfilProfesionalId();
+  }
+
   toggleEstado(servicio: Servicio): void {
     const accion = servicio.estado === 'ACTIVO' ? 'desactivar' : 'activar';
     const confirmado = window.confirm(`¿Estás seguro de que deseas ${accion} el servicio "${servicio.nombre}"?`);

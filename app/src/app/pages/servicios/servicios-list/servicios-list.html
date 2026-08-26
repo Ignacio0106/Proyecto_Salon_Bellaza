@@ -155,7 +155,7 @@
                 <mat-icon>visibility</mat-icon>
               </a>
 
-              @if (puedeGestionarServicio(servicio)) {
+              @if (puedeEditarServicio(servicio)) {
               <a mat-icon-button class="btn-editar" matTooltip="Editar" [routerLink]="['/servicios/edit', servicio.id]">
                 <mat-icon>edit</mat-icon>
               </a>
