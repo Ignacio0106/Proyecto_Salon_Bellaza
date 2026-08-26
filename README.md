@@ -35,15 +35,7 @@ Proyecto_Salon_Bellaza/
 
 ## Instalación y ejecución
 
-### 1. Base de datos
-
-Crear la base de datos (si no existe):
-
-```sql
-CREATE DATABASE marketplace CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-### 2. Backend (`api/`)
+### 1. Backend (`api/`)
 
 **a)** Crear el archivo `.env` dentro de la carpeta `api/` con las variables:
 
@@ -68,11 +60,15 @@ npm install
 
 **c)** Ejecutar las migraciones de Prisma (crea todas las tablas):
 
+npx prisma generate
+
 ```bash
-npx prisma migrate deploy
+npx prisma migrate
 ```
 
 **d)** Cargar los datos iniciales (seeders):
+
+npx prisma migrate dev --name init   
 
 ```bash
 npx prisma db seed
@@ -103,7 +99,7 @@ export const environment = {
 ```bash
 cd app
 npm install
-npm start
+ng serve -o
 ```
 
 La aplicación queda disponible en `http://localhost:4200`.
@@ -139,13 +135,3 @@ El registro público crea únicamente cuentas con rol **Cliente**.
 - Una sola reseña por cita completada, únicamente del cliente dueño de la cita.
 - Reportes calculados desde datos reales (umbral de baja calificación: promedio < 3.0).
 
-## Comandos útiles
-
-| Comando | Descripción |
-|---------|-------------|
-| `npm run dev` (en `api/`) | API en modo desarrollo con recarga |
-| `npm run build` (en `api/`) | Compilar el backend a `dist/` |
-| `npm start` (en `app/`) | Frontend en modo desarrollo |
-| `npm run build` (en `app/`) | Compilar producción en `dist/app` |
-| `npx prisma migrate deploy` | Aplicar migraciones pendientes |
-| `npx prisma db seed` | Reiniciar datos iniciales |
